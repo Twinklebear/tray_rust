@@ -1,2 +1,68 @@
+use std::f32;
+use std::num::{FloatMath, Float};
+
 pub mod vector;
+pub mod normal;
+pub mod point;
+pub mod ray;
+pub mod matrix4;
+
+/// Compute the cross product of two vectors
+pub fn cross<A: Index<uint, f32>, B: Index<uint, f32>>(a: &A, b: &B) -> vector::Vector {
+    vector::Vector::new(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
+                a[0] * b[1] - a[1] * b[0])
+}
+/// Compute the dot product of two vectors
+pub fn dot<A: Index<uint, f32>, B: Index<uint, f32>>(a: &A, b: &B) -> f32 {
+    a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+}
+/*
+ * TODO: I don't quite understand the error here
+/// Lerp between `a` and `b` at some distance `t`
+pub fn lerp<T: Mul<f32, T> + Add<T, T>>(t: f32, a: &T, b: &T) -> T {
+    *a * (1f32 - t) + *b * t
+}
+*/
+/// Clamp `x` to be between `min` and `max`
+pub fn clamp<T: PartialOrd>(x: T, min: T, max: T) -> T {
+    if x < min { min } else if x > max { max } else { x }
+}
+/// Convert `d` in degrees to radians
+pub fn radians(d: f32) -> f32 {
+    f32::consts::PI / 180f32 * d
+}
+/// Convert `r` in radians to degrees
+pub fn degrees(r: f32) -> f32 {
+    180f32 / f32::consts::PI * r
+}
+/// Compute the direction specified by `theta` and `phi` in the spherical coordinate system
+pub fn spherical_dir(sin_theta: f32, cos_theta: f32, phi: f32) -> vector::Vector {
+    vector::Vector::new(sin_theta * FloatMath::cos(phi), sin_theta * FloatMath::sin(phi),
+                cos_theta)
+}
+/// Compute the value of theta for the vector in the spherical coordinate system
+pub fn spherical_theta(v: &vector::Vector) -> f32 {
+    FloatMath::acos(clamp(v.z, -1f32, 1f32))
+}
+/// Compute the value of phi for the vector in the spherical coordinate system
+pub fn spherical_phi(v: &vector::Vector) -> f32 {
+    match FloatMath::atan2(v.y, v.x) {
+        x if x < 0f32 => x + f32::consts::PI_2,
+        x             => x,
+    }
+}
+/// Try to solve the quadratic equation `a*t^2 + b*t + c = 0` and return the two
+/// real roots if a solution exists
+pub fn solve_quadratic(a: f32, b: f32, c: f32) -> Option<(f32, f32)> {
+    let discrim = Float::sqrt(b * b - 4f32 * a * c);
+    if Float::is_nan(discrim) {
+        None
+    } else {
+        let q = if b < 0f32 { -0.5f32 * (b - discrim) } else { -0.5f32 * (b + discrim) };
+        match (q / a, c / q) {
+            (x, y) if x > y => Some((y, x)),
+            (x, y)          => Some((x, y)),
+        }
+    }
+}
 
