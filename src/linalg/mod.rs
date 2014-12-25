@@ -6,6 +6,7 @@ pub mod normal;
 pub mod point;
 pub mod ray;
 pub mod matrix4;
+pub mod transform;
 
 /// Compute the cross product of two vectors
 pub fn cross<A: Index<uint, f32>, B: Index<uint, f32>>(a: &A, b: &B) -> vector::Vector {
