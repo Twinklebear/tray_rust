@@ -1,6 +1,4 @@
-use std::num::Float;
-
-use linalg::vector;
+use linalg::vector::Vector;
 
 /// Point is a standard 3 component point but transforms as a point
 /// point when transformations are applied
@@ -37,23 +35,23 @@ impl Add<Point, Point> for Point {
     }
 }
 
-impl Add<vector::Vector, Point> for Point {
+impl Add<Vector, Point> for Point {
     /// Add two points together
-    fn add(self, rhs: vector::Vector) -> Point {
+    fn add(self, rhs: Vector) -> Point {
         Point { x: self.x + rhs.x, y: self.y + rhs.y, z: self.z + rhs.z }
     }
 }
 
-impl Sub<Point, vector::Vector> for Point {
+impl Sub<Point, Vector> for Point {
     /// Subtract two points to get the vector between them
-    fn sub(self, rhs: Point) -> vector::Vector {
-        vector::Vector { x: self.x - rhs.x, y: self.y - rhs.y, z: self.z - rhs.z }
+    fn sub(self, rhs: Point) -> Vector {
+        Vector { x: self.x - rhs.x, y: self.y - rhs.y, z: self.z - rhs.z }
     }
 }
 
-impl Sub<vector::Vector, Point> for Point {
+impl Sub<Vector, Point> for Point {
     /// Subtract a vector from a point, translating the point by -vector
-    fn sub(self, rhs: vector::Vector) -> Point {
+    fn sub(self, rhs: Vector) -> Point {
         Point { x: self.x - rhs.x, y: self.y - rhs.y, z: self.z - rhs.z }
     }
 }
@@ -62,13 +60,6 @@ impl Mul<f32, Point> for Point {
     /// Scale the point by some value
     fn mul(self, rhs: f32) -> Point {
         Point { x: self.x * rhs, y: self.y * rhs, z: self.z * rhs }
-    }
-}
-
-impl Mul<Point, Point> for f32 {
-    /// Scale the point by some value
-    fn mul(self, rhs: Point) -> Point {
-        rhs * self
     }
 }
 
@@ -123,4 +114,10 @@ impl IndexMut<uint, f32> for Point {
     }
 }
 
+#[test]
+fn test_distance_sqr() {
+    let a = Point::new(0f32, 0f32, 0f32);
+    let b = Point::new(3f32, 4f32, 0f32);
+    assert!(b.distance_sqr(&a) == 25f32);
+}
 
