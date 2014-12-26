@@ -1,7 +1,7 @@
 use std::num::Float;
 
 use linalg;
-use linalg::vector;
+use linalg::vector::Vector;
 
 /// Normal is a standard 3 component normal but transforms as a normal
 /// normal when transformations are applied
@@ -35,8 +35,8 @@ impl Normal {
         Normal { x: self.x / len, y: self.y / len, z: self.z / len }
     }
     /// Return a normal facing along the same direction as v
-    pub fn face_forward(&self, v: &vector::Vector) -> Normal {
-        if linalg::dot(self, v) < 0f32 { *self } else { -*self }
+    pub fn face_forward(&self, v: &Vector) -> Normal {
+        if linalg::dot(self, v) < 0f32 { -*self } else { *self }
     }
 }
 
@@ -124,5 +124,13 @@ impl IndexMut<uint, f32> for Normal {
             _ => &mut self.z,
         }
     }
+}
+
+#[test]
+fn test_face_fwd() {
+    let n = Normal::new(1f32, 0f32, 0f32);
+    let v = Vector::new(-1f32, 0f32, 0f32);
+    let n_fwd = n.face_forward(&v);
+    assert!(n_fwd == Normal::new(-1f32, 0f32, 0f32));
 }
 
