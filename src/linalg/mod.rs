@@ -67,3 +67,18 @@ pub fn solve_quadratic(a: f32, b: f32, c: f32) -> Option<(f32, f32)> {
     }
 }
 
+#[test]
+fn test_cross() {
+    let a = vector::Vector::new(1f32, 0f32, 0f32);
+    let b = vector::Vector::new(0f32, 1f32, 0f32);
+    let c = cross(&a, &b);
+    assert!(c == vector::Vector::new(0f32, 0f32, 1f32));
+}
+
+#[test]
+fn test_dot() {
+    let a = vector::Vector::new(1f32, 2f32, 3f32);
+    let b = vector::Vector::new(4f32, 5f32, 6f32);
+    assert!(dot(&a, &b) == 1f32 * 4f32 + 2f32 * 5f32 + 3f32 * 6f32);
+}
+
