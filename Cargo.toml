@@ -3,3 +3,8 @@
 name = "tray_rust"
 version = "0.0.1"
 authors = ["Will Usher <willusher.life@gmail.com>"]
+
+[[bin]]
+name = "tray_rust"
+doc = false
+
