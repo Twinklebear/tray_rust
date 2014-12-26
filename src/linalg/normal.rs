@@ -23,7 +23,7 @@ impl Normal {
     }
     /// Compute the squared length of the normal
     pub fn length_sqr(&self) -> f32 {
-        self.x * self.x + self.y * self.y + self.z * self.x
+        self.x * self.x + self.y * self.y + self.z * self.z
     }
     /// Compute the length of the normal
     pub fn length(&self) -> f32 {

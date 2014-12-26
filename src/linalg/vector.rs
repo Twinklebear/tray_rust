@@ -19,7 +19,7 @@ impl Vector {
     }
     /// Compute the squared length of the vector
     pub fn length_sqr(&self) -> f32 {
-        self.x * self.x + self.y * self.y + self.z * self.x
+        self.x * self.x + self.y * self.y + self.z * self.z
     }
     /// Compute the length of the vector
     pub fn length(&self) -> f32 {
@@ -68,7 +68,7 @@ impl Div<Vector, Vector> for Vector {
 }
 
 impl Div<f32, Vector> for Vector {
-    /// Divide the vectors components by scalar
+    /// Divide the vectors components by a scalar
     fn div(self, rhs: f32) -> Vector {
         Vector { x: self.x / rhs, y: self.y / rhs, z: self.z / rhs }
     }
@@ -113,8 +113,8 @@ impl IndexMut<uint, f32> for Vector {
 
 #[test]
 fn test_len_sqr() {
-    let v = Vector::broadcast(1f32);
-    assert!(v.length_sqr() == 3f32);
+    let v = Vector::new(1f32, 2f32, 3f32);
+    assert!(v.length_sqr() == 1f32 + 4f32 + 9f32);
 }
 
 #[test]
