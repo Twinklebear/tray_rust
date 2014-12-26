@@ -20,19 +20,6 @@ impl Point {
     pub fn broadcast(x: f32) -> Point {
         Point { x: x, y: x, z: x }
     }
-    /// Compute the squared length of the point
-    pub fn length_sqr(&self) -> f32 {
-        self.x * self.x + self.y * self.y + self.z * self.x
-    }
-    /// Compute the length of the point
-    pub fn length(&self) -> f32 {
-        Float::sqrt(self.length_sqr())
-    }
-    /// Get a pointized copy of this point
-    pub fn pointized(&self) -> Point {
-        let len = self.length();
-        Point { x: self.x / len, y: self.y / len, z: self.z / len }
-    }
     /// Compute the squared distance between this point and another
     pub fn distance_sqr(&self, a: &Point) -> f32 {
         (*self - *a).length_sqr()
