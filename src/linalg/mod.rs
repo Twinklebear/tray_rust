@@ -1,6 +1,14 @@
 use std::f32;
 use std::num::{FloatMath, Float};
 
+// Re-export the linalg types from the internal modules
+pub use self::vector::Vector;
+pub use self::normal::Normal;
+pub use self::point::Point;
+pub use self::ray::Ray;
+pub use self::matrix4::Matrix4;
+pub use self::transform::Transform;
+
 pub mod vector;
 pub mod normal;
 pub mod point;
