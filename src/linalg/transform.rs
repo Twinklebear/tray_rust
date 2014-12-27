@@ -99,17 +99,14 @@ impl Transform {
         *m.at_mut(0, 0) = a.x * a.x + (1f32 - a.x * a.x) * c;
         *m.at_mut(0, 1) = a.x * a.y * (1f32 - c) - a.z * s;
         *m.at_mut(0, 2) = a.x * a.z * (1f32 - c) + a.y * s;
-        *m.at_mut(0, 3) = 0f32;
 
         *m.at_mut(1, 0) = a.x * a.y * (1f32 - c) + a.z * s;
         *m.at_mut(1, 1) = a.y * a.y + (1f32 - a.y * a.y) * c;
         *m.at_mut(1, 2) = a.y * a.z * (1f32 - c) - a.x * s;
-        *m.at_mut(1, 3) = 0f32;
 
         *m.at_mut(2, 0) = a.x * a.z * (1f32 - c) - a.y * s;
         *m.at_mut(2, 1) = a.y * a.z * (1f32 - c) + a.x * s;
         *m.at_mut(2, 2) = a.z * a.z + (1f32 - a.z * a.z) * c;
-        *m.at_mut(2, 3) = 0f32;
         Transform { mat: m, inv: m.transpose() }
     }
     /// Construct the look at transform for a camera at `pos` looking at
