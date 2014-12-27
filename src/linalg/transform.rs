@@ -1,10 +1,10 @@
 use std::num::FloatMath;
 use linalg;
-use linalg::matrix4::Matrix4;
-use linalg::vector::Vector;
-use linalg::point::Point;
-use linalg::normal::Normal;
-use linalg::ray::Ray;
+use linalg::Matrix4;
+use linalg::Vector;
+use linalg::Point;
+use linalg::Normal;
+use linalg::Ray;
 
 /// Transform describes an affine transformation in 3D space
 /// and stores both the transformation and its inverse

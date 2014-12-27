@@ -1,7 +1,7 @@
 use std::num::Float;
 
 use linalg;
-use linalg::vector::Vector;
+use linalg::Vector;
 
 /// Normal is a standard 3 component normal but transforms as a normal
 /// normal when transformations are applied
