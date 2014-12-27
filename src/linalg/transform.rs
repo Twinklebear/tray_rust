@@ -130,7 +130,7 @@ impl Transform {
                                      0f32, 1f32, 0f32, 0f32,
                                      0f32, 0f32, far / (far - near), -far * near / (far - near),
                                      0f32, 0f32, 1f32, 0f32]);
-        let inv_tan = 1f32 / FloatMath::atan(linalg::radians(fovy) / 2f32);
+        let inv_tan = 1f32 / FloatMath::tan(linalg::radians(fovy) / 2f32);
         Transform::scale(&Vector::new(inv_tan, inv_tan, 1f32)) * Transform::from_mat(&proj_div)
     }
     /// Return the inverse of the transformation
