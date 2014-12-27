@@ -17,13 +17,11 @@ pub fn cross<A: Index<uint, f32>, B: Index<uint, f32>>(a: &A, b: &B) -> vector::
 pub fn dot<A: Index<uint, f32>, B: Index<uint, f32>>(a: &A, b: &B) -> f32 {
     a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
-/*
- * TODO: I don't quite understand the error here
-/// Lerp between `a` and `b` at some distance `t`
-pub fn lerp<T: Mul<f32, T> + Add<T, T>>(t: f32, a: &T, b: &T) -> T {
+/// Lerp between `a` and `b` at some distance `t` where t is in [0, 1]
+/// and t = 0 returns `a` and t = 1 returns `b`
+pub fn lerp<T: Mul<f32, T> + Add<T, T> + Copy<T>>(t: f32, a: &T, b: &T) -> T {
     *a * (1f32 - t) + *b * t
 }
-*/
 /// Clamp `x` to be between `min` and `max`
 pub fn clamp<T: PartialOrd>(x: T, min: T, max: T) -> T {
     if x < min { min } else if x > max { max } else { x }
