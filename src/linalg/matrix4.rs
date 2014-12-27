@@ -168,29 +168,31 @@ impl Matrix4 {
     }
 }
 
+impl FromIterator<f32> for Matrix4 {
+    /// Create the matrix using the values from the iterator. The iterator should return
+    /// the rows of the matrix one after another. The first 16 values returned will
+    /// be used to set the matrix elements. If fewer than 16 values are returned the
+    /// remaining entries will be 0
+    fn from_iter<T: Iterator<f32>>(it: T) -> Matrix4 {
+        let mut m = Matrix4::zero();
+        for (r, x) in m.mat.iter_mut().zip(it) {
+            *r = x;
+        }
+        m
+    }
+}
+
 impl Add<Matrix4, Matrix4> for Matrix4 {
     /// Add two matrices together
     fn add(self, rhs: Matrix4) -> Matrix4 {
-        // TODO: Is there not a way to fill an array from an iterator?
-        let mut it = self.mat.iter().zip(rhs.mat.iter()).map(|(&x, &y)| x + y).enumerate();
-        let mut res = Matrix4::zero();
-        for (i, x) in it {
-            res.mat[i] = x;
-        }
-        res
+        self.mat.iter().zip(rhs.mat.iter()).map(|(&x, &y)| x + y).collect()
     }
 }
 
 impl Sub<Matrix4, Matrix4> for Matrix4 {
     /// Subtract two matrices
     fn sub(self, rhs: Matrix4) -> Matrix4 {
-        // TODO: Is there not a way to fill an array from an iterator?
-        let mut it = self.mat.iter().zip(rhs.mat.iter()).map(|(&x, &y)| x - y).enumerate();
-        let mut res = Matrix4::zero();
-        for (i, x) in it {
-            res.mat[i] = x;
-        }
-        res
+        self.mat.iter().zip(rhs.mat.iter()).map(|(&x, &y)| x - y).collect()
     }
 }
 
@@ -208,5 +210,47 @@ impl Mul<Matrix4, Matrix4> for Matrix4 {
         }
         res
     }
+}
+
+#[test]
+fn test_add() {
+    let mut a = Matrix4::identity();
+    *a.at_mut(0, 1) = 1f32;
+    let mut b = Matrix4::identity();
+    *b.at_mut(2, 3) = 3f32;
+    let c = Matrix4::new([2f32, 1f32, 0f32, 0f32,
+                          0f32, 2f32, 0f32, 0f32,
+                          0f32, 0f32, 2f32, 3f32,
+                          0f32, 0f32, 0f32, 2f32]);
+    assert!(a + b == c);
+}
+#[test]
+fn test_sub() {
+    let mut a = Matrix4::identity();
+    *a.at_mut(0, 1) = 1f32;
+    let mut b = Matrix4::identity();
+    *b.at_mut(2, 3) = 3f32;
+    let c = Matrix4::new([0f32, 1f32, 0f32, 0f32,
+                          0f32, 0f32, 0f32, 0f32,
+                          0f32, 0f32, 0f32, -3f32,
+                          0f32, 0f32, 0f32, 0f32]);
+    assert!(a - b == c);
+}
+#[test]
+fn test_mul() {
+    assert!(Matrix4::identity() * Matrix4::identity() == Matrix4::identity());
+    let a = Matrix4::new([1f32,  2f32,  1f32,  0f32,
+                         3f32,  1f32,  4f32,  2f32,
+                         1f32,  2f32, -5f32,  4f32,
+                         3f32,  2f32,  4f32,  1f32]);
+    let b = Matrix4::new([8f32,  0f32,  2f32,  3f32,
+                          -2f32,  1f32,  0f32,  1f32,
+                          5f32, -2f32,  3f32,  1f32,
+                          0f32,  0f32,  4f32,  1f32]);
+    let c = Matrix4::new([9f32,   0f32,   5f32,   6f32,
+                          42f32,  -7f32,  26f32,  16f32,
+                          -21f32,  12f32,   3f32,   4f32,
+                          40f32,  -6f32,  22f32,  16f32]);
+    assert!(a * b == c);
 }
 
