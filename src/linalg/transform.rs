@@ -126,12 +126,14 @@ impl Transform {
     }
     /// Construct a perspective transformation
     pub fn perspective(fovy: f32, near: f32, far: f32) -> Transform {
-        let proj_div = Matrix4::new([1f32, 0f32, 0f32, 0f32,
-                                     0f32, 1f32, 0f32, 0f32,
-                                     0f32, 0f32, far / (far - near), -far * near / (far - near),
-                                     0f32, 0f32, 1f32, 0f32]);
+        let proj_div = Matrix4::new(
+            [1f32, 0f32, 0f32, 0f32,
+             0f32, 1f32, 0f32, 0f32,
+             0f32, 0f32, far / (far - near), -far * near / (far - near),
+             0f32, 0f32, 1f32, 0f32]);
         let inv_tan = 1f32 / FloatMath::tan(linalg::radians(fovy) / 2f32);
-        Transform::scale(&Vector::new(inv_tan, inv_tan, 1f32)) * Transform::from_mat(&proj_div)
+        Transform::scale(&Vector::new(inv_tan, inv_tan, 1f32))
+            * Transform::from_mat(&proj_div)
     }
     /// Return the inverse of the transformation
     pub fn inverse(&self) -> Transform {
@@ -196,5 +198,22 @@ impl Mul<Ray, Ray> for Transform {
         res.d = self * res.d;
         res
     }
+}
+
+// Just test against multiplying by the identity matrix as a sanity baseline
+#[test]
+fn test_mult_sanity() {
+    let t = Transform::identity();
+    let p = Point::new(1f32, 2f32, 3f32);
+    assert!(t * p == p);
+
+    let v = Vector::new(1f32, 2f32, 3f32);
+    assert!(t * v == v);
+
+    let n = Normal::new(1f32, 2f32, 3f32);
+    assert!(t * n == n);
+
+    let r = Ray::new(&p, &v);
+    assert!(t * r == r);
 }
 
