@@ -137,8 +137,18 @@ impl Transform {
     pub fn inverse(&self) -> Transform {
         Transform { mat: self.inv, inv: self.mat }
     }
-    /// Apply the transformation to a point
-    pub fn point(&self, p: &Point) -> Point {
+}
+
+impl Mul<Transform, Transform> for Transform {
+    /// Compose two transformations
+    fn mul(self, rhs: Transform) -> Transform {
+        Transform { mat: self.mat * rhs.mat, inv: rhs.inv * self.inv }
+    }
+}
+
+impl Mul<Point, Point> for Transform {
+    /// Multiply the point by the transform to apply the transformation
+    fn mul(self, p: Point) -> Point {
         let mut res = Point::broadcast(0f32);
         for i in range(0u, 3u) {
             res[i] = *self.mat.at(i, 0) * p.x + *self.mat.at(i, 1) * p.y
@@ -152,8 +162,11 @@ impl Transform {
             res
         }
     }
-    /// Apply the transformation to a vector
-    pub fn vector(&self, v: &Vector) -> Vector {
+}
+
+impl Mul<Vector, Vector> for Transform {
+    /// Multiply the vector by the transform to apply the transformation
+    fn mul(self, v: Vector) -> Vector {
         let mut res = Vector::broadcast(0f32);
         for i in range(0u, 3u) {
             res[i] = *self.mat.at(i, 0) * v.x + *self.mat.at(i, 1) * v.y
@@ -161,8 +174,11 @@ impl Transform {
         }
         res
     }
-    /// Apply the transformation to a normal
-    pub fn normal(&self, n: &Normal) -> Normal {
+}
+
+impl Mul<Normal, Normal> for Transform {
+    /// Multiply the normal by the transform to apply the transformation
+    fn mul(self, n: Normal) -> Normal {
         let mut res = Normal::broadcast(0f32);
         for i in range(0u, 3u) {
             res[i] = *self.inv.at(0, i) * n.x + *self.inv.at(1, i) * n.y
@@ -170,19 +186,15 @@ impl Transform {
         }
         res
     }
-    /// Apply the transformation to a ray
-    pub fn ray(&self, ray: &Ray) -> Ray {
-        let mut res = *ray;
-        res.o = self.point(&res.o);
-        res.d = self.vector(&res.d);
-        res
-    }
 }
 
-impl Mul<Transform, Transform> for Transform {
-    /// Compose two transformations
-    fn mul(self, rhs: Transform) -> Transform {
-        Transform { mat: self.mat * rhs.mat, inv: rhs.inv * self.inv }
+impl Mul<Ray, Ray> for Transform {
+    /// Multiply the ray by the transform to apply the transformation
+    fn mul(self, ray: Ray) -> Ray {
+        let mut res = ray;
+        res.o = self * res.o;
+        res.d = self * res.d;
+        res
     }
 }
 
