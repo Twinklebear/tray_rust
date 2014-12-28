@@ -205,15 +205,96 @@ impl Mul<Ray, Ray> for Transform {
 fn test_mult_sanity() {
     let t = Transform::identity();
     let p = Point::new(1f32, 2f32, 3f32);
-    assert!(t * p == p);
-
     let v = Vector::new(1f32, 2f32, 3f32);
-    assert!(t * v == v);
-
     let n = Normal::new(1f32, 2f32, 3f32);
-    assert!(t * n == n);
+    assert_eq!(t * p, p);
+    assert_eq!(t * v, v);
+    assert_eq!(t * n, n);
+}
+#[test]
+fn test_translate() {
+    let t = Transform::translate(&Vector::new(1f32, 2f32, 3f32));
+    let p = Point::new(1f32, 2f32, -1f32);
+    let v = Vector::new(1f32, 0f32, 1f32);
+    let n = Normal::new(1f32, 0f32, 1f32);
+    assert_eq!(t * p, p + Vector::new(1f32, 2f32, 3f32));
+    assert_eq!(t * v, v);
+    assert_eq!(t * n, n);
+}
+#[test]
+fn test_scale() {
+    let t = Transform::scale(&Vector::new(0.5f32, 0.1f32, 2f32));
+    let p = Point::new(10f32, 20f32, 30f32);
+    let v = Vector::new(10f32, 20f32, 30f32);
+    let n = Normal::new(1f32, 2f32, 10f32);
+    assert_eq!(t * p, Point::new(p.x * 0.5f32, p.y * 0.1f32, p.z * 2f32));
+    assert_eq!(t * v, v * Vector::new(0.5f32, 0.1f32, 2f32));
+    assert_eq!(t * n, n * Normal::new(2f32, 10f32, 0.5f32));
+}
+#[test]
+fn test_rotate_x() {
+    let t = Transform::rotate_x(90f32);
+    let p = t * Point::new(0f32, 1f32, 0f32);
+    let v = t * Vector::new(0f32, 1f32, 0f32);
+    let n = t * Normal::new(0f32, 1f32, 0f32);
+    // Need to now deal with some floating annoyances in these tests
+    assert_eq!(p.x, 0f32);
+    assert_eq!(FloatMath::abs_sub(p.y, 0f32), 0f32);
+    assert_eq!(p.z, 1f32);
 
-    let r = Ray::new(&p, &v);
-    assert!(t * r == r);
+    assert_eq!(v.x, 0f32);
+    assert_eq!(FloatMath::abs_sub(v.y, 0f32), 0f32);
+    assert_eq!(v.z, 1f32);
+
+    assert_eq!(n.x, 0f32);
+    assert_eq!(FloatMath::abs_sub(n.y, 0f32), 0f32);
+    assert_eq!(n.z, 1f32);
+}
+#[test]
+fn test_rotate_y() {
+    let t = Transform::rotate_y(-90f32);
+    let p = t * Point::new(1f32, 0f32, 0f32);
+    let v = t * Vector::new(1f32, 0f32, 0f32);
+    let n = t * Normal::new(1f32, 0f32, 0f32);
+    // Need to now deal with some floating annoyances in these tests
+    assert_eq!(FloatMath::abs_sub(p.x, 0f32), 0f32);
+    assert_eq!(p.y, 0f32);
+    assert_eq!(p.z, 1f32);
+
+    assert_eq!(FloatMath::abs_sub(v.x, 0f32), 0f32);
+    assert_eq!(v.y, 0f32);
+    assert_eq!(v.z, 1f32);
+
+    assert_eq!(FloatMath::abs_sub(n.x, 0f32), 0f32);
+    assert_eq!(n.y, 0f32);
+    assert_eq!(n.z, 1f32);
+}
+#[test]
+fn test_rotate_z() {
+    let t = Transform::rotate_z(90f32);
+    let p = t * Point::new(1f32, 0f32, 0f32);
+    let v = t * Vector::new(1f32, 0f32, 0f32);
+    let n = t * Normal::new(1f32, 0f32, 0f32);
+    // Need to now deal with some floating annoyances in these tests
+    assert_eq!(FloatMath::abs_sub(p.x, 0f32), 0f32);
+    assert_eq!(p.y, 1f32);
+    assert_eq!(p.z, 0f32);
+
+    assert_eq!(FloatMath::abs_sub(v.x, 0f32), 0f32);
+    assert_eq!(v.y, 1f32);
+    assert_eq!(v.z, 0f32);
+
+    assert_eq!(FloatMath::abs_sub(n.x, 0f32), 0f32);
+    assert_eq!(n.y, 1f32);
+    assert_eq!(n.z, 0f32);
+}
+#[test]
+fn test_rotate() {
+    assert_eq!(Transform::rotate(&Vector::new(1f32, 0f32, 0f32), 32f32),
+                Transform::rotate_x(32f32));
+    assert_eq!(Transform::rotate(&Vector::new(0f32, 1f32, 0f32), 104f32),
+                Transform::rotate_y(104f32));
+    assert_eq!(Transform::rotate(&Vector::new(0f32, 0f32, 1f32), 243f32),
+                Transform::rotate_z(243f32));
 }
 
