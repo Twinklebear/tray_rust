@@ -86,12 +86,13 @@ impl Index<uint, f32> for Vector {
     ///
     /// - 0 = x
     /// - 1 = y
-    /// - 2+ = z
+    /// - 2 = z
     fn index(&self, i: &uint) -> &f32 {
         match *i {
             0 => &self.x,
             1 => &self.y,
-            _ => &self.z,
+            2 => &self.z,
+            _ => panic!("Invalid index into vector"),
         }
     }
 }
@@ -101,12 +102,13 @@ impl IndexMut<uint, f32> for Vector {
     ///
     /// - 0 = x
     /// - 1 = y
-    /// - 2+ = z
+    /// - 2 = z
     fn index_mut(&mut self, i: &uint) -> &mut f32 {
         match *i {
             0 => &mut self.x,
             1 => &mut self.y,
-            _ => &mut self.z,
+            2 => &mut self.z,
+            _ => panic!("Invalid index into vector"),
         }
     }
 }
