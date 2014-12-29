@@ -11,14 +11,6 @@ pub struct Colorf {
     pub b: f32,
 }
 
-/// Color24 is a 8 bit per channel RGB color type
-#[deriving(Show, Copy, PartialEq, Eq)]
-pub struct Color24 {
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
-}
-
 impl Colorf {
     /// Create an RGB color
     pub fn new(r: f32, g: f32, b: f32) -> Colorf {
@@ -59,19 +51,6 @@ impl Colorf {
     /// Return the color with values { e^r, e^g, e^b }
     pub fn exp(&self) -> Colorf {
         Colorf { r: Float::exp(self.r), g: Float::exp(self.g), b: Float::exp(self.b) }
-    }
-    /// Convert the Colorf to a Color24
-    /// TODO: Is there a way to overload conversion operators in rust? eg `as`
-    /// from some quick googling it seems like not currently?
-    pub fn to_color24(&self) -> Color24 {
-        Color24::new((self.r * 255.0) as u8, (self.g * 255.0) as u8, (self.b * 255.0) as u8)
-    }
-}
-
-impl Color24 {
-    /// Create a new 24 bit color
-    pub fn new(r: u8, g: u8, b: u8) -> Color24 {
-        Color24 { r: r, g: g, b: b}
     }
 }
 
@@ -156,34 +135,3 @@ impl IndexMut<uint, f32> for Colorf {
     }
 }
 
-impl Index<uint, u8> for Color24 {
-    /// Access the channels by index
-    /// 
-    /// - 0 = r
-    /// - 1 = g
-    /// - 2 = b
-    fn index(&self, i: &uint) -> &u8 {
-        match *i {
-            0 => &self.r,
-            1 => &self.g,
-            2 => &self.b,
-            _ => panic!("Invalid index into color"),
-        }
-    }
-}
-
-impl IndexMut<uint, u8> for Color24 {
-    /// Access the channels by index
-    /// 
-    /// - 0 = r
-    /// - 1 = g
-    /// - 2 = b
-    fn index_mut(&mut self, i: &uint) -> &mut u8 {
-        match *i {
-            0 => &mut self.r,
-            1 => &mut self.g,
-            2 => &mut self.b,
-            _ => panic!("Invalid index into color"),
-        }
-    }
-}

@@ -5,7 +5,7 @@
 
 use std::io::{File, Open, Write, BufferedWriter};
 
-pub use self::color::{Colorf, Color24};
+pub use self::color::Colorf;
 
 pub mod color;
 
