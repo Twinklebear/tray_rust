@@ -38,7 +38,7 @@ impl Ray {
     }
     /// Evaulate the ray equation at some t value and return the point
     /// returns result of `self.o + t * self.d`
-    fn at(&self, t: f32) -> Point {
+    pub fn at(&self, t: f32) -> Point {
         self.o + self.d * t
     }
 }
