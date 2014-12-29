@@ -11,7 +11,7 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    /// Create the sphere with the desired radius
+    /// Create a sphere with the desired radius
     pub fn new(radius: f32) -> Sphere {
         Sphere { radius: radius }
     }

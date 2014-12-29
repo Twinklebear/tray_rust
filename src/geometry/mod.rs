@@ -13,9 +13,9 @@ pub mod instance;
 pub mod sphere;
 
 pub trait Geometry {
-    /// Test a ray for intersection with the geometry
+    /// Test a ray for intersection with the geometry.
     /// The ray should have been previously transformed into the geometry's
-    /// object space otherwise the test will be incorrect
+    /// object space otherwise the test will be incorrect.
     /// Returns the differential geometry containing the hit information if the
     /// ray hit the object and set's the ray's `max_t` member accordingly
     fn intersect(&self, ray: &mut linalg::Ray) -> Option<DifferentialGeometry>;
