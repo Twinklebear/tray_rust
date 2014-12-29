@@ -4,3 +4,5 @@ This is a port of my physically based ray tracer [tray](https://github.com/Twink
 [Rust](http://www.rust-lang.org) to learn the language and have some fun. It's probably not a good example
 to look at if you're trying to find well written Rust code, since I'm learning the language.
 
+Documentation can be found on the [project site](http://www.willusher.io/tray_rust/tray_rust/)
+
