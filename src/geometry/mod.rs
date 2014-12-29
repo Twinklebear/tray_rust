@@ -6,9 +6,11 @@ use linalg;
 
 pub use self::differential_geometry::DifferentialGeometry;
 pub use self::instance::Instance;
+pub use self::sphere::Sphere;
 
 pub mod differential_geometry;
 pub mod instance;
+pub mod sphere;
 
 pub trait Geometry {
     /// Test a ray for intersection with the geometry
