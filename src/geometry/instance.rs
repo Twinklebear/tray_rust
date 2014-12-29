@@ -23,17 +23,17 @@ impl<'a> Instance<'a> {
 }
 
 impl<'a> Geometry for Instance<'a> {
-    fn intersect(&self, ray: &mut linalg::Ray, dg: &mut DifferentialGeometry) -> bool {
+    fn intersect(&self, ray: &mut linalg::Ray) -> Option<DifferentialGeometry> {
         let mut local = self.inv_transform * *ray;
-        if self.geom.intersect(&mut local, dg) {
-            ray.max_t = local.max_t;
-            dg.p = self.transform * dg.p;
-            dg.n = self.transform * dg.n;
-            dg.ng = self.transform * dg.ng;
-            true
-        } else {
-            false
-        }
+        let mut dg = match self.geom.intersect(&mut local) {
+            Some(dg) => dg,
+            None => return None,
+        };
+        ray.max_t = local.max_t;
+        dg.p = self.transform * dg.p;
+        dg.n = self.transform * dg.n;
+        dg.ng = self.transform * dg.ng;
+        Some(dg)
     }
 }
 

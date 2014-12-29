@@ -15,11 +15,9 @@ pub mod sphere;
 pub trait Geometry {
     /// Test a ray for intersection with the geometry
     /// The ray should have been previously transformed into the geometry's
-    /// object space otherwise the test will be incorrect. Returns true if a
-    /// hit is found, fills out the differential geometry with the hit point
-    /// information and sets the ray's `max_t` to the hit `t`
-    /// Note: the values set on `dg` will be in object space and must be transformed
-    /// back out to world space before shading
-    fn intersect(&self, ray: &mut linalg::Ray, dg: &mut DifferentialGeometry) -> bool;
+    /// object space otherwise the test will be incorrect
+    /// Returns the differential geometry containing the hit information if the
+    /// ray hit the object and set's the ray's `max_t` member accordingly
+    fn intersect(&self, ray: &mut linalg::Ray) -> Option<DifferentialGeometry>;
 }
 
