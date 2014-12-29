@@ -1,3 +1,6 @@
+//! The linalg module provides some basic linear algebra functionality for
+//! transforming 3D geometry
+
 use std::f32;
 use std::num::{FloatMath, Float};
 
