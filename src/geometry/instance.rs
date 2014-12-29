@@ -15,6 +15,13 @@ pub struct Instance<'a> {
     inv_transform: linalg::Transform,
 }
 
+impl<'a> Instance<'a> {
+    /// Create a new instance of some geometry in the scene
+    pub fn new(geom: &'a (Geometry + 'a), transform: linalg::Transform) -> Instance<'a> {
+        Instance { geom: geom, transform: transform, inv_transform: transform.inverse() }
+    }
+}
+
 impl<'a> Geometry for Instance<'a> {
     fn intersect(&self, ray: &mut linalg::Ray, dg: &mut DifferentialGeometry) -> bool {
         let mut local = self.inv_transform * *ray;
