@@ -7,9 +7,11 @@ use std::io::{File, Open, Write, BufferedWriter};
 
 pub use self::color::Colorf;
 pub use self::render_target::RenderTarget;
+pub use self::camera::Camera;
 
 pub mod color;
 pub mod render_target;
+pub mod camera;
 
 /// Write the sequence of bytes as a PPM image file with the desired name
 pub fn write_ppm(name: &str, w: u32, h: u32, img: &[u8]) {
