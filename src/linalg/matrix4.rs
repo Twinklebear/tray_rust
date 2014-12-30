@@ -1,13 +1,13 @@
 /// Matrix4 is a 4x4 matrix stored in row-major format
 #[deriving(Show, PartialEq, Copy)]
 pub struct Matrix4 {
-    mat: [f32, ..16],
+    mat: [f32; 16],
 }
 
 impl Matrix4 {
     /// Return the zero matrix
     pub fn zero() -> Matrix4 {
-        Matrix4 { mat: [0f32, ..16] }
+        Matrix4 { mat: [0f32; 16] }
     }
     /// Return the identity matrix
     pub fn identity() -> Matrix4 {
@@ -19,7 +19,7 @@ impl Matrix4 {
         }
     }
     /// Create the matrix using the values passed
-    pub fn new(mat: [f32, ..16]) -> Matrix4 {
+    pub fn new(mat: [f32; 16]) -> Matrix4 {
         Matrix4 { mat: mat }
     }
     /// Access the element at row `i` column `j`
