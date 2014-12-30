@@ -33,6 +33,7 @@ impl<'a> Geometry for Instance<'a> {
         dg.p = self.transform * dg.p;
         dg.n = self.transform * dg.n;
         dg.ng = self.transform * dg.ng;
+        dg.instance = Some(self);
         Some(dg)
     }
 }
