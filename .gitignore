@@ -1,4 +1,6 @@
 *.swp
 /target
 *.ppm
+*.png
+*.bmp
 
