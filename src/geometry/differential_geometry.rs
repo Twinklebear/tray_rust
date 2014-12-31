@@ -14,7 +14,7 @@ pub struct DifferentialGeometry<'a, 'b> {
     /// The geometry normal
     pub ng: Normal,
     /// The geometry that was hit
-    pub geom: &'a (Geometry + 'a),
+    pub geom: &'a (Geometry + 'static),
     /// The instance of geometry that was hit
     pub instance: Option<&'b Instance<'b>>,
 }
@@ -22,7 +22,7 @@ pub struct DifferentialGeometry<'a, 'b> {
 impl<'a, 'b> DifferentialGeometry<'a, 'b> {
     /// Initialize the differential geometry with 0 values for all fields
     /// and None for the hit geometry
-    pub fn new(p: &Point, n: &Normal, ng: &Normal, geom: &'a (Geometry + 'a),
+    pub fn new(p: &Point, n: &Normal, ng: &Normal, geom: &'a (Geometry + 'static),
                instance: Option<&'b Instance<'b>>) -> DifferentialGeometry<'a, 'b> {
         DifferentialGeometry { p: *p, n: *n, ng: *ng, geom: geom, instance: instance }
     }
