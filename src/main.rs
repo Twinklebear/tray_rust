@@ -19,9 +19,8 @@ fn main() {
         for x in range(0, width) {
             let px = (x as f32 + 0.5, y as f32 + 0.5);
             let mut ray = camera.generate_ray(px);
-            match instance.intersect(&mut ray) {
-                Some(_) => rt.write(px.0, px.1, &film::Colorf::broadcast(1.0)),
-                None => {},
+            if let Some(_) = geometry::Intersection::from_diffgeom(instance.intersect(&mut ray)) {
+                rt.write(px.0, px.1, &film::Colorf::broadcast(1.0));
             }
         }
     }
