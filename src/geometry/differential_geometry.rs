@@ -14,7 +14,7 @@ pub struct DifferentialGeometry<'a, 'b> {
     /// The geometry normal
     pub ng: Normal,
     /// The geometry that was hit
-    pub geom: &'a (Geometry + 'static),
+    pub geom: &'a (Geometry + 'a),
     /// The instance of geometry that was hit
     pub instance: Option<&'b Instance<'b>>,
 }
