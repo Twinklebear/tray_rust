@@ -9,22 +9,22 @@ use linalg;
 pub struct Instance<'a> {
     /// The geometry that's being instanced
     geom: &'a (Geometry + 'a),
+    /// TODO Don't store both transform and inverse, just use the transform
+    /// backwards when coming back up
     /// The transform to world space
     transform: linalg::Transform,
-    /// The inverse transform, to object space
-    inv_transform: linalg::Transform,
 }
 
 impl<'a> Instance<'a> {
     /// Create a new instance of some geometry in the scene
     pub fn new(geom: &'a (Geometry + 'a), transform: linalg::Transform) -> Instance<'a> {
-        Instance { geom: geom, transform: transform, inv_transform: transform.inverse() }
+        Instance { geom: geom, transform: transform }
     }
 }
 
 impl<'a> Geometry for Instance<'a> {
     fn intersect(&self, ray: &mut linalg::Ray) -> Option<DifferentialGeometry> {
-        let mut local = self.inv_transform * *ray;
+        let mut local = self.transform.inv_mul_ray(ray);
         let mut dg = match self.geom.intersect(&mut local) {
             Some(dg) => dg,
             None => return None,
