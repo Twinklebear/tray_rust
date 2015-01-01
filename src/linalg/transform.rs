@@ -139,6 +139,48 @@ impl Transform {
     pub fn inverse(&self) -> Transform {
         Transform { mat: self.inv, inv: self.mat }
     }
+    /// Multiply the point by the inverse transformation
+    /// TODO: These inverse mults are a bit hacky since Rust doesn't currently
+    /// have function overloading, clean up when it's added
+    pub fn inv_mul_point(&self, p: &Point) -> Point {
+        let mut res = Point::broadcast(0f32);
+        for i in range(0u, 3u) {
+            res[i] = *self.inv.at(i, 0) * p.x + *self.inv.at(i, 1) * p.y
+                + *self.inv.at(i, 2) * p.z + *self.inv.at(i, 3);
+        }
+        let w = *self.inv.at(3, 0) * p.x + *self.inv.at(3, 1) * p.y
+            + *self.inv.at(3, 2) * p.z + *self.inv.at(3, 3);
+        if w != 1f32 {
+            res / w
+        } else {
+            res
+        }
+    }
+    /// Multiply the vector with the inverse transformation
+    pub fn inv_mul_vector(&self, v: &Vector) -> Vector {
+        let mut res = Vector::broadcast(0f32);
+        for i in range(0u, 3u) {
+            res[i] = *self.inv.at(i, 0) * v.x + *self.inv.at(i, 1) * v.y
+                + *self.inv.at(i, 2) * v.z;
+        }
+        res
+    }
+    /// Multiply the normal with the inverse transformation
+    pub fn inv_mul_normal(&self, n: &Normal) -> Normal {
+        let mut res = Normal::broadcast(0f32);
+        for i in range(0u, 3u) {
+            res[i] = *self.mat.at(0, i) * n.x + *self.mat.at(1, i) * n.y
+                + *self.mat.at(2, i) * n.z;
+        }
+        res
+    }
+    /// Multiply the ray with the inverse transformation
+    pub fn inv_mul_ray(&self, ray: &Ray) -> Ray {
+        let mut res = *ray;
+        res.o = self.inv_mul_point(&res.o);
+        res.d = self.inv_mul_vector(&res.d);
+        res
+    }
 }
 
 impl Mul<Transform, Transform> for Transform {
