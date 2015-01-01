@@ -5,10 +5,12 @@
 use linalg;
 
 pub use self::differential_geometry::DifferentialGeometry;
+pub use self::intersection::Intersection;
 pub use self::instance::Instance;
 pub use self::sphere::Sphere;
 
 pub mod differential_geometry;
+pub mod intersection;
 pub mod instance;
 pub mod sphere;
 
