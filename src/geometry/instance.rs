@@ -2,15 +2,13 @@
 //! can re-use loaded geometry but apply different transformations and materials
 //! to them
 
-use geometry::{Geometry, DifferentialGeometry};
+use geometry::{Geometry, Intersection};
 use linalg;
 
 /// Defines an instance of some geometry with its own transform and material
 pub struct Instance<'a> {
     /// The geometry that's being instanced
     geom: &'a (Geometry + 'a),
-    /// TODO Don't store both transform and inverse, just use the transform
-    /// backwards when coming back up
     /// The transform to world space
     transform: linalg::Transform,
 }
@@ -20,10 +18,10 @@ impl<'a> Instance<'a> {
     pub fn new(geom: &'a (Geometry + 'a), transform: linalg::Transform) -> Instance<'a> {
         Instance { geom: geom, transform: transform }
     }
-}
-
-impl<'a> Geometry for Instance<'a> {
-    fn intersect(&self, ray: &mut linalg::Ray) -> Option<DifferentialGeometry> {
+    /// Test the ray for intersection against this insance of geometry.
+    /// returns Some(Intersection) if an intersection was found and None if not.
+    /// If an intersection is found `ray.max_t` will be set accordingly
+    pub fn intersect(&self, ray: &mut linalg::Ray) -> Option<Intersection> {
         let mut local = self.transform.inv_mul_ray(ray);
         let mut dg = match self.geom.intersect(&mut local) {
             Some(dg) => dg,
@@ -33,9 +31,7 @@ impl<'a> Geometry for Instance<'a> {
         dg.p = self.transform * dg.p;
         dg.n = self.transform * dg.n;
         dg.ng = self.transform * dg.ng;
-        dg.instance = Some(self);
-        Some(dg)
+        Some(Intersection::new(dg, self))
     }
 }
-
 

@@ -46,7 +46,7 @@ impl Geometry for Sphere {
         ray.max_t = t_hit;
         let p = ray.at(t_hit);
         let n = Normal::new(p.x, p.y, p.z);
-        Some(DifferentialGeometry::new(&p, &n, &n, self, None))
+        Some(DifferentialGeometry::new(&p, &n, &n, self))
     }
 }
 
