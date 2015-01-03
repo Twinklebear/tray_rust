@@ -2,4 +2,5 @@
 pub mod linalg;
 pub mod film;
 pub mod geometry;
+pub mod sampler;
 
