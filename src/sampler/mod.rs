@@ -3,9 +3,11 @@
 //! on through a simple trait interface
 
 pub use self::uniform::Uniform;
+pub use self::block_queue::BlockQueue;
 
 pub mod morton;
 pub mod uniform;
+pub mod block_queue;
 
 /// Provides the interface for all samplers to implement. Defines functions for
 /// getting samples from the sampler and checking the sampler has finished sampling
