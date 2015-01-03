@@ -17,13 +17,17 @@ pub struct BlockQueue {
     next: AtomicUint,
 }
 
+/// Iterator to work through the queue safely
+pub struct BlockQueueIterator<'a> {
+    queue: &'a BlockQueue,
+}
+
 impl BlockQueue {
     /// Create a block queue for the image with dimensions `img`.
     /// Panics if the image is not evenly broken into blocks of dimension `dim`
     pub fn new(img: (u32, u32), dim: (u32, u32)) -> BlockQueue {
         if img.0 % dim.0 != 0 || img.1 % dim.1 != 0 {
-            panic!("Image with dimension {} not evenly divided by dims of {}",
-                   img, dim);
+            panic!("Image with dimension {} not evenly divided by blocks of {}", img, dim);
         }
         let num_blocks = (img.0 / dim.0, img.1 / dim.1);
         let mut blocks: Vec<(u32, u32)> = range(0, num_blocks.0 * num_blocks.1)
@@ -33,10 +37,10 @@ impl BlockQueue {
     }
     /// Get the dimensions of an individual block in the queue
     pub fn block_dim(&self) -> (u32, u32) { self.dimensions }
-}
-
-impl Iterator<(u32, u32)> for BlockQueue {
-    fn next(&mut self) -> Option<(u32, u32)> {
+    /// Get an iterator to work through the queue
+    pub fn iter(&self) -> BlockQueueIterator { BlockQueueIterator { queue: self } }
+    /// Get the next block in the queue or None if the queue is finished
+    fn next(&self) -> Option<(u32, u32)> {
         let i = self.next.fetch_add(1, AcqRel);
         if i >= self.blocks.len() {
             None
@@ -44,9 +48,13 @@ impl Iterator<(u32, u32)> for BlockQueue {
             Some(self.blocks[i])
         }
     }
-    fn size_hint(&self) -> (uint, Option<uint>) {
-        let i = self.next.load(AcqRel);
-        (i, Some(i))
+    /// Get the length of the queue
+    pub fn len(&self) -> uint { self.blocks.len() }
+}
+
+impl<'a> Iterator<(u32, u32)> for BlockQueueIterator<'a> {
+    fn next(&mut self) -> Option<(u32, u32)> {
+        self.queue.next()
     }
 }
 
