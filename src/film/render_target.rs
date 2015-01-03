@@ -3,6 +3,7 @@
 //! TODO: Reconstruction filters
 
 use std::vec::Vec;
+use std::iter;
 use linalg;
 use film::Colorf;
 
@@ -18,7 +19,7 @@ impl RenderTarget {
     /// Create a render target with `width * height` pixels
     pub fn new(width: uint, height: uint) -> RenderTarget {
         RenderTarget { width: width, height: height,
-            pixels: Vec::from_fn(width * height, |_| Colorf::broadcast(0f32)),
+            pixels: iter::repeat(Colorf::broadcast(0f32)).take(width * height).collect(),
         }
     }
     /// Write a color value to the image at `(x, y)`
@@ -36,7 +37,7 @@ impl RenderTarget {
     }
     /// Convert the floating point color buffer to 24bpp sRGB for output to an image
     pub fn get_render(&self) -> Vec<u8> {
-        let mut render = Vec::from_fn(self.width * self.height * 3, |_| 0u8);
+        let mut render: Vec<u8> = iter::repeat(0u8).take(self.width * self.height * 3).collect();
         for y in range(0u, self.height) {
             for x in range(0u, self.width) {
                 let c = &self.pixels[y * self.width + x];
