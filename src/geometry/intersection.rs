@@ -12,14 +12,14 @@ pub struct Intersection<'a, 'b> {
     /// that was hit
     pub dg: DifferentialGeometry<'a>,
     /// The instance of geometry that was hit
-    pub instance: &'b Instance<'b>,
+    pub instance: &'b Instance,
 }
 
 impl<'a, 'b> Intersection<'a, 'b> {
     /// Construct the Intersection from a potential hit stored in a
     /// Option<DifferentialGeometry>. Returns None if `dg` is None
     /// or if the instance member of `dg` is None
-    pub fn new(dg: DifferentialGeometry<'a>, inst: &'b Instance<'b>) -> Intersection<'a, 'b> {
+    pub fn new(dg: DifferentialGeometry<'a>, inst: &'b Instance) -> Intersection<'a, 'b> {
         Intersection { dg: dg, instance: inst }
     }
 }
