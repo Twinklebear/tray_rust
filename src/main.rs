@@ -66,8 +66,8 @@ fn spawn_workers(pool: &TaskPool, n: uint, scene: Arc<scene::Scene>) -> Receiver
     rx
 }
 
-fn test_parallel(){
-    let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
+/// Render in the scene in parallel to the passed render target
+fn render_parallel(rt: &mut film::RenderTarget){
     let scene = Arc::new(scene::Scene::new(WIDTH, HEIGHT));
     let n = 8;
     let pool = TaskPool::new(n);
@@ -75,11 +75,12 @@ fn test_parallel(){
     for m in rx.iter() {
         rt.write(m.0, m.1, &m.2);
     }
-    film::write_ppm("out.ppm", WIDTH, HEIGHT, rt.get_render().as_slice());
 }
 
 fn main() {
-    let d = Duration::span(move || test_parallel());
+    let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
+    let d = Duration::span(|| render_parallel(&mut rt));
     println!("Rendering took {}ms", d.num_milliseconds());
+    film::write_ppm("out.ppm", WIDTH, HEIGHT, rt.get_render().as_slice());
 }
 
