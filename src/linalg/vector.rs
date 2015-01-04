@@ -1,7 +1,8 @@
 use std::num::Float;
+use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 
 /// Vector is a standard 3 component vector
-#[deriving(Show, Copy, PartialEq, PartialOrd)]
+#[derive(Show, Copy, PartialEq, PartialOrd)]
 pub struct Vector {
     pub x: f32,
     pub y: f32,

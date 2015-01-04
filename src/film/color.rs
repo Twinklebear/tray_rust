@@ -1,13 +1,14 @@
 //! Defines types for operating with floating point and 8 bit RGB colors
 
 use std::num::Float;
+use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 use linalg;
 
 /// Colorf is a floating point RGBA color type
 /// `a` is typically used to store the weight of a color eg. in the
 /// render target for multisampling we need to track the weight to
 /// normalize in the end and is always initialized to 0
-#[deriving(Show, Copy, Clone, PartialEq)]
+#[derive(Show, Copy, Clone, PartialEq)]
 pub struct Colorf {
     pub r: f32,
     pub g: f32,

@@ -1,8 +1,9 @@
+use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 use linalg::Vector;
 
 /// Point is a standard 3 component point but transforms as a point
 /// point when transformations are applied
-#[deriving(Show, Copy, PartialEq)]
+#[derive(Show, Copy, PartialEq)]
 pub struct Point {
     pub x: f32,
     pub y: f32,

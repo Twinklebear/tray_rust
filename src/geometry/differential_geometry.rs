@@ -5,7 +5,7 @@ use linalg::{Point, Normal};
 use geometry::Geometry;
 
 /// Stores information about a hit piece of geometry of some object in the scene
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct DifferentialGeometry<'a> {
     /// The hit point 
     pub p: Point,

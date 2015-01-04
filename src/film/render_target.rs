@@ -8,7 +8,7 @@ use linalg;
 use film::Colorf;
 
 /// RenderTarget is a RGBF render target to write our image too while rendering
-#[deriving(Clone)]
+#[derive(Clone)]
 pub struct RenderTarget {
     width: uint,
     height: uint,

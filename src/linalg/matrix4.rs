@@ -1,5 +1,8 @@
+use std::iter::FromIterator;
+use std::ops::{Add, Sub, Mul};
+
 /// Matrix4 is a 4x4 matrix stored in row-major format
-#[deriving(Show, PartialEq, Copy)]
+#[derive(Show, PartialEq, Copy)]
 pub struct Matrix4 {
     mat: [f32; 16],
 }

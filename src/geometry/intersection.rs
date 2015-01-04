@@ -6,7 +6,7 @@ use geometry::{Instance, DifferentialGeometry};
 
 /// Stores information about an intersection that occured with some instance
 /// of geometry in the scene
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct Intersection<'a, 'b> {
     /// The differential geometry holding information about the piece of geometry
     /// that was hit

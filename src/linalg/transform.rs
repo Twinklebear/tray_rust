@@ -1,4 +1,5 @@
 use std::num::FloatMath;
+use std::ops::{Mul};
 use linalg;
 use linalg::Matrix4;
 use linalg::Vector;
@@ -8,7 +9,7 @@ use linalg::Ray;
 
 /// Transform describes an affine transformation in 3D space
 /// and stores both the transformation and its inverse
-#[deriving(Show, Copy, PartialEq)]
+#[derive(Show, Copy, PartialEq)]
 pub struct Transform {
     pub mat: Matrix4,
     pub inv: Matrix4,

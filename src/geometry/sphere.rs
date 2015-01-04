@@ -5,7 +5,7 @@ use linalg;
 use linalg::{Normal, Point};
 
 /// A sphere with user-specified radius
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct Sphere {
     radius: f32,
 }

@@ -3,6 +3,7 @@
 
 use std::f32;
 use std::num::{FloatMath, Float};
+use std::ops::{Index, Mul, Add};
 
 // Re-export the linalg types from the internal modules
 pub use self::vector::Vector;

@@ -4,7 +4,7 @@
 use linalg::{Transform, Vector, Point, Ray};
 
 /// Our camera for the ray tracer, has a transformation to position it in world space
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct Camera {
     /// Transformation from camera to world space
     cam_world: Transform,

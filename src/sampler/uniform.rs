@@ -4,7 +4,7 @@
 use sampler::Sampler;
 
 /// Uniform sampler that takes one sample per pixel at the center of each pixel
-#[deriving(Copy, Show)]
+#[derive(Copy, Show)]
 pub struct Uniform {
     /// Current coordinates of the pixel to sample (x, y)
     current: (u32, u32),
