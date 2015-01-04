@@ -32,7 +32,7 @@ impl Camera {
         Camera { cam_world: cam_world, raster_cam: cam_screen.inverse() * raster_screen }
     }
     /// Generate a ray from the camera through the pixel `px`
-    pub fn generate_ray(&self, px: (f32, f32)) -> Ray {
+    pub fn generate_ray(&self, px: &(f32, f32)) -> Ray {
         // Take the raster space position -> camera space
         let px_pos = self.raster_cam * Point::new(px.0, px.1, 0.0);
         let d = Vector::new(px_pos.x, px_pos.y, px_pos.z).normalized();

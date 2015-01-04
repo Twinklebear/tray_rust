@@ -36,7 +36,7 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
         while sampler.has_samples() {
             sampler.get_samples(&mut sample_pos);
             for px in sample_pos.iter() {
-                let mut ray = camera.generate_ray(*px);
+                let mut ray = camera.generate_ray(px);
                 match instance.intersect(&mut ray) {
                     Some(_) => samples.push((px.0, px.1, film::Colorf::broadcast(1.0))),
                     None => samples.push((px.0, px.1, film::Colorf::new(0.0, 0.0, 1.0))),
@@ -86,24 +86,5 @@ fn test_parallel(){
 fn main() {
     let d = Duration::span(move || test_parallel());
     println!("Rendering took {}ms", d.num_milliseconds());
-    /*
-    let block_queue = sampler::BlockQueue::new((width as u32, height as u32), (8, 8));
-    let mut sampler = sampler::Uniform::new(block_queue.block_dim());
-    let mut sample_pos = Vec::with_capacity(sampler.max_spp());
-    for b in block_queue.iter() {
-        sampler.select_block(&b);
-        while sampler.has_samples() {
-            sampler.get_samples(&mut sample_pos);
-            for px in sample_pos.iter() {
-                let mut ray = camera.generate_ray(*px);
-                match instance.intersect(&mut ray) {
-                    Some(_) => rt.write(px.0, px.1, &film::Colorf::broadcast(1.0)),
-                    None => rt.write(px.0, px.1, &film::Colorf::new(0.0, 0.0, 1.0)),
-                }
-            }
-        }
-    }
-    */
-    
 }
 
