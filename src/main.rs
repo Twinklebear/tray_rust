@@ -20,14 +20,8 @@ static HEIGHT: uint = 600;
 /// Threads are each sent a send end of the channel that is
 /// read from by the render target thread which then saves the
 /// values recieved to the framebuffer
-fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>) {
-    // TODO: Sharing this between the threads? How?
-    let camera = film::Camera::new(linalg::Transform::look_at(
-        &linalg::Point::new(0.0, 0.0, -10.0), &linalg::Point::new(0.0, 0.0, 0.0),
-        &linalg::Vector::new(0.0, 1.0, 0.0)), 40.0, (WIDTH, HEIGHT));
-    let sphere = geometry::Sphere::new(1.5);
-    let instance = Arc::new(geometry::Instance::new(&sphere,
-        linalg::Transform::translate(&linalg::Vector::new(0.0, 2.0, 0.0))));
+fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>,
+               camera: Arc<film::Camera>, instance: Arc<geometry::Instance>) {
     let mut sampler = sampler::Uniform::new(queue.block_dim());
     let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
@@ -59,14 +53,18 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
 /// Hand the workers their own send endpoints to communicate results back
 /// to the main thread but drop the sender on the main thread so once
 /// all threads finish the channel closes
-fn spawn_workers(pool: &TaskPool, n: uint) -> Receiver<(f32, f32, film::Colorf)> {
+fn spawn_workers(pool: &TaskPool, n: uint, camera: Arc<film::Camera>,
+                 instance: Arc<geometry::Instance>)
+                 -> Receiver<(f32, f32, film::Colorf)> {
     let (tx, rx) = mpsc::channel();
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
     for _ in range(0, n) {
         let q = block_queue.clone();
         let t = tx.clone();
+        let c = camera.clone();
+        let inst = instance.clone();
         pool.execute(move || {
-            thread_work(t, q);
+            thread_work(t, q, c, inst);
         });
     }
     rx
@@ -74,9 +72,15 @@ fn spawn_workers(pool: &TaskPool, n: uint) -> Receiver<(f32, f32, film::Colorf)>
 
 fn test_parallel(){
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
+    let camera = Arc::new(film::Camera::new(linalg::Transform::look_at(
+        &linalg::Point::new(0.0, 0.0, -10.0), &linalg::Point::new(0.0, 0.0, 0.0),
+        &linalg::Vector::new(0.0, 1.0, 0.0)), 40.0, (WIDTH, HEIGHT)));
+    let sphere = Arc::new(box geometry::Sphere::new(1.5) as Box<geometry::Geometry + Send + Sync>);
+    let instance = Arc::new(geometry::Instance::new(sphere.clone(),
+        linalg::Transform::translate(&linalg::Vector::new(0.0, 2.0, 0.0))));
     let n = 8;
     let pool = TaskPool::new(n);
-    let rx = spawn_workers(&pool, n);
+    let rx = spawn_workers(&pool, n, camera, instance);
     for m in rx.iter() {
         rt.write(m.0, m.1, &m.2);
     }
