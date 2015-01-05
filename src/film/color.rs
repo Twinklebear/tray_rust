@@ -61,56 +61,64 @@ impl Colorf {
     }
 }
 
-impl Add<Colorf, Colorf> for Colorf {
+impl Add for Colorf {
+    type Output = Colorf;
     /// Add two colors together
     fn add(self, rhs: Colorf) -> Colorf {
         Colorf { r: self.r + rhs.r, g: self.g + rhs.g, b: self.b + rhs.b, a: self.a + rhs.a }
     }
 }
 
-impl Sub<Colorf, Colorf> for Colorf {
+impl Sub for Colorf {
+    type Output = Colorf;
     /// Subtract the two colors
     fn sub(self, rhs: Colorf) -> Colorf {
         Colorf { r: self.r - rhs.r, g: self.g - rhs.g, b: self.b - rhs.b, a: self.a - rhs.a }
     }
 }
 
-impl Mul<Colorf, Colorf> for Colorf {
+impl Mul for Colorf {
+    type Output = Colorf;
     /// Multiply the two colors
     fn mul(self, rhs: Colorf) -> Colorf {
         Colorf { r: self.r * rhs.r, g: self.g * rhs.g, b: self.b * rhs.b, a: self.a * rhs.a }
     }
 }
 
-impl Mul<f32, Colorf> for Colorf {
+impl Mul<f32> for Colorf {
+    type Output = Colorf;
     /// Scale the color by the float
     fn mul(self, rhs: f32) -> Colorf {
         Colorf { r: self.r * rhs, g: self.g * rhs, b: self.b * rhs, a: self.a * rhs}
     }
 }
 
-impl Div<Colorf, Colorf> for Colorf {
+impl Div for Colorf {
+    type Output = Colorf;
     /// Divide the channels of one color by another
     fn div(self, rhs: Colorf) -> Colorf {
         Colorf { r: self.r / rhs.r, g: self.g / rhs.g, b: self.b / rhs.b, a: self.a / rhs.a }
     }
 }
 
-impl Div<f32, Colorf> for Colorf {
+impl Div<f32> for Colorf {
+    type Output = Colorf;
     /// Divide the channels of the color by the float
     fn div(self, rhs: f32) -> Colorf {
         Colorf { r: self.r / rhs, g: self.g / rhs, b: self.b / rhs, a: self.a / rhs }
     }
 }
 
-impl Neg<Colorf> for Colorf {
+impl Neg for Colorf {
+    type Output = Colorf;
     /// Negate the color channels
     fn neg(self) -> Colorf {
         Colorf { r: -self.r, g: -self.g, b: -self.b, a: -self.a }
     }
 }
 
-impl Index<uint, f32> for Colorf {
+impl Index<uint> for Colorf {
+    type Output = f32;
     /// Access the channels by index
     /// 
     /// - 0 = r
@@ -128,7 +136,8 @@ impl Index<uint, f32> for Colorf {
     }
 }
 
-impl IndexMut<uint, f32> for Colorf {
+impl IndexMut<uint> for Colorf {
+    type Output = f32;
     /// Access the channels by index
     /// 
     /// - 0 = r

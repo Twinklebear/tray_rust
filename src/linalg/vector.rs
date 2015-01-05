@@ -33,56 +33,64 @@ impl Vector {
     }
 }
 
-impl Add<Vector, Vector> for Vector {
+impl Add for Vector {
+    type Output = Vector;
     /// Add two vectors together
     fn add(self, rhs: Vector) -> Vector {
         Vector { x: self.x + rhs.x, y: self.y + rhs.y, z: self.z + rhs.z }
     }
 }
 
-impl Sub<Vector, Vector> for Vector {
+impl Sub for Vector {
+    type Output = Vector;
     /// Subtract two vectors
     fn sub(self, rhs: Vector) -> Vector {
         Vector { x: self.x - rhs.x, y: self.y - rhs.y, z: self.z - rhs.z }
     }
 }
 
-impl Mul<Vector, Vector> for Vector {
+impl Mul for Vector {
+    type Output = Vector;
     /// Multiply two vectors
     fn mul(self, rhs: Vector) -> Vector {
         Vector { x: self.x * rhs.x, y: self.y * rhs.y, z: self.z * rhs.z }
     }
 }
 
-impl Mul<f32, Vector> for Vector {
+impl Mul<f32> for Vector {
+    type Output = Vector;
     /// Scale the vector by some value
     fn mul(self, rhs: f32) -> Vector {
         Vector { x: self.x * rhs, y: self.y * rhs, z: self.z * rhs }
     }
 }
 
-impl Div<Vector, Vector> for Vector {
+impl Div for Vector {
+    type Output = Vector;
     /// Divide the vectors components by the right hand side's components
     fn div(self, rhs: Vector) -> Vector {
         Vector { x: self.x / rhs.x, y: self.y / rhs.y, z: self.z / rhs.z }
     }
 }
 
-impl Div<f32, Vector> for Vector {
+impl Div<f32> for Vector {
+    type Output = Vector;
     /// Divide the vectors components by a scalar
     fn div(self, rhs: f32) -> Vector {
         Vector { x: self.x / rhs, y: self.y / rhs, z: self.z / rhs }
     }
 }
 
-impl Neg<Vector> for Vector {
+impl Neg for Vector {
+    type Output = Vector;
     /// Negate the vector
     fn neg(self) -> Vector {
         Vector { x: -self.x, y: -self.y, z: -self.z }
     }
 }
 
-impl Index<uint, f32> for Vector {
+impl Index<uint> for Vector {
+    type Output = f32;
     /// Access the vector by index
     ///
     /// - 0 = x
@@ -98,7 +106,8 @@ impl Index<uint, f32> for Vector {
     }
 }
 
-impl IndexMut<uint, f32> for Vector {
+impl IndexMut<uint> for Vector {
+    type Output = f32;
     /// Access the vector by index
     ///
     /// - 0 = x

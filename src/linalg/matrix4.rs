@@ -176,7 +176,7 @@ impl FromIterator<f32> for Matrix4 {
     /// the rows of the matrix one after another. The first 16 values returned will
     /// be used to set the matrix elements. If fewer than 16 values are returned the
     /// remaining entries will be 0
-    fn from_iter<T: Iterator<f32>>(it: T) -> Matrix4 {
+    fn from_iter<T: Iterator<Item = f32>>(it: T) -> Matrix4 {
         let mut m = Matrix4::zero();
         for (r, x) in m.mat.iter_mut().zip(it) {
             *r = x;
@@ -185,21 +185,24 @@ impl FromIterator<f32> for Matrix4 {
     }
 }
 
-impl Add<Matrix4, Matrix4> for Matrix4 {
+impl Add for Matrix4 {
+    type Output = Matrix4;
     /// Add two matrices together
     fn add(self, rhs: Matrix4) -> Matrix4 {
         self.mat.iter().zip(rhs.mat.iter()).map(|(&x, &y)| x + y).collect()
     }
 }
 
-impl Sub<Matrix4, Matrix4> for Matrix4 {
+impl Sub for Matrix4 {
+    type Output = Matrix4;
     /// Subtract two matrices
     fn sub(self, rhs: Matrix4) -> Matrix4 {
         self.mat.iter().zip(rhs.mat.iter()).map(|(&x, &y)| x - y).collect()
     }
 }
 
-impl Mul<Matrix4, Matrix4> for Matrix4 {
+impl Mul for Matrix4 {
+    type Output = Matrix4;
     /// Multiply two matrices
     fn mul(self, rhs: Matrix4) -> Matrix4 {
         let mut res = Matrix4::zero();

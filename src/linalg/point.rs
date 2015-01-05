@@ -29,63 +29,72 @@ impl Point {
     }
 }
 
-impl Add<Point, Point> for Point {
+impl Add for Point {
+    type Output = Point;
     /// Add two points together
     fn add(self, rhs: Point) -> Point {
         Point { x: self.x + rhs.x, y: self.y + rhs.y, z: self.z + rhs.z }
     }
 }
 
-impl Add<Vector, Point> for Point {
+impl Add<Vector> for Point {
+    type Output = Point;
     /// Add two points together
     fn add(self, rhs: Vector) -> Point {
         Point { x: self.x + rhs.x, y: self.y + rhs.y, z: self.z + rhs.z }
     }
 }
 
-impl Sub<Point, Vector> for Point {
+impl Sub for Point {
+    type Output = Vector;
     /// Subtract two points to get the vector between them
     fn sub(self, rhs: Point) -> Vector {
         Vector { x: self.x - rhs.x, y: self.y - rhs.y, z: self.z - rhs.z }
     }
 }
 
-impl Sub<Vector, Point> for Point {
+impl Sub<Vector> for Point {
+    type Output = Point;
     /// Subtract a vector from a point, translating the point by -vector
     fn sub(self, rhs: Vector) -> Point {
         Point { x: self.x - rhs.x, y: self.y - rhs.y, z: self.z - rhs.z }
     }
 }
 
-impl Mul<f32, Point> for Point {
+impl Mul<f32> for Point {
+    type Output = Point;
     /// Scale the point by some value
     fn mul(self, rhs: f32) -> Point {
         Point { x: self.x * rhs, y: self.y * rhs, z: self.z * rhs }
     }
 }
 
-impl Div<Point, Point> for Point {
+impl Div for Point {
+    type Output = Point;
     /// Divide the points components by the right hand side's components
     fn div(self, rhs: Point) -> Point {
         Point { x: self.x / rhs.x, y: self.y / rhs.y, z: self.z / rhs.z }
     }
 }
 
-impl Div<f32, Point> for Point {
+impl Div<f32> for Point {
+    type Output = Point;
     /// Divide the points components by scalar
     fn div(self, rhs: f32) -> Point {
         Point { x: self.x / rhs, y: self.y / rhs, z: self.z / rhs }
     }
 }
 
-impl Neg<Point> for Point {
+impl Neg for Point {
+    type Output = Point;
     /// Negate the point
     fn neg(self) -> Point {
         Point { x: -self.x, y: -self.y, z: -self.z }
     }
 }
 
-impl Index<uint, f32> for Point {
+impl Index<uint> for Point {
+    type Output = f32;
     /// Access the point by index
     ///
     /// - 0 = x
@@ -101,7 +110,8 @@ impl Index<uint, f32> for Point {
     }
 }
 
-impl IndexMut<uint, f32> for Point {
+impl IndexMut<uint> for Point {
+    type Output = f32;
     /// Access the point by index
     ///
     /// - 0 = x

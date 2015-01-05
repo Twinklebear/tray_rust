@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![feature(associated_types, default_type_params)]
 pub mod linalg;
 pub mod film;
 pub mod geometry;

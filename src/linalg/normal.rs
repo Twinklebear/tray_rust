@@ -41,63 +41,64 @@ impl Normal {
     }
 }
 
-impl Add<Normal, Normal> for Normal {
+impl Add for Normal {
+    type Output = Normal;
     /// Add two normals together
     fn add(self, rhs: Normal) -> Normal {
         Normal { x: self.x + rhs.x, y: self.y + rhs.y, z: self.z + rhs.z }
     }
 }
 
-impl Sub<Normal, Normal> for Normal {
+impl Sub for Normal {
+    type Output = Normal;
     /// Subtract two normals
     fn sub(self, rhs: Normal) -> Normal {
         Normal { x: self.x - rhs.x, y: self.y - rhs.y, z: self.z - rhs.z }
     }
 }
 
-impl Mul<Normal, Normal> for Normal {
+impl Mul for Normal {
+    type Output = Normal;
     /// Multiply two normals
     fn mul(self, rhs: Normal) -> Normal {
         Normal { x: self.x * rhs.x, y: self.y * rhs.y, z: self.z * rhs.z }
     }
 }
 
-impl Mul<f32, Normal> for Normal {
+impl Mul<f32> for Normal {
+    type Output = Normal;
     /// Scale the normal by some value
     fn mul(self, rhs: f32) -> Normal {
         Normal { x: self.x * rhs, y: self.y * rhs, z: self.z * rhs }
     }
 }
 
-impl Mul<Normal, Normal> for f32 {
-    /// Scale the normal by some value
-    fn mul(self, rhs: Normal) -> Normal {
-        rhs * self
-    }
-}
-
-impl Div<Normal, Normal> for Normal {
+impl Div for Normal {
+    type Output = Normal;
     /// Divide the normals components by the right hand side's components
     fn div(self, rhs: Normal) -> Normal {
         Normal { x: self.x / rhs.x, y: self.y / rhs.y, z: self.z / rhs.z }
     }
 }
 
-impl Div<f32, Normal> for Normal {
+impl Div<f32> for Normal {
+    type Output = Normal;
     /// Divide the normals components by scalar
     fn div(self, rhs: f32) -> Normal {
         Normal { x: self.x / rhs, y: self.y / rhs, z: self.z / rhs }
     }
 }
 
-impl Neg<Normal> for Normal {
+impl Neg for Normal {
+    type Output = Normal;
     /// Negate the normal
     fn neg(self) -> Normal {
         Normal { x: -self.x, y: -self.y, z: -self.z }
     }
 }
 
-impl Index<uint, f32> for Normal {
+impl Index<uint> for Normal {
+    type Output = f32;
     /// Access the normal by index
     ///
     /// - 0 = x
@@ -113,7 +114,8 @@ impl Index<uint, f32> for Normal {
     }
 }
 
-impl IndexMut<uint, f32> for Normal {
+impl IndexMut<uint> for Normal {
+    type Output = f32;
     /// Access the normal by index
     ///
     /// - 0 = x

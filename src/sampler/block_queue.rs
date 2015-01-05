@@ -52,7 +52,8 @@ impl BlockQueue {
     pub fn len(&self) -> uint { self.blocks.len() }
 }
 
-impl<'a> Iterator<(u32, u32)> for BlockQueueIterator<'a> {
+impl<'a> Iterator for BlockQueueIterator<'a> {
+    type Item = (u32, u32);
     fn next(&mut self) -> Option<(u32, u32)> {
         self.queue.next()
     }

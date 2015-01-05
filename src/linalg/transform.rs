@@ -1,5 +1,6 @@
 use std::num::FloatMath;
-use std::ops::{Mul};
+use std::ops::Mul;
+
 use linalg;
 use linalg::Matrix4;
 use linalg::Vector;
@@ -184,14 +185,16 @@ impl Transform {
     }
 }
 
-impl Mul<Transform, Transform> for Transform {
+impl Mul for Transform {
+    type Output = Transform;
     /// Compose two transformations
     fn mul(self, rhs: Transform) -> Transform {
         Transform { mat: self.mat * rhs.mat, inv: rhs.inv * self.inv }
     }
 }
 
-impl Mul<Point, Point> for Transform {
+impl Mul<Point> for Transform {
+    type Output = Point;
     /// Multiply the point by the transform to apply the transformation
     fn mul(self, p: Point) -> Point {
         let mut res = Point::broadcast(0f32);
@@ -209,7 +212,8 @@ impl Mul<Point, Point> for Transform {
     }
 }
 
-impl Mul<Vector, Vector> for Transform {
+impl Mul<Vector> for Transform {
+    type Output = Vector;
     /// Multiply the vector by the transform to apply the transformation
     fn mul(self, v: Vector) -> Vector {
         let mut res = Vector::broadcast(0f32);
@@ -221,7 +225,8 @@ impl Mul<Vector, Vector> for Transform {
     }
 }
 
-impl Mul<Normal, Normal> for Transform {
+impl Mul<Normal> for Transform {
+    type Output = Normal;
     /// Multiply the normal by the transform to apply the transformation
     fn mul(self, n: Normal) -> Normal {
         let mut res = Normal::broadcast(0f32);
@@ -233,7 +238,8 @@ impl Mul<Normal, Normal> for Transform {
     }
 }
 
-impl Mul<Ray, Ray> for Transform {
+impl Mul<Ray> for Transform {
+    type Output = Ray;
     /// Multiply the ray by the transform to apply the transformation
     fn mul(self, ray: Ray) -> Ray {
         let mut res = ray;
