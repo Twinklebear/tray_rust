@@ -22,8 +22,7 @@ impl Scene {
     /// Create our (currently) hard-coded scene, passing in the render target
     /// dimensions so we can set the projection matrix for the camera
     pub fn new(w: uint, h: uint) -> Scene {
-        let sphere = Arc::new(box Sphere::new(1.5)
-                              as Box<Geometry + Send + Sync>);
+        let sphere = Arc::new(box Sphere::new(1.5) as Box<Geometry + Send + Sync>);
         Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, 0.0, -10.0),
                 &Point::new(0.0, 0.0, 0.0), &Vector::new(0.0, 1.0, 0.0)), 40.0, (w, h))),
