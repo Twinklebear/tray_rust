@@ -14,6 +14,7 @@ pub mod intersection;
 pub mod instance;
 pub mod sphere;
 
+/// Trait implemented by geometric primitives
 pub trait Geometry {
     /// Test a ray for intersection with the geometry.
     /// The ray should have been previously transformed into the geometry's
