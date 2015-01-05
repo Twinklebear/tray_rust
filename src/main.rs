@@ -11,6 +11,7 @@ use tray_rust::geometry::Geometry;
 use tray_rust::sampler;
 use tray_rust::sampler::{Sampler};
 use tray_rust::scene;
+use tray_rust::integrator::Integrator;
 
 static WIDTH: uint = 800;
 static HEIGHT: uint = 600;
@@ -24,24 +25,24 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
     let mut sampler = sampler::Uniform::new(queue.block_dim());
     let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
+    // Grab a block from the queue and start working on it, submitting samples
+    // to the render target thread after each pixel
     for b in queue.iter() {
         sampler.select_block(&b);
         while sampler.has_samples() {
+            // Get samples for a pixel and render them
             sampler.get_samples(&mut sample_pos);
             for px in sample_pos.iter() {
                 let mut ray = scene.camera.generate_ray(px);
-                match scene.instance.intersect(&mut ray) {
-                    Some(_) => samples.push((px.0, px.1, film::Colorf::broadcast(1.0))),
-                    None => samples.push((px.0, px.1, film::Colorf::new(0.0, 0.0, 1.0))),
+                if let Some(hit) = scene.instance.intersect(&mut ray) {
+                    let c = scene.integrator.illumination(&*scene, &ray, &hit);
+                    samples.push((px.0, px.1, c));
                 }
             }
             for s in samples.iter() {
-                match tx.send(*s) {
-                    Ok(_) => {},
-                    Err(e) => {
-                        println!("Worker thread exiting with send error {}", e);
-                        return;
-                    },
+                if let Err(e) = tx.send(*s) {
+                    println!("Worker thread exiting with send error {}", e);
+                    return;
                 }
             }
             samples.clear();
