@@ -1,7 +1,8 @@
 //! Defines the DifferentialGeometry type which is used to pass information
 //! about the hit piece of geometry back from the intersection to the shading
 
-use linalg::{Point, Normal};
+use linalg;
+use linalg::{Point, Normal, Vector};
 use geometry::Geometry;
 
 /// Stores information about a hit piece of geometry of some object in the scene
@@ -13,6 +14,10 @@ pub struct DifferentialGeometry<'a> {
     pub n: Normal,
     /// The geometry normal
     pub ng: Normal,
+    /// Derivative of the point with respect to the u parameterization coord of the surface
+    pub dp_du: Vector,
+    /// Derivative of the point with respect to the v parameterization coord of the surface
+    pub dp_dv: Vector,
     /// The geometry that was hit
     pub geom: &'a (Geometry + 'a),
 }
@@ -20,9 +25,12 @@ pub struct DifferentialGeometry<'a> {
 impl<'a> DifferentialGeometry<'a> {
     /// Initialize the differential geometry with 0 values for all fields
     /// and None for the hit geometry
-    pub fn new(p: &Point, n: &Normal, ng: &Normal, geom: &'a (Geometry + 'a))
+    pub fn new(p: &Point, ng: &Normal, dp_du: &Vector, dp_dv: &Vector,
+               geom: &'a (Geometry + 'a))
                -> DifferentialGeometry<'a> {
-        DifferentialGeometry { p: *p, n: *n, ng: *ng, geom: geom }
+        let n = linalg::cross(dp_du, dp_dv).normalized();
+        DifferentialGeometry { p: *p, n: Normal::new(n.x, n.y, n.z), ng: *ng,
+                               dp_du: *dp_du, dp_dv: *dp_dv, geom: geom }
     }
 }
 
