@@ -27,7 +27,7 @@ pub enum BxDFType {
 impl BxDFType {
     /// Get an EnumSet containing all flags for the different types of
     /// BxDFs: Diffuse, Glossy, Specular
-    fn all_types() -> EnumSet<BxDFType> {
+    pub fn all_types() -> EnumSet<BxDFType> {
         let mut e = EnumSet::new();
         e.insert(BxDFType::Diffuse);
         e.insert(BxDFType::Glossy);
@@ -35,22 +35,22 @@ impl BxDFType {
         e
     }
     /// Get an EnumSet containing all flags for reflective BxDFs (eg. BRDFs)
-    fn all_brdf() -> EnumSet<BxDFType> {
+    pub fn all_brdf() -> EnumSet<BxDFType> {
         let mut e = BxDFType::all_types();
         e.insert(BxDFType::Reflection);
         e
     }
     /// Get an EnumSet containing all flags for transmissive BxDFs (eg. BTDFs)
-    fn all_btdf() -> EnumSet<BxDFType> {
+    pub fn all_btdf() -> EnumSet<BxDFType> {
         let mut e = BxDFType::all_types();
         e.insert(BxDFType::Transmission);
         e
     }
     /// Get an EnumSet containing all flags for all BxDFs. This would be all
     /// types of BRDFs and BTDFs
-    fn all() -> EnumSet<BxDFType> { BxDFType::all_brdf().union(BxDFType::all_btdf()) }
+    pub fn all() -> EnumSet<BxDFType> { BxDFType::all_brdf().union(BxDFType::all_btdf()) }
     /// Get an EnumSet containing flags for all types of specular BxDFs
-    fn specular() -> EnumSet<BxDFType> {
+    pub fn specular() -> EnumSet<BxDFType> {
         let mut e = EnumSet::new();
         e.insert(BxDFType::Specular);
         e.insert(BxDFType::Reflection);
@@ -58,7 +58,7 @@ impl BxDFType {
         e
     }
     /// Get an EnumSet containing flags for all non-specular BxDFs
-    fn non_specular() -> EnumSet<BxDFType> {
+    pub fn non_specular() -> EnumSet<BxDFType> {
         let mut e = EnumSet::new();
         e.insert(BxDFType::Diffuse);
         e.insert(BxDFType::Glossy);
