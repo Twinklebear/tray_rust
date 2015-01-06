@@ -10,6 +10,10 @@ use linalg;
 use linalg::Vector;
 use film::Colorf;
 
+pub use self::lambertian::Lambertian;
+
+pub mod lambertian;
+
 /// Various types of BxDFs that can be selected to specify which
 /// types of surface functions should be evaluated
 #[repr(uint)]
