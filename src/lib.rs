@@ -7,4 +7,5 @@ pub mod sampler;
 pub mod integrator;
 pub mod scene;
 pub mod bxdf;
+pub mod material;
 
