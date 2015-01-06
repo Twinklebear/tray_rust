@@ -10,8 +10,10 @@ use linalg;
 use linalg::Vector;
 use film::Colorf;
 
+pub use self::bsdf::BSDF;
 pub use self::lambertian::Lambertian;
 
+pub mod bsdf;
 pub mod lambertian;
 
 /// Various types of BxDFs that can be selected to specify which
@@ -77,8 +79,8 @@ pub trait BxDF {
     /// Get the type of this BxDF
     fn bxdf_type(&self) -> EnumSet<BxDFType>;
     /// Check if this BxDF matches the type flags passed
-    fn matches(&self, flags: &EnumSet<BxDFType>) -> bool {
-        self.bxdf_type().is_subset(flags)
+    fn matches(&self, flags: EnumSet<BxDFType>) -> bool {
+        self.bxdf_type().is_subset(&flags)
     }
     /// Evaluate the BxDF for the pair of incident and outgoing light directions,
     /// `w_i` and `w_o`.
