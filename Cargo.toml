@@ -10,6 +10,9 @@ name = "tray_rust"
 doc = false
 
 [profile.release]
+
+# How to send extra compiler flag for -march=native equivalent in Rust
+# flag is `-C target-cpu=native`
 opt-level = 3
 debug = false
 rpath = false
