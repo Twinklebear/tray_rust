@@ -6,4 +6,5 @@ pub mod geometry;
 pub mod sampler;
 pub mod integrator;
 pub mod scene;
+pub mod bxdf;
 
