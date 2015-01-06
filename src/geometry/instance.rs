@@ -5,6 +5,7 @@
 use std::sync::Arc;
 
 use geometry::{Geometry, Intersection};
+use material::Material;
 use linalg;
 
 /// Defines an instance of some geometry with its own transform and material
@@ -12,14 +13,18 @@ pub struct Instance {
     /// The geometry that's being instanced. TODO: We must Box for now but this
     /// restriction will be lifted later
     geom: Arc<Box<Geometry + Send + Sync>>,
+    /// The material being used by this instance.
+    pub material: Arc<Box<Material + Send + Sync>>,
     /// The transform to world space
     transform: linalg::Transform,
 }
 
 impl Instance {
     /// Create a new instance of some geometry in the scene
-    pub fn new(geom: Arc<Box<Geometry + Send + Sync>>, transform: linalg::Transform) -> Instance {
-        Instance { geom: geom, transform: transform }
+    pub fn new(geom: Arc<Box<Geometry + Send + Sync>>, material: Arc<Box<Material + Send + Sync>>,
+               transform: linalg::Transform)
+               -> Instance {
+        Instance { geom: geom, material: material, transform: transform }
     }
     /// Test the ray for intersection against this insance of geometry.
     /// returns Some(Intersection) if an intersection was found and None if not.

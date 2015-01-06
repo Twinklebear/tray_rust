@@ -29,7 +29,7 @@ pub struct BSDF<'a> {
     /// will leak since it won't be dropped. This would also migrate our BxDFs
     /// from Box<BxDF> to &BxDF. When unboxed traits land we can move to unboxed
     /// BxDFs here though.
-    bxdfs: &'a Vec<Box<BxDF + 'static>>,
+    bxdfs: &'a Vec<Box<BxDF + 'static + Send + Sync>>,
     /// Refractive index of the geometry
     pub eta: f32,
 }
@@ -37,7 +37,9 @@ pub struct BSDF<'a> {
 impl<'a> BSDF<'a> {
     /// Create a new BSDF using the BxDFs passed to shade the differential geometry with
     /// refractive index `eta`
-    pub fn new(bxdfs: &'a Vec<Box<BxDF + 'static>>, eta: f32, dg: &DifferentialGeometry<'a>) -> BSDF<'a> {
+    pub fn new(bxdfs: &'a Vec<Box<BxDF + 'static + Send + Sync>>, eta: f32,
+               dg: &DifferentialGeometry<'a>)
+               -> BSDF<'a> {
         let n = dg.n.normalized();
         let tan = linalg::cross(&n,  &dg.dp_du.normalized()).normalized();
         let bitan = linalg::cross(&tan, &n).normalized();

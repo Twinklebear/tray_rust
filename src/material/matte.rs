@@ -14,13 +14,13 @@ use material::Material;
 /// like to change material properties over the surface and should use a memory pool
 /// TODO: Oren-Nayar BxDF
 pub struct Matte {
-    bxdfs: Vec<Box<BxDF + 'static>>,
+    bxdfs: Vec<Box<BxDF + 'static + Send + Sync>>,
 }
 
 impl Matte {
     /// Create a new Matte material with the desired diffuse color and roughness
-    pub fn new(diffuse: &Colorf, roughess: f32) -> Matte {
-        Matte { bxdfs: vec![box Lambertian::new(diffuse) as Box<BxDF>], }
+    pub fn new(diffuse: &Colorf, roughness: f32) -> Matte {
+        Matte { bxdfs: vec![box Lambertian::new(diffuse) as Box<BxDF + Send + Sync>], }
     }
 }
 
