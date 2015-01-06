@@ -4,10 +4,11 @@
 use std::sync::Arc;
 
 use linalg::{Transform, Point, Vector};
-use film::{Camera};
+use film::{Camera, Colorf};
 use geometry::{Sphere, Instance};
+use material::{Matte, Material};
 use geometry::Geometry;
-use integrator::{HitMarker, Integrator};
+use integrator::{EyeLight, Integrator};
 
 /// The scene containing the objects and camera configuration we'd like to render,
 /// shared immutably among the ray tracing threads
@@ -27,8 +28,11 @@ impl Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, 0.0, -10.0),
                 &Point::new(0.0, 0.0, 0.0), &Vector::new(0.0, 1.0, 0.0)), 40.0, (w, h))),
             instance: Arc::new(Instance::new(sphere.clone(),
+                Arc::new(box Matte::new(&Colorf::new(1.0, 0.0, 0.0), 0.0)
+                         as Box<Material + Send + Sync>),
                 Transform::translate(&Vector::new(0.0, 2.0, 0.0)))),
-            integrator: Arc::new(box HitMarker as Box<Integrator + Send + Sync>),
+            integrator: Arc::new(box EyeLight::new(&Colorf::broadcast(5.0))
+                                 as Box<Integrator + Send + Sync>),
             sphere: sphere.clone(),
         }
     }
