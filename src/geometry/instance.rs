@@ -39,6 +39,8 @@ impl Instance {
         dg.p = self.transform * dg.p;
         dg.n = self.transform * dg.n;
         dg.ng = self.transform * dg.ng;
+        dg.dp_du = self.transform * dg.dp_du;
+        dg.dp_dv = self.transform * dg.dp_dv;
         Some(Intersection::new(dg, self))
     }
 }
