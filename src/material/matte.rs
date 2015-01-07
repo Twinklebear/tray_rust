@@ -4,7 +4,7 @@ use std::vec::Vec;
 
 use film::Colorf;
 use geometry::Intersection;
-use bxdf::{BxDF, BSDF, Lambertian};
+use bxdf::{BxDF, BSDF, Lambertian, OrenNayar};
 use material::Material;
 
 /// The Matte material describes diffuse materials with either a Lambertian or
@@ -12,7 +12,6 @@ use material::Material;
 /// while Oren-Nayar is used for those with some roughness.
 /// TODO: Currently we create the BSDF when creating the material but later we'd
 /// like to change material properties over the surface and should use a memory pool
-/// TODO: Oren-Nayar BxDF
 pub struct Matte {
     bxdfs: Vec<Box<BxDF + 'static + Send + Sync>>,
 }
@@ -20,7 +19,11 @@ pub struct Matte {
 impl Matte {
     /// Create a new Matte material with the desired diffuse color and roughness
     pub fn new(diffuse: &Colorf, roughness: f32) -> Matte {
-        Matte { bxdfs: vec![box Lambertian::new(diffuse) as Box<BxDF + Send + Sync>], }
+        if roughness == 0.0 {
+            Matte { bxdfs: vec![box Lambertian::new(diffuse) as Box<BxDF + Send + Sync>], }
+        } else {
+            Matte { bxdfs: vec![box OrenNayar::new(diffuse, roughness) as Box<BxDF + Send + Sync>], }
+        }
     }
 }
 

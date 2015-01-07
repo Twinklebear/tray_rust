@@ -28,7 +28,7 @@ impl Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, 0.0, -10.0),
                 &Point::new(0.0, 0.0, 0.0), &Vector::new(0.0, 1.0, 0.0)), 40.0, (w, h))),
             instance: Arc::new(Instance::new(sphere.clone(),
-                Arc::new(box Matte::new(&Colorf::new(1.0, 0.0, 0.0), 0.0)
+                Arc::new(box Matte::new(&Colorf::new(1.0, 0.0, 0.0), 0.5)
                          as Box<Material + Send + Sync>),
                 Transform::translate(&Vector::new(0.0, 2.0, 0.0)))),
             integrator: Arc::new(box EyeLight::new(&Colorf::broadcast(2.0))
