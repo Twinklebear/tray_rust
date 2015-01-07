@@ -78,13 +78,13 @@ impl CLike for BxDFType {
 pub trait BxDF {
     /// Get the type of this BxDF
     fn bxdf_type(&self) -> EnumSet<BxDFType>;
+    /// Evaluate the BxDF for the pair of incident and outgoing light directions,
+    /// `w_i` and `w_o`.
+    fn eval(&self, w_o: &Vector, w_i: &Vector) -> Colorf;
     /// Check if this BxDF matches the type flags passed
     fn matches(&self, flags: EnumSet<BxDFType>) -> bool {
         self.bxdf_type().is_subset(&flags)
     }
-    /// Evaluate the BxDF for the pair of incident and outgoing light directions,
-    /// `w_i` and `w_o`.
-    fn eval(&self, w_o: &Vector, w_i: &Vector) -> Colorf;
 }
 
 /// Compute the value of cosine theta for a vector in shading space
