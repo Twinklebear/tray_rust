@@ -1,6 +1,9 @@
 //! Defines a simple eye light integrator used for debugging
 
+use std::num::Float;
+
 use scene::Scene;
+use linalg;
 use linalg::Ray;
 use geometry::Intersection;
 use film::Colorf;
@@ -26,7 +29,8 @@ impl Integrator for EyeLight {
     fn illumination(&self, _: &Scene, ray: &Ray, hit: &Intersection) -> Colorf {
         let bsdf = hit.instance.material.bsdf(hit);
         let w_o = -ray.d;
-        bsdf.eval(&w_o, &ray.d, BxDFType::all())
+        self.intensity * bsdf.eval(&w_o, &w_o, BxDFType::all())
+            * Float::abs(linalg::dot(&ray.d, &bsdf.n))
     }
 }
 
