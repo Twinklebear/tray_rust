@@ -12,9 +12,11 @@ use film::Colorf;
 
 pub use self::bsdf::BSDF;
 pub use self::lambertian::Lambertian;
+pub use self::oren_nayar::OrenNayar;
 
 pub mod bsdf;
 pub mod lambertian;
+pub mod oren_nayar;
 
 /// Various types of BxDFs that can be selected to specify which
 /// types of surface functions should be evaluated

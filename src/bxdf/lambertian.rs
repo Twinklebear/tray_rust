@@ -8,7 +8,7 @@ use linalg::Vector;
 use film::Colorf;
 use bxdf::{BxDF, BxDFType};
 
-/// Lambertian BRDF that provides a BRDF implementing the Lambertian reflectance model
+/// Lambertian BRDF that implements the Lambertian reflectance model
 #[derive(Copy, Show)]
 pub struct Lambertian {
     /// Color of the diffuse material
