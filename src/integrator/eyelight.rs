@@ -30,7 +30,7 @@ impl Integrator for EyeLight {
         let bsdf = hit.instance.material.bsdf(hit);
         let w_o = -ray.d;
         self.intensity * bsdf.eval(&w_o, &w_o, BxDFType::all())
-            * Float::abs(linalg::dot(&ray.d, &bsdf.n))
+            * Float::abs(linalg::dot(&w_o, &bsdf.n))
     }
 }
 
