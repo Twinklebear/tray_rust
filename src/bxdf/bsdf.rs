@@ -18,20 +18,20 @@ use bxdf::{BxDF, BxDFType};
 /// their own tangent, bitangent and differential geometry reference.
 pub struct BSDF<'a> {
     /// Shading normal, may be perturbed by bump mapping
-    n: Normal,
+    pub n: Normal,
     /// The actual geometry normal
-    ng: Normal,
+    pub ng: Normal,
     /// Tangent vector for the surface
-    tan: Vector,
+    pub tan: Vector,
     /// Bitangent vector for the surface
-    bitan: Vector,
+    pub bitan: Vector,
+    /// Refractive index of the geometry
+    pub eta: f32,
     /// TODO: Currently a Vec is safe to use but once in the memory pool it
     /// will leak since it won't be dropped. This would also migrate our BxDFs
     /// from Box<BxDF> to &BxDF. When unboxed traits land we can move to unboxed
     /// BxDFs here though.
     bxdfs: &'a Vec<Box<BxDF + 'static + Send + Sync>>,
-    /// Refractive index of the geometry
-    pub eta: f32,
 }
 
 impl<'a> BSDF<'a> {
@@ -49,7 +49,7 @@ impl<'a> BSDF<'a> {
     pub fn num_bxdfs(&self) -> uint { self.bxdfs.len() }
     /// Return the number of BxDFs matching the flags
     pub fn num_matching(&self, flags: EnumSet<BxDFType>) -> uint {
-        self.bxdfs.iter().filter(|&x| x.matches(flags)).count()
+        self.bxdfs.iter().filter(|ref x| x.matches(flags)).count()
     }
     /// Transform the vector from world space to shading space
     pub fn to_shading(&self, v: &Vector) -> Vector {
@@ -64,7 +64,8 @@ impl<'a> BSDF<'a> {
     }
     /// Evaluate the BSDF for the outgoing and incident light directions
     /// `w_o` and `w_i` in world space, sampling the desired subset of BxDFs
-    /// selected by the flags passed
+    /// selected by the flags passed. `wo_world` and `wi_world` should point from
+    /// the hit point in the outgoing and incident light directions respectively.
     pub fn eval(&self, wo_world: &Vector, wi_world: &Vector, mut flags: EnumSet<BxDFType>) -> Colorf {
         let w_o = self.to_shading(wo_world);
         let w_i = self.to_shading(wi_world);
@@ -75,9 +76,8 @@ impl<'a> BSDF<'a> {
         } else {
             flags.remove(&BxDFType::Reflection);
         }
-        // Find all matching BxDFs and add their contribution to the material's
-        // final color
-        self.bxdfs.iter().filter(|&x| x.matches(flags)).map(|ref x| x.eval(&w_o, &w_i))
+        // Find all matching BxDFs and add their contribution to the material's color
+        self.bxdfs.iter().filter(|ref x| x.matches(flags)).map(|ref x| x.eval(&w_o, &w_i))
             .fold(Colorf::broadcast(0.0), |x, y| x + y)
     }
 }

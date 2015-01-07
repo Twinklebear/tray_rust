@@ -31,7 +31,7 @@ impl Scene {
                 Arc::new(box Matte::new(&Colorf::new(1.0, 0.0, 0.0), 0.0)
                          as Box<Material + Send + Sync>),
                 Transform::translate(&Vector::new(0.0, 2.0, 0.0)))),
-            integrator: Arc::new(box EyeLight::new(&Colorf::broadcast(5.0))
+            integrator: Arc::new(box EyeLight::new(&Colorf::broadcast(2.0))
                                  as Box<Integrator + Send + Sync>),
             sphere: sphere.clone(),
         }
