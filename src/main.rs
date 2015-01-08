@@ -16,10 +16,9 @@ use tray_rust::integrator::Integrator;
 static WIDTH: uint = 800;
 static HEIGHT: uint = 600;
 
-/// Trial of how we might do the render target stuff.
-/// Threads are each sent a send end of the channel that is
+/// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
-/// values recieved to the framebuffer
+/// values recieved to the render target
 fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>,
                scene: Arc<scene::Scene>) {
     let mut sampler = sampler::Uniform::new(queue.block_dim());
@@ -50,9 +49,9 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
     }
 }
 
-/// Hand the workers their own send endpoints to communicate results back
-/// to the main thread but drop the sender on the main thread so once
-/// all threads finish the channel closes
+/// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
+/// of the channel where the threads will write their samples so that the receiver
+/// can write these samples to the render target
 fn spawn_workers(pool: &TaskPool, n: uint, scene: Arc<scene::Scene>) -> Receiver<(f32, f32, film::Colorf)> {
     let (tx, rx) = mpsc::channel();
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
@@ -67,7 +66,7 @@ fn spawn_workers(pool: &TaskPool, n: uint, scene: Arc<scene::Scene>) -> Receiver
     rx
 }
 
-/// Render in the scene in parallel to the passed render target
+/// Render in the scene in parallel to the render target
 fn render_parallel(rt: &mut film::RenderTarget){
     let scene = Arc::new(scene::Scene::new(WIDTH, HEIGHT));
     let n = 8;
