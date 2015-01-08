@@ -4,7 +4,7 @@
 //! block to work on
 
 use std::vec::Vec;
-use std::sync::atomic::{AtomicUint, AcqRel};
+use std::sync::atomic::{AtomicUint, Ordering};
 use sampler::morton;
 
 /// The queue of blocks to be worked on shared immutably between worker threads.
@@ -41,7 +41,7 @@ impl BlockQueue {
     pub fn iter(&self) -> BlockQueueIterator { BlockQueueIterator { queue: self } }
     /// Get the next block in the queue or None if the queue is finished
     fn next(&self) -> Option<(u32, u32)> {
-        let i = self.next.fetch_add(1, AcqRel);
+        let i = self.next.fetch_add(1, Ordering::AcqRel);
         if i >= self.blocks.len() {
             None
         } else {

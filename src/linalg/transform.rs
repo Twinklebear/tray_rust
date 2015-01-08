@@ -1,4 +1,4 @@
-use std::num::FloatMath;
+use std::num::Float;
 use std::ops::Mul;
 
 use linalg;
@@ -61,8 +61,8 @@ impl Transform {
     /// Construct a transform to rotate `deg` degrees about the x axis
     pub fn rotate_x(deg: f32) -> Transform {
         let r = linalg::radians(deg);
-        let s = FloatMath::sin(r);
-        let c = FloatMath::cos(r);
+        let s = Float::sin(r);
+        let c = Float::cos(r);
         let m = Matrix4::new([1f32, 0f32, 0f32, 0f32,
                               0f32, c, -s, 0f32,
                               0f32, s, c, 0f32,
@@ -72,8 +72,8 @@ impl Transform {
     /// Construct a transform to rotate `deg` degrees about the y axis
     pub fn rotate_y(deg: f32) -> Transform {
         let r = linalg::radians(deg);
-        let s = FloatMath::sin(r);
-        let c = FloatMath::cos(r);
+        let s = Float::sin(r);
+        let c = Float::cos(r);
         let m = Matrix4::new([c, 0f32, s, 0f32,
                               0f32, 1f32, 0f32, 0f32,
                               -s, 0f32, c, 0f32,
@@ -83,8 +83,8 @@ impl Transform {
     /// Construct a transform to rotate `deg` degrees about the z axis
     pub fn rotate_z(deg: f32) -> Transform {
         let r = linalg::radians(deg);
-        let s = FloatMath::sin(r);
-        let c = FloatMath::cos(r);
+        let s = Float::sin(r);
+        let c = Float::cos(r);
         let m = Matrix4::new([c, -s, 0f32, 0f32,
                               s, c, 0f32, 0f32,
                               0f32, 0f32, 1f32, 0f32,
@@ -95,8 +95,8 @@ impl Transform {
     pub fn rotate(axis: &Vector, deg: f32) -> Transform {
         let a = axis.normalized();
         let r = linalg::radians(deg);
-        let s = FloatMath::sin(r);
-        let c = FloatMath::cos(r);
+        let s = Float::sin(r);
+        let c = Float::cos(r);
         let mut m = Matrix4::identity();
         *m.at_mut(0, 0) = a.x * a.x + (1f32 - a.x * a.x) * c;
         *m.at_mut(0, 1) = a.x * a.y * (1f32 - c) - a.z * s;
@@ -133,7 +133,7 @@ impl Transform {
              0f32, 1f32, 0f32, 0f32,
              0f32, 0f32, far / (far - near), -far * near / (far - near),
              0f32, 0f32, 1f32, 0f32]);
-        let inv_tan = 1f32 / FloatMath::tan(linalg::radians(fovy) / 2f32);
+        let inv_tan = 1f32 / Float::tan(linalg::radians(fovy) / 2f32);
         Transform::scale(&Vector::new(inv_tan, inv_tan, 1f32))
             * Transform::from_mat(&proj_div)
     }
@@ -288,15 +288,15 @@ fn test_rotate_x() {
     let n = t * Normal::new(0f32, 1f32, 0f32);
     // Need to now deal with some floating annoyances in these tests
     assert_eq!(p.x, 0f32);
-    assert_eq!(FloatMath::abs_sub(p.y, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(p.y, 0f32), 0f32);
     assert_eq!(p.z, 1f32);
 
     assert_eq!(v.x, 0f32);
-    assert_eq!(FloatMath::abs_sub(v.y, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(v.y, 0f32), 0f32);
     assert_eq!(v.z, 1f32);
 
     assert_eq!(n.x, 0f32);
-    assert_eq!(FloatMath::abs_sub(n.y, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(n.y, 0f32), 0f32);
     assert_eq!(n.z, 1f32);
 }
 #[test]
@@ -306,15 +306,15 @@ fn test_rotate_y() {
     let v = t * Vector::new(1f32, 0f32, 0f32);
     let n = t * Normal::new(1f32, 0f32, 0f32);
     // Need to now deal with some floating annoyances in these tests
-    assert_eq!(FloatMath::abs_sub(p.x, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(p.x, 0f32), 0f32);
     assert_eq!(p.y, 0f32);
     assert_eq!(p.z, 1f32);
 
-    assert_eq!(FloatMath::abs_sub(v.x, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(v.x, 0f32), 0f32);
     assert_eq!(v.y, 0f32);
     assert_eq!(v.z, 1f32);
 
-    assert_eq!(FloatMath::abs_sub(n.x, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(n.x, 0f32), 0f32);
     assert_eq!(n.y, 0f32);
     assert_eq!(n.z, 1f32);
 }
@@ -325,15 +325,15 @@ fn test_rotate_z() {
     let v = t * Vector::new(1f32, 0f32, 0f32);
     let n = t * Normal::new(1f32, 0f32, 0f32);
     // Need to now deal with some floating annoyances in these tests
-    assert_eq!(FloatMath::abs_sub(p.x, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(p.x, 0f32), 0f32);
     assert_eq!(p.y, 1f32);
     assert_eq!(p.z, 0f32);
 
-    assert_eq!(FloatMath::abs_sub(v.x, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(v.x, 0f32), 0f32);
     assert_eq!(v.y, 1f32);
     assert_eq!(v.z, 0f32);
 
-    assert_eq!(FloatMath::abs_sub(n.x, 0f32), 0f32);
+    assert_eq!(Float::abs_sub(n.x, 0f32), 0f32);
     assert_eq!(n.y, 1f32);
     assert_eq!(n.z, 0f32);
 }

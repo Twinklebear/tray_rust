@@ -2,7 +2,7 @@
 //! transforming 3D geometry
 
 use std::f32;
-use std::num::{FloatMath, Float};
+use std::num::Float;
 use std::ops::{Index, Mul, Add};
 
 // Re-export the linalg types from the internal modules
@@ -48,16 +48,16 @@ pub fn degrees(r: f32) -> f32 {
 }
 /// Compute the direction specified by `theta` and `phi` in the spherical coordinate system
 pub fn spherical_dir(sin_theta: f32, cos_theta: f32, phi: f32) -> vector::Vector {
-    vector::Vector::new(sin_theta * FloatMath::cos(phi), sin_theta * FloatMath::sin(phi),
+    vector::Vector::new(sin_theta * Float::cos(phi), sin_theta * Float::sin(phi),
                 cos_theta)
 }
 /// Compute the value of theta for the vector in the spherical coordinate system
 pub fn spherical_theta(v: &vector::Vector) -> f32 {
-    FloatMath::acos(clamp(v.z, -1f32, 1f32))
+    Float::acos(clamp(v.z, -1f32, 1f32))
 }
 /// Compute the value of phi for the vector in the spherical coordinate system
 pub fn spherical_phi(v: &vector::Vector) -> f32 {
-    match FloatMath::atan2(v.y, v.x) {
+    match Float::atan2(v.y, v.x) {
         x if x < 0f32 => x + f32::consts::PI_2,
         x             => x,
     }

@@ -2,8 +2,8 @@
 //! See [Oren-Nayar reflectance model](https://en.wikipedia.org/wiki/Oren%E2%80%93Nayar_reflectance_model)
 
 use std::f32;
-use std::num::FloatMath;
-use std::collections::enum_set::{EnumSet};
+use std::num::Float;
+use collect::enum_set::EnumSet;
 
 use linalg::Vector;
 use film::Colorf;
@@ -41,17 +41,17 @@ impl BxDF for OrenNayar {
         e
     }
     fn eval(&self, w_o: &Vector, w_i: &Vector) -> Colorf {
-        let alpha = FloatMath::max(bxdf::cos_theta(w_i), bxdf::cos_theta(w_o));
-        let beta = FloatMath::min(bxdf::cos_theta(w_i), bxdf::cos_theta(w_o));
+        let alpha = Float::max(bxdf::cos_theta(w_i), bxdf::cos_theta(w_o));
+        let beta = Float::min(bxdf::cos_theta(w_i), bxdf::cos_theta(w_o));
         let max_cos =
             if bxdf::sin_theta(w_i) > 1e-4 && bxdf::sin_theta(w_o) > 1e-4 {
-                FloatMath::max(0.0, bxdf::cos_phi(w_i) * bxdf::cos_phi(w_o)
+                Float::max(0.0, bxdf::cos_phi(w_i) * bxdf::cos_phi(w_o)
                            + bxdf::sin_phi(w_i) * bxdf::sin_phi(w_o))
             } else {
                 0.0
             };
         self.reflectance * f32::consts::FRAC_1_PI * (self.a + self.b * max_cos
-                                                     * FloatMath::sin(alpha) * FloatMath::tan(beta))
+                                                     * Float::sin(alpha) * Float::tan(beta))
     }
 }
 

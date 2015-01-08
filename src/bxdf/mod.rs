@@ -2,9 +2,9 @@
 //! material properties. Also provides the BSDF type which composes
 //! various BRDF/BTDFs to describe materials
 
-use std::collections::enum_set::{EnumSet, CLike};
+use collect::enum_set::{EnumSet, CLike};
 use std::mem;
-use std::num::{FloatMath, Float};
+use std::num::Float;
 
 use linalg;
 use linalg::Vector;
@@ -20,7 +20,7 @@ pub mod oren_nayar;
 
 /// Various types of BxDFs that can be selected to specify which
 /// types of surface functions should be evaluated
-#[repr(uint)]
+#[repr(u32)]
 #[derive(Copy, Show)]
 pub enum BxDFType {
     Reflection, Transmission, Diffuse, Glossy, Specular,
@@ -71,8 +71,8 @@ impl BxDFType {
 }
 
 impl CLike for BxDFType {
-    fn to_uint(&self) -> uint { *self as uint }
-    fn from_uint(v: uint) -> BxDFType { unsafe { mem::transmute(v) } }
+    fn to_u32(&self) -> u32 { *self as u32 }
+    unsafe fn from_u32(v: u32) -> BxDFType { mem::transmute(v) }
 }
 
 /// Trait implemented by BRDF/BTDFs in tray_rust. Provides methods for
@@ -92,7 +92,7 @@ pub trait BxDF {
 /// Compute the value of cosine theta for a vector in shading space
 pub fn cos_theta(v: &Vector) -> f32 { v.z }
 /// Compute the value of (sine theta)^2  for a vector in shading space
-pub fn sin_theta_sqr(v: &Vector) -> f32 { FloatMath::max(0.0, 1.0 - v.z * v.z) }
+pub fn sin_theta_sqr(v: &Vector) -> f32 { Float::max(0.0, 1.0 - v.z * v.z) }
 /// Compute the value of sine theta for a vector in shading space
 pub fn sin_theta(v: &Vector) -> f32 { Float::sqrt(sin_theta_sqr(v)) }
 /// Compute the value of cosine phi for a vector in shading space

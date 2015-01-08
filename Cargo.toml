@@ -9,6 +9,9 @@ authors = ["Will Usher <willusher.life@gmail.com>"]
 name = "tray_rust"
 doc = false
 
+[dependencies]
+collect = "0.0.13"
+
 [profile.release]
 
 # How to send extra compiler flag for -march=native equivalent in Rust

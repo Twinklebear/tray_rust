@@ -2,7 +2,7 @@
 //! and BTDFs that describe the surface's properties
 
 use std::vec::Vec;
-use std::collections::enum_set::EnumSet;
+use collect::enum_set::EnumSet;
 
 use linalg;
 use linalg::{Normal, Vector};

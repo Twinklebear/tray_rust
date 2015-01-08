@@ -1,5 +1,7 @@
 #![allow(dead_code)]
-#![feature(associated_types, default_type_params)]
+
+extern crate collect;
+
 pub mod linalg;
 pub mod film;
 pub mod geometry;

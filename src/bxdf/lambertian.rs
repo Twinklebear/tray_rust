@@ -2,7 +2,7 @@
 //! See [Lambertian reflectance](https://en.wikipedia.org/wiki/Lambertian_reflectance)
 
 use std::f32;
-use std::collections::enum_set::{EnumSet};
+use collect::enum_set::EnumSet;
 
 use linalg::Vector;
 use film::Colorf;
