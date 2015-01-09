@@ -41,17 +41,22 @@ impl BxDF for OrenNayar {
         e
     }
     fn eval(&self, w_o: &Vector, w_i: &Vector) -> Colorf {
-        let alpha = Float::max(bxdf::cos_theta(w_i), bxdf::cos_theta(w_o));
-        let beta = Float::min(bxdf::cos_theta(w_i), bxdf::cos_theta(w_o));
+        let sin_theta_o = bxdf::sin_theta(w_o);
+        let sin_theta_i = bxdf::sin_theta(w_i);
         let max_cos =
-            if bxdf::sin_theta(w_i) > 1e-4 && bxdf::sin_theta(w_o) > 1e-4 {
+            if sin_theta_i > 1e-4 && sin_theta_o > 1e-4 {
                 Float::max(0.0, bxdf::cos_phi(w_i) * bxdf::cos_phi(w_o)
                            + bxdf::sin_phi(w_i) * bxdf::sin_phi(w_o))
             } else {
                 0.0
             };
-        self.reflectance * f32::consts::FRAC_1_PI * (self.a + self.b * max_cos
-                                                     * Float::sin(alpha) * Float::tan(beta))
+        let (sin_alpha, tan_beta) =
+            if Float::abs(bxdf::cos_theta(w_i)) > Float::abs(bxdf::cos_theta(w_o)) {
+                (sin_theta_o, sin_theta_i / Float::abs(bxdf::cos_theta(w_i)))
+            } else {
+                (sin_theta_i, sin_theta_o / Float::abs(bxdf::cos_theta(w_o)))
+            };
+        self.reflectance * f32::consts::FRAC_1_PI * (self.a + self.b * max_cos * sin_alpha * tan_beta)
     }
 }
 
