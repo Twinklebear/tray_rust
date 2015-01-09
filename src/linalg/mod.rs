@@ -22,8 +22,7 @@ pub mod transform;
 
 /// Compute the cross product of two vectors
 pub fn cross<A: Index<uint, Output = f32>, B: Index<uint, Output = f32>>(a: &A, b: &B) -> vector::Vector {
-    vector::Vector::new(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
-                a[0] * b[1] - a[1] * b[0])
+    Vector::new(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
 }
 /// Compute the dot product of two vectors
 pub fn dot<A: Index<uint, Output = f32>, B: Index<uint, Output = f32>>(a: &A, b: &B) -> f32 {
@@ -48,7 +47,7 @@ pub fn degrees(r: f32) -> f32 {
 }
 /// Compute the direction specified by `theta` and `phi` in the spherical coordinate system
 pub fn spherical_dir(sin_theta: f32, cos_theta: f32, phi: f32) -> vector::Vector {
-    vector::Vector::new(sin_theta * Float::cos(phi), sin_theta * Float::sin(phi),
+    Vector::new(sin_theta * Float::cos(phi), sin_theta * Float::sin(phi),
                 cos_theta)
 }
 /// Compute the value of theta for the vector in the spherical coordinate system
@@ -79,16 +78,16 @@ pub fn solve_quadratic(a: f32, b: f32, c: f32) -> Option<(f32, f32)> {
 
 #[test]
 fn test_cross() {
-    let a = vector::Vector::new(1f32, 0f32, 0f32);
-    let b = vector::Vector::new(0f32, 1f32, 0f32);
+    let a = Vector::new(1f32, 0f32, 0f32);
+    let b = Vector::new(0f32, 1f32, 0f32);
     let c = cross(&a, &b);
-    assert!(c == vector::Vector::new(0f32, 0f32, 1f32));
+    assert!(c == Vector::new(0f32, 0f32, 1f32));
 }
 
 #[test]
 fn test_dot() {
-    let a = vector::Vector::new(1f32, 2f32, 3f32);
-    let b = vector::Vector::new(4f32, 5f32, 6f32);
+    let a = Vector::new(1f32, 2f32, 3f32);
+    let b = Vector::new(4f32, 5f32, 6f32);
     assert!(dot(&a, &b) == 1f32 * 4f32 + 2f32 * 5f32 + 3f32 * 6f32);
 }
 
