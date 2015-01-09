@@ -33,7 +33,7 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
             sampler.get_samples(&mut sample_pos);
             for px in sample_pos.iter() {
                 let mut ray = scene.camera.generate_ray(px);
-                if let Some(hit) = scene.instance.intersect(&mut ray) {
+                if let Some(hit) = scene.intersect(&mut ray) {
                     let c = scene.integrator.illumination(&*scene, &ray, &hit);
                     samples.push((px.0, px.1, c));
                 }
