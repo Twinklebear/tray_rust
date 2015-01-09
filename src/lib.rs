@@ -10,4 +10,5 @@ pub mod integrator;
 pub mod scene;
 pub mod bxdf;
 pub mod material;
+pub mod light;
 
