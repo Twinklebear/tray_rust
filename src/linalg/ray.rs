@@ -16,7 +16,7 @@ pub struct Ray {
     /// Point along the ray at which it stops, will be inf if the ray is infinite
     pub max_t: f32,
     /// Recursion depth of the ray
-    pub depth: i32,
+    pub depth: u32,
 }
 
 impl Ray {
