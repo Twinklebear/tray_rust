@@ -115,12 +115,13 @@ impl Transform {
     /// the point `center` oriented with up vector `up`
     pub fn look_at(pos: &Point, center: &Point, up: &Vector) -> Transform {
         let dir = (*center - *pos).normalized();
-        let right = linalg::cross(&dir, up).normalized();
-        let u = linalg::cross(&dir, &right).normalized();
+        let mut new_up = up.normalized();
+        let left = linalg::cross(&new_up, &dir).normalized();
+        new_up = linalg::cross(&left, &dir);
         let mut m = Matrix4::identity();
         for i in range(0u, 3u) {
-            *m.at_mut(i, 0) = right[i];
-            *m.at_mut(i, 1) = u[i];
+            *m.at_mut(i, 0) = left[i];
+            *m.at_mut(i, 1) = new_up[i];
             *m.at_mut(i, 2) = dir[i];
             *m.at_mut(i, 3) = pos[i];
         }
