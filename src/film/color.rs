@@ -2,6 +2,7 @@
 
 use std::num::Float;
 use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
+
 use linalg;
 
 /// Colorf is a floating point RGBA color type
@@ -39,6 +40,10 @@ impl Colorf {
     /// Check if the color is black
     pub fn is_black(&self) -> bool {
         self.r == 0f32 && self.g == 0f32 && self.b == 0f32
+    }
+    /// Check if any of the color channels are NaN
+    pub fn has_nans(&self) -> bool {
+        Float::is_nan(self.r) || Float::is_nan(self.g) || Float::is_nan(self.b) || Float::is_nan(self.a)
     }
     /// Convert the linear RGB color to sRGB
     pub fn to_srgb(&self) -> Colorf {
