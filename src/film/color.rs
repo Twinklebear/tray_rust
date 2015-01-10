@@ -89,7 +89,7 @@ impl Mul<f32> for Colorf {
     type Output = Colorf;
     /// Scale the color by the float
     fn mul(self, rhs: f32) -> Colorf {
-        Colorf { r: self.r * rhs, g: self.g * rhs, b: self.b * rhs, a: self.a * rhs}
+        Colorf { r: self.r * rhs, g: self.g * rhs, b: self.b * rhs, a: self.a * rhs }
     }
 }
 
