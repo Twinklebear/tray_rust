@@ -31,6 +31,7 @@ pub trait Fresnel {
 }
 
 /// Computes the Fresnel term for dielectric materials
+#[derive(Copy, Show)]
 pub struct Dielectric {
     /// Refractive index of the material the light is coming from
     pub eta_i: f32,
@@ -64,6 +65,7 @@ impl Fresnel for Dielectric {
 }
 
 /// Computes the Fresnel term for conductive materials
+#[derive(Copy, Show)]
 pub struct Conductor {
     /// Refractive index of the material being hit
     pub eta: Colorf,

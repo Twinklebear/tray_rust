@@ -13,7 +13,7 @@ use material::Material;
 /// TODO: Currently we create the BSDF when creating the material but later we'd
 /// like to change material properties over the surface and should use a memory pool
 pub struct Matte {
-    bxdfs: Vec<Box<BxDF + 'static + Send + Sync>>,
+    bxdfs: Vec<Box<BxDF + Send + Sync>>,
 }
 
 impl Matte {
