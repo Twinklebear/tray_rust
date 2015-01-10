@@ -5,7 +5,7 @@ use std::f32;
 
 use geometry::{Geometry, DifferentialGeometry};
 use linalg;
-use linalg::{Normal, Point, Vector};
+use linalg::{Normal, Point, Vector, Ray};
 
 /// A sphere with user-specified radius
 #[derive(Copy)]
@@ -21,7 +21,7 @@ impl Sphere {
 }
 
 impl Geometry for Sphere {
-    fn intersect(&self, ray: &mut linalg::Ray) -> Option<DifferentialGeometry> {
+    fn intersect(&self, ray: &mut Ray) -> Option<DifferentialGeometry> {
         // Compute quadratic coefficients for sphere intersection equation
         let a = ray.d.length_sqr();
         let b = 2.0 * linalg::dot(&ray.d, &ray.o);
