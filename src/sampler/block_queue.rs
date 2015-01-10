@@ -27,7 +27,7 @@ impl BlockQueue {
     /// Panics if the image is not evenly broken into blocks of dimension `dim`
     pub fn new(img: (u32, u32), dim: (u32, u32)) -> BlockQueue {
         if img.0 % dim.0 != 0 || img.1 % dim.1 != 0 {
-            panic!("Image with dimension {} not evenly divided by blocks of {}", img, dim);
+            panic!("Image with dimension {:?} not evenly divided by blocks of {:?}", img, dim);
         }
         let num_blocks = (img.0 / dim.0, img.1 / dim.1);
         let mut blocks: Vec<(u32, u32)> = range(0, num_blocks.0 * num_blocks.1)

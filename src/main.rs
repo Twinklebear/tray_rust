@@ -40,7 +40,7 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
             }
             for s in samples.iter() {
                 if let Err(e) = tx.send(*s) {
-                    println!("Worker thread exiting with send error {}", e);
+                    println!("Worker thread exiting with send error {:?}", e);
                     return;
                 }
             }

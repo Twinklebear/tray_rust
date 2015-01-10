@@ -11,7 +11,7 @@ doc = false
 
 [dependencies]
 
-collect = "0.0.13"
+collect = "0.0.14"
 
 [profile.release]
 

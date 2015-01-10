@@ -28,19 +28,19 @@ impl Scene {
     /// Create our (currently) hard-coded scene, passing in the render target
     /// dimensions so we can set the projection matrix for the camera
     pub fn new(w: uint, h: uint) -> Scene {
-        let sphere = Arc::new(box Sphere::new(1.0) as Box<Geometry + Send + Sync>);
+        let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<Geometry + Send + Sync>);
         let instances = vec![Instance::new(sphere.clone(),
-            Arc::new(box Matte::new(&Colorf::new(1.0, 0.0, 0.0), 0.3)
+            Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.0, 0.0), 0.3))
                      as Box<Material + Send + Sync>), Transform::scale(&Vector::broadcast(1.5))),
             Instance::new(sphere.clone(),
-            Arc::new(box Matte::new(&Colorf::new(0.0, 0.0, 1.0), 0.8)
+            Arc::new(Box::new(Matte::new(&Colorf::new(0.0, 0.0, 1.0), 0.8))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(2.0, -2.0, -1.0)))];
         Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, 0.0, -10.0),
                 &Point::new(0.0, 0.0, 0.0), &Vector::new(0.0, 1.0, 0.0)), 40.0, (w, h))),
             instances: Arc::new(instances),
-            integrator: Arc::new(box Whitted::new(8) as Box<Integrator + Send + Sync>),
-            light: Arc::new(box light::Point::new(&Point::new(0.0, 1.5, -4.0), &Colorf::broadcast(30.0))
+            integrator: Arc::new(Box::new(Whitted::new(8)) as Box<Integrator + Send + Sync>),
+            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 1.5, -4.0), &Colorf::broadcast(30.0)))
                             as Box<Light + Send + Sync>),
             sphere: sphere.clone(),
         }

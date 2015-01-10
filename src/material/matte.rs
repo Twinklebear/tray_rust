@@ -20,9 +20,9 @@ impl Matte {
     /// Create a new Matte material with the desired diffuse color and roughness
     pub fn new(diffuse: &Colorf, roughness: f32) -> Matte {
         if roughness == 0.0 {
-            Matte { bxdfs: vec![box Lambertian::new(diffuse) as Box<BxDF + Send + Sync>], }
+            Matte { bxdfs: vec![Box::new(Lambertian::new(diffuse)) as Box<BxDF + Send + Sync>], }
         } else {
-            Matte { bxdfs: vec![box OrenNayar::new(diffuse, roughness) as Box<BxDF + Send + Sync>], }
+            Matte { bxdfs: vec![Box::new(OrenNayar::new(diffuse, roughness)) as Box<BxDF + Send + Sync>], }
         }
     }
 }
