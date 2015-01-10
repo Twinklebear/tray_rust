@@ -19,11 +19,11 @@ pub struct Colorf {
 impl Colorf {
     /// Create an RGB color
     pub fn new(r: f32, g: f32, b: f32) -> Colorf {
-        Colorf { r: r, g: g, b: b, a: 0f32 }
+        Colorf { r: r, g: g, b: b, a: 1.0 }
     }
     /// Create an RGB color using the same value for all channels
     pub fn broadcast(r: f32) -> Colorf {
-        Colorf { r: r, g: r, b: r, a: 0f32 }
+        Colorf { r: r, g: r, b: r, a: r }
     }
     /// Clamp the color values between [0, 1]
     pub fn clamp(&self) -> Colorf {
