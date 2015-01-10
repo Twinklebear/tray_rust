@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use linalg::{Transform, Point, Vector, Ray};
 use film::{Camera, Colorf};
-use geometry::{Sphere, Instance};
+use geometry::{Sphere, Plane, Instance};
 use material::{Matte, SpecularMetal, Material};
 use geometry::{Geometry, Intersection};
 use integrator::{Whitted, Integrator};
@@ -28,20 +28,43 @@ impl Scene {
     /// Create our (currently) hard-coded scene, passing in the render target
     /// dimensions so we can set the projection matrix for the camera
     pub fn new(w: usize, h: usize) -> Scene {
-        let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<Geometry + Send + Sync>);
-        let instances = vec![Instance::new(sphere.clone(),
+        let sphere = Arc::new(Box::new(Sphere::new(1.9)) as Box<Geometry + Send + Sync>);
+        let plane = Arc::new(Box::new(Plane) as Box<Geometry + Send + Sync>);
+        let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 0.0)) as Box<Material + Send + Sync>);
+        let red_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0)) as Box<Material + Send + Sync>);
+        let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0)) as Box<Material + Send + Sync>);
+        let instances = vec![
+            // The reflective sphere
+            Instance::new(sphere.clone(),
             Arc::new(Box::new(SpecularMetal::new(&Colorf::new(0.155, 0.116, 0.138),
                                                  &Colorf::new(4.828, 3.122, 2.146)))
-                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-1.0, 0.0, 0.0))),
+                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-3.0, -4.0, 6.0))),
+            // The blue matte sphere
             Instance::new(sphere.clone(),
             Arc::new(Box::new(Matte::new(&Colorf::new(0.0, 0.0, 1.0), 0.8))
-                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(2.0, 0.0, 0.0)))];
+                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(3.0, -4.0, 3.0))),
+            // The back wall
+            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 10.0))
+                          * Transform::scale(&Vector::broadcast(20.0))),
+            // The left wall
+            Instance::new(plane.clone(), red_wall.clone(), Transform::translate(&Vector::new(-6.0, 0.0, 0.0))
+                          * Transform::scale(&Vector::broadcast(20.0)) * Transform::rotate_y(90.0)),
+            // The right wall
+            Instance::new(plane.clone(), blue_wall.clone(), Transform::translate(&Vector::new(6.0, 0.0, 0.0))
+                          * Transform::scale(&Vector::broadcast(20.0)) * Transform::rotate_y(-90.0)),
+            // The top wall
+            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 6.0, 0.0))
+                          * Transform::scale(&Vector::broadcast(20.0)) * Transform::rotate_x(90.0)),
+            // The bottom wall
+            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, -6.0, 0.0))
+                          * Transform::scale(&Vector::broadcast(20.0)) * Transform::rotate_x(-90.0))
+        ];
         Scene {
-            camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, 0.0, -10.0),
+            camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, 0.0, -16.0),
                 &Point::new(0.0, 0.0, 0.0), &Vector::new(0.0, 1.0, 0.0)), 40.0, (w, h))),
             instances: Arc::new(instances),
             integrator: Arc::new(Box::new(Whitted::new(8)) as Box<Integrator + Send + Sync>),
-            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 1.5, -4.0), &Colorf::broadcast(30.0)))
+            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 5.0, 3.0), &Colorf::broadcast(40.0)))
                             as Box<Light + Send + Sync>),
             sphere: sphere.clone(),
         }
