@@ -5,7 +5,7 @@ use std::vec::Vec;
 use collect::enum_set::EnumSet;
 
 use linalg;
-use linalg::{Normal, Vector};
+use linalg::{Normal, Vector, Point};
 use film::Colorf;
 use geometry::DifferentialGeometry;
 use bxdf::{BxDF, BxDFType};
@@ -17,6 +17,8 @@ use bxdf::{BxDF, BxDFType};
 /// material we need to allocate a decent amount of stuff since they each need
 /// their own tangent, bitangent and differential geometry reference.
 pub struct BSDF<'a> {
+    /// The hit point
+    pub p: Point,
     /// Shading normal, may be perturbed by bump mapping
     pub n: Normal,
     /// The actual geometry normal
@@ -31,19 +33,19 @@ pub struct BSDF<'a> {
     /// will leak since it won't be dropped. This would also migrate our BxDFs
     /// from Box<BxDF> to &BxDF. When unboxed traits land we can move to unboxed
     /// BxDFs here though.
-    bxdfs: &'a Vec<Box<BxDF + 'static + Send + Sync>>,
+    bxdfs: &'a Vec<Box<BxDF + Send + Sync>>,
 }
 
 impl<'a> BSDF<'a> {
     /// Create a new BSDF using the BxDFs passed to shade the differential geometry with
     /// refractive index `eta`
-    pub fn new(bxdfs: &'a Vec<Box<BxDF + 'static + Send + Sync>>, eta: f32,
+    pub fn new(bxdfs: &'a Vec<Box<BxDF + Send + Sync>>, eta: f32,
                dg: &DifferentialGeometry<'a>)
                -> BSDF<'a> {
         let n = dg.n.normalized();
         let tan = linalg::cross(&n,  &dg.dp_du.normalized()).normalized();
         let bitan = linalg::cross(&tan, &n).normalized();
-        BSDF { n: n, ng: dg.ng.normalized(), tan: tan, bitan: bitan, bxdfs: bxdfs, eta: eta }
+        BSDF { p: dg.p, n: n, ng: dg.ng.normalized(), tan: tan, bitan: bitan, bxdfs: bxdfs, eta: eta }
     }
     /// Return the total number of BxDFs
     pub fn num_bxdfs(&self) -> usize { self.bxdfs.len() }
@@ -79,6 +81,35 @@ impl<'a> BSDF<'a> {
         // Find all matching BxDFs and add their contribution to the material's color
         self.bxdfs.iter().filter(|ref x| x.matches(flags)).map(|ref x| x.eval(&w_o, &w_i))
             .fold(Colorf::broadcast(0.0), |x, y| x + y)
+    }
+    /// Sample a component of the BSDF to get an incident light direction for light
+    /// leaving the surface along `w_o`. Returns the color, direction and the type
+    /// of the BxDF that was sampled. TODO: Need to take random numbers here for proper
+    /// sampling. Currently we just find the first that matches which is so incredibly wrong
+    /// for proper sampling.
+    pub fn sample(&self, wo_world: &Vector, flags: EnumSet<BxDFType>) -> (Colorf, Vector, EnumSet<BxDFType>) {
+        let n_matching = self.num_matching(flags);
+        if n_matching == 0 {
+            return (Colorf::broadcast(0.0), Vector::broadcast(0.0), EnumSet::new());
+        }
+        // Really bad: just take the first for now. This will be ok for having very basic
+        // materials like our single component diffuse and specular but is wrong for
+        // more complicated ones
+        let bsdf = self.matching_at(0, flags);
+        let w_o = self.to_shading(wo_world);
+        let (f, w_i) = bsdf.sample(&w_o);
+        // TODO: Will fail for later materials - we assume only one matched. For the diffuse
+        // and specular metal materials this is correct but not for more complex ones
+        (f, self.from_shading(&w_i), bsdf.bxdf_type())
+    }
+    /// Get the `i`th BxDF that matches the flags passed. There should not be fewer than i
+    /// BxDFs that match the flags
+    fn matching_at(&self, i: usize, flags: EnumSet<BxDFType>) -> &Box<BxDF + Send + Sync> {
+        let mut it = self.bxdfs.iter().filter(|ref x| x.matches(flags)).skip(i);
+        match it.next() {
+            Some(b) => b,
+            None => panic!("Out of bounds index for BxDF type {:?}", flags)
+        }
     }
 }
 
