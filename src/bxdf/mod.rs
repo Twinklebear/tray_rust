@@ -13,11 +13,13 @@ use film::Colorf;
 pub use self::bsdf::BSDF;
 pub use self::lambertian::Lambertian;
 pub use self::oren_nayar::OrenNayar;
+pub use self::specular_reflection::SpecularReflection;
 
 pub mod bsdf;
 pub mod lambertian;
 pub mod oren_nayar;
 pub mod fresnel;
+pub mod specular_reflection;
 
 /// Various types of BxDFs that can be selected to specify which
 /// types of surface functions should be evaluated
@@ -84,6 +86,16 @@ pub trait BxDF {
     /// Evaluate the BxDF for the pair of incident and outgoing light directions,
     /// `w_i` and `w_o`.
     fn eval(&self, w_o: &Vector, w_i: &Vector) -> Colorf;
+    /// Sample an incident light direction for an outgoing light direction `w_o`.
+    /// TODO: Later this will also take 2 random sample values and also return the pdf
+    /// Returns the color of the material for the pair of directions and the incident
+    /// light direction as a tuple.
+    fn sample(&self, w_o: &Vector) -> (Colorf, Vector) {
+        // TODO: We need random samples to provide an actual default implementation.
+        // for now we just return black for no reflection. The incident light
+        // direction should be sampled from a cos-weighted hemisphere sampling
+        (Colorf::broadcast(0.0), *w_o)
+    }
     /// Check if this BxDF matches the type flags passed
     fn matches(&self, flags: EnumSet<BxDFType>) -> bool {
         self.bxdf_type().is_subset(&flags)
