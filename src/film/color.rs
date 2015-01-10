@@ -45,7 +45,7 @@ impl Colorf {
         let a = 0.055f32;
         let b = 1f32 / 2.4;
         let mut srgb = Colorf::broadcast(0.0);
-        for i in range(0u, 3) {
+        for i in 0..3us {
             if self[i] <= 0.0031308 {
                 srgb[i] = 12.92 * self[i];
             } else {
@@ -117,7 +117,7 @@ impl Neg for Colorf {
     }
 }
 
-impl Index<uint> for Colorf {
+impl Index<usize> for Colorf {
     type Output = f32;
     /// Access the channels by index
     /// 
@@ -125,7 +125,7 @@ impl Index<uint> for Colorf {
     /// - 1 = g
     /// - 2 = b
     /// - 3 = a
-    fn index(&self, i: &uint) -> &f32 {
+    fn index(&self, i: &usize) -> &f32 {
         match *i {
             0 => &self.r,
             1 => &self.g,
@@ -136,7 +136,7 @@ impl Index<uint> for Colorf {
     }
 }
 
-impl IndexMut<uint> for Colorf {
+impl IndexMut<usize> for Colorf {
     type Output = f32;
     /// Access the channels by index
     /// 
@@ -144,7 +144,7 @@ impl IndexMut<uint> for Colorf {
     /// - 1 = g
     /// - 2 = b
     /// - 3 = a
-    fn index_mut(&mut self, i: &uint) -> &mut f32 {
+    fn index_mut(&mut self, i: &usize) -> &mut f32 {
         match *i {
             0 => &mut self.r,
             1 => &mut self.g,

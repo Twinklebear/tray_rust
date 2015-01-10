@@ -27,7 +27,7 @@ pub struct Scene {
 impl Scene {
     /// Create our (currently) hard-coded scene, passing in the render target
     /// dimensions so we can set the projection matrix for the camera
-    pub fn new(w: uint, h: uint) -> Scene {
+    pub fn new(w: usize, h: usize) -> Scene {
         let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<Geometry + Send + Sync>);
         let instances = vec![Instance::new(sphere.clone(),
             Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.0, 0.0), 0.3))

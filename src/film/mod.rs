@@ -14,7 +14,7 @@ pub mod render_target;
 pub mod camera;
 
 /// Write the sequence of bytes as a PPM image file with the desired name
-pub fn write_ppm(name: &str, w: uint, h: uint, img: &[u8]) {
+pub fn write_ppm(name: &str, w: usize, h: usize, img: &[u8]) {
     let file = match File::open_mode(&Path::new(name), Open, Write) {
         Ok(f) => f,
         Err(e) => panic!("Failed to open {}: {}", name, e),

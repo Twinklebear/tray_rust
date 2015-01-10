@@ -93,14 +93,14 @@ impl Neg for Point {
     }
 }
 
-impl Index<uint> for Point {
+impl Index<usize> for Point {
     type Output = f32;
     /// Access the point by index
     ///
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index(&self, i: &uint) -> &f32 {
+    fn index(&self, i: &usize) -> &f32 {
         match *i {
             0 => &self.x,
             1 => &self.y,
@@ -110,14 +110,14 @@ impl Index<uint> for Point {
     }
 }
 
-impl IndexMut<uint> for Point {
+impl IndexMut<usize> for Point {
     type Output = f32;
     /// Access the point by index
     ///
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index_mut(&mut self, i: &uint) -> &mut f32 {
+    fn index_mut(&mut self, i: &usize) -> &mut f32 {
         match *i {
             0 => &mut self.x,
             1 => &mut self.y,

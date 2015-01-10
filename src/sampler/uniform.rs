@@ -38,7 +38,7 @@ impl Sampler for Uniform {
             self.current.1 += 1;
         }
     }
-    fn max_spp(&self) -> uint { 1 }
+    fn max_spp(&self) -> usize { 1 }
     fn has_samples(&self) -> bool { self.current.1 != self.end.1 }
     fn dimensions(&self) -> (u32, u32) { self.dimensions }
     fn select_block(&mut self, start: &(u32, u32)) {

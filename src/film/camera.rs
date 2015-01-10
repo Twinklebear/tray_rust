@@ -16,7 +16,7 @@ impl Camera {
     /// Create the camera with some orientation in the world specified by `cam_world`
     /// and a perspective projection with `fov`. The render target dimensions `dims`
     /// are needed to construct the raster -> camera transform
-    pub fn new(cam_world: Transform, fov: f32, dims: (uint, uint)) -> Camera {
+    pub fn new(cam_world: Transform, fov: f32, dims: (usize, usize)) -> Camera {
         let aspect_ratio = (dims.0 as f32) / (dims.1 as f32);
         let screen =
             if aspect_ratio > 1.0 {

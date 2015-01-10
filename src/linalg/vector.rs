@@ -89,14 +89,14 @@ impl Neg for Vector {
     }
 }
 
-impl Index<uint> for Vector {
+impl Index<usize> for Vector {
     type Output = f32;
     /// Access the vector by index
     ///
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index(&self, i: &uint) -> &f32 {
+    fn index(&self, i: &usize) -> &f32 {
         match *i {
             0 => &self.x,
             1 => &self.y,
@@ -106,14 +106,14 @@ impl Index<uint> for Vector {
     }
 }
 
-impl IndexMut<uint> for Vector {
+impl IndexMut<usize> for Vector {
     type Output = f32;
     /// Access the vector by index
     ///
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index_mut(&mut self, i: &uint) -> &mut f32 {
+    fn index_mut(&mut self, i: &usize) -> &mut f32 {
         match *i {
             0 => &mut self.x,
             1 => &mut self.y,

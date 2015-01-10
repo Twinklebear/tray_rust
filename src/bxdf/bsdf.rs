@@ -46,9 +46,9 @@ impl<'a> BSDF<'a> {
         BSDF { n: n, ng: dg.ng.normalized(), tan: tan, bitan: bitan, bxdfs: bxdfs, eta: eta }
     }
     /// Return the total number of BxDFs
-    pub fn num_bxdfs(&self) -> uint { self.bxdfs.len() }
+    pub fn num_bxdfs(&self) -> usize { self.bxdfs.len() }
     /// Return the number of BxDFs matching the flags
-    pub fn num_matching(&self, flags: EnumSet<BxDFType>) -> uint {
+    pub fn num_matching(&self, flags: EnumSet<BxDFType>) -> usize {
         self.bxdfs.iter().filter(|ref x| x.matches(flags)).count()
     }
     /// Transform the vector from world space to shading space

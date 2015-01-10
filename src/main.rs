@@ -13,8 +13,8 @@ use tray_rust::sampler::{Sampler};
 use tray_rust::scene;
 use tray_rust::integrator::Integrator;
 
-static WIDTH: uint = 800;
-static HEIGHT: uint = 600;
+static WIDTH: usize = 800;
+static HEIGHT: usize = 600;
 
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
@@ -52,10 +52,12 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
 /// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
 /// of the channel where the threads will write their samples so that the receiver
 /// can write these samples to the render target
-fn spawn_workers(pool: &TaskPool, n: uint, scene: Arc<scene::Scene>) -> Receiver<(f32, f32, film::Colorf)> {
+fn spawn_workers(pool: &TaskPool, n: usize, scene: Arc<scene::Scene>) -> Receiver<(f32, f32, film::Colorf)> {
     let (tx, rx) = mpsc::channel();
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
-    for _ in range(0, n) {
+    // TODO: the .. operator precedence is very low so we need this paren here at the moment
+    // once (hopefully) it's raised we can remove the parens
+    for _ in (0..n) {
         let q = block_queue.clone();
         let t = tx.clone();
         let s = scene.clone();
@@ -81,6 +83,6 @@ fn main() {
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
     let d = Duration::span(|| render_parallel(&mut rt));
     println!("Rendering took {}ms", d.num_milliseconds());
-    film::write_ppm("out.ppm", WIDTH, HEIGHT, rt.get_render().as_slice());
+    film::write_ppm("out.ppm", WIDTH, HEIGHT, &rt.get_render()[]);
 }
 

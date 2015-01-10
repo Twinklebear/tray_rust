@@ -30,7 +30,9 @@ impl BlockQueue {
             panic!("Image with dimension {:?} not evenly divided by blocks of {:?}", img, dim);
         }
         let num_blocks = (img.0 / dim.0, img.1 / dim.1);
-        let mut blocks: Vec<(u32, u32)> = range(0, num_blocks.0 * num_blocks.1)
+        // TODO: the .. operator precedence is very low so we need this paren here at the moment
+        // once (hopefully) it's raised we can remove the parens
+        let mut blocks: Vec<(u32, u32)> = (0..num_blocks.0 * num_blocks.1)
             .map(|i| (i % num_blocks.0, i / num_blocks.0)).collect();
         blocks.sort_by(|a, b| morton::morton2(a).cmp(&morton::morton2(b)));
         BlockQueue { blocks: blocks, dimensions: dim, next: AtomicUint::new(0) }
@@ -49,7 +51,7 @@ impl BlockQueue {
         }
     }
     /// Get the length of the queue
-    pub fn len(&self) -> uint { self.blocks.len() }
+    pub fn len(&self) -> usize { self.blocks.len() }
 }
 
 impl<'a> Iterator for BlockQueueIterator<'a> {

@@ -97,14 +97,14 @@ impl Neg for Normal {
     }
 }
 
-impl Index<uint> for Normal {
+impl Index<usize> for Normal {
     type Output = f32;
     /// Access the normal by index
     ///
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index(&self, i: &uint) -> &f32 {
+    fn index(&self, i: &usize) -> &f32 {
         match *i {
             0 => &self.x,
             1 => &self.y,
@@ -114,14 +114,14 @@ impl Index<uint> for Normal {
     }
 }
 
-impl IndexMut<uint> for Normal {
+impl IndexMut<usize> for Normal {
     type Output = f32;
     /// Access the normal by index
     ///
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index_mut(&mut self, i: &uint) -> &mut f32 {
+    fn index_mut(&mut self, i: &usize) -> &mut f32 {
         match *i {
             0 => &mut self.x,
             1 => &mut self.y,

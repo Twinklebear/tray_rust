@@ -18,7 +18,7 @@ pub trait Sampler {
     /// for the region the vector will be empty
     fn get_samples(&mut self, samples: &mut Vec<(f32, f32)>);
     /// Get the max number of samples this sampler will take per pixel
-    fn max_spp(&self) -> uint;
+    fn max_spp(&self) -> usize;
     /// Check if the sampler has more samples for the region being sampled
     fn has_samples(&self) -> bool;
     /// Get the dimensions of the region being sampled in pixels

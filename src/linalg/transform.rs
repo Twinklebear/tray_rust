@@ -119,7 +119,7 @@ impl Transform {
         let left = linalg::cross(&new_up, &dir).normalized();
         new_up = linalg::cross(&left, &dir);
         let mut m = Matrix4::identity();
-        for i in range(0u, 3u) {
+        for i in 0..3us {
             *m.at_mut(i, 0) = left[i];
             *m.at_mut(i, 1) = new_up[i];
             *m.at_mut(i, 2) = dir[i];
@@ -147,7 +147,7 @@ impl Transform {
     /// have function overloading, clean up when it's added
     pub fn inv_mul_point(&self, p: &Point) -> Point {
         let mut res = Point::broadcast(0f32);
-        for i in range(0u, 3u) {
+        for i in 0..3us {
             res[i] = *self.inv.at(i, 0) * p.x + *self.inv.at(i, 1) * p.y
                 + *self.inv.at(i, 2) * p.z + *self.inv.at(i, 3);
         }
@@ -162,7 +162,7 @@ impl Transform {
     /// Multiply the vector with the inverse transformation
     pub fn inv_mul_vector(&self, v: &Vector) -> Vector {
         let mut res = Vector::broadcast(0f32);
-        for i in range(0u, 3u) {
+        for i in 0..3us {
             res[i] = *self.inv.at(i, 0) * v.x + *self.inv.at(i, 1) * v.y
                 + *self.inv.at(i, 2) * v.z;
         }
@@ -171,7 +171,7 @@ impl Transform {
     /// Multiply the normal with the inverse transformation
     pub fn inv_mul_normal(&self, n: &Normal) -> Normal {
         let mut res = Normal::broadcast(0f32);
-        for i in range(0u, 3u) {
+        for i in 0..3us {
             res[i] = *self.mat.at(0, i) * n.x + *self.mat.at(1, i) * n.y
                 + *self.mat.at(2, i) * n.z;
         }
@@ -199,7 +199,7 @@ impl Mul<Point> for Transform {
     /// Multiply the point by the transform to apply the transformation
     fn mul(self, p: Point) -> Point {
         let mut res = Point::broadcast(0f32);
-        for i in range(0u, 3u) {
+        for i in 0..3us {
             res[i] = *self.mat.at(i, 0) * p.x + *self.mat.at(i, 1) * p.y
                 + *self.mat.at(i, 2) * p.z + *self.mat.at(i, 3);
         }
@@ -218,7 +218,7 @@ impl Mul<Vector> for Transform {
     /// Multiply the vector by the transform to apply the transformation
     fn mul(self, v: Vector) -> Vector {
         let mut res = Vector::broadcast(0f32);
-        for i in range(0u, 3u) {
+        for i in 0..3us {
             res[i] = *self.mat.at(i, 0) * v.x + *self.mat.at(i, 1) * v.y
                 + *self.mat.at(i, 2) * v.z;
         }
@@ -231,7 +231,7 @@ impl Mul<Normal> for Transform {
     /// Multiply the normal by the transform to apply the transformation
     fn mul(self, n: Normal) -> Normal {
         let mut res = Normal::broadcast(0f32);
-        for i in range(0u, 3u) {
+        for i in 0..3us {
             res[i] = *self.inv.at(0, i) * n.x + *self.inv.at(1, i) * n.y
                 + *self.inv.at(2, i) * n.z;
         }

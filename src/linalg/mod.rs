@@ -21,11 +21,11 @@ pub mod matrix4;
 pub mod transform;
 
 /// Compute the cross product of two vectors
-pub fn cross<A: Index<uint, Output = f32>, B: Index<uint, Output = f32>>(a: &A, b: &B) -> vector::Vector {
+pub fn cross<A: Index<usize, Output = f32>, B: Index<usize, Output = f32>>(a: &A, b: &B) -> vector::Vector {
     Vector::new(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
 }
 /// Compute the dot product of two vectors
-pub fn dot<A: Index<uint, Output = f32>, B: Index<uint, Output = f32>>(a: &A, b: &B) -> f32 {
+pub fn dot<A: Index<usize, Output = f32>, B: Index<usize, Output = f32>>(a: &A, b: &B) -> f32 {
     a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
 /// Lerp between `a` and `b` at some distance `t` where t is in [0, 1]
