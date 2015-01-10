@@ -28,9 +28,9 @@ impl Scene {
     /// Create our (currently) hard-coded scene, passing in the render target
     /// dimensions so we can set the projection matrix for the camera
     pub fn new(w: usize, h: usize) -> Scene {
-        let sphere = Arc::new(Box::new(Sphere::new(1.9)) as Box<Geometry + Send + Sync>);
+        let sphere = Arc::new(Box::new(Sphere::new(2.0)) as Box<Geometry + Send + Sync>);
         let plane = Arc::new(Box::new(Plane) as Box<Geometry + Send + Sync>);
-        let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 0.0)) as Box<Material + Send + Sync>);
+        let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 1.0)) as Box<Material + Send + Sync>);
         let red_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0)) as Box<Material + Send + Sync>);
         let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0)) as Box<Material + Send + Sync>);
         let instances = vec![
@@ -64,7 +64,7 @@ impl Scene {
                 &Point::new(0.0, 0.0, 0.0), &Vector::new(0.0, 1.0, 0.0)), 40.0, (w, h))),
             instances: Arc::new(instances),
             integrator: Arc::new(Box::new(Whitted::new(8)) as Box<Integrator + Send + Sync>),
-            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 5.0, 3.0), &Colorf::broadcast(40.0)))
+            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 5.0, 4.5), &Colorf::broadcast(40.0)))
                             as Box<Light + Send + Sync>),
             sphere: sphere.clone(),
         }
