@@ -31,14 +31,18 @@ impl Integrator for Whitted {
         // Should we just return this in the tuple as well?
         let mut occlusion = OcclusionTester::test_points(&Point::broadcast(0.0), &Point::broadcast(0.0));
         let (li, w_i) = scene.light.sample_incident(&hit.dg.p, &mut occlusion);
-        let c = bsdf.eval(&w_o, &w_i, BxDFType::all());
-        // TODO: Need specular reflection and refraction
-        if !li.is_black() && !c.is_black() { //&& !occlusion.occluded(scene) {
+        let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
+        let mut illum = Colorf::broadcast(0.0);
+        if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {
             // TODO: Divide by pdf once we add that to lights
-            c * li * Float::abs(linalg::dot(&w_i, &bsdf.n))
-        } else {
-            Colorf::broadcast(0.0)
+            illum = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n));
         }
+        // TODO: Need specular and refraction
+        if ray.depth < self.max_depth {
+            // TODO: How to overload += ?
+            illum = illum + self.specular_reflection(scene, ray, &bsdf);
+        }
+        illum
     }
 }
 

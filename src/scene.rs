@@ -6,7 +6,7 @@ use std::sync::Arc;
 use linalg::{Transform, Point, Vector, Ray};
 use film::{Camera, Colorf};
 use geometry::{Sphere, Instance};
-use material::{Matte, Material};
+use material::{Matte, SpecularMetal, Material};
 use geometry::{Geometry, Intersection};
 use integrator::{Whitted, Integrator};
 use light;
@@ -30,11 +30,12 @@ impl Scene {
     pub fn new(w: usize, h: usize) -> Scene {
         let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<Geometry + Send + Sync>);
         let instances = vec![Instance::new(sphere.clone(),
-            Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.0, 0.0), 0.3))
-                     as Box<Material + Send + Sync>), Transform::scale(&Vector::broadcast(1.5))),
+            Arc::new(Box::new(SpecularMetal::new(&Colorf::new(0.155, 0.116, 0.138),
+                                                 &Colorf::new(4.828, 3.122, 2.146)))
+                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-1.0, 0.0, 0.0))),
             Instance::new(sphere.clone(),
             Arc::new(Box::new(Matte::new(&Colorf::new(0.0, 0.0, 1.0), 0.8))
-                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(2.0, -2.0, -1.0)))];
+                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(2.0, 0.0, 0.0)))];
         Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, 0.0, -10.0),
                 &Point::new(0.0, 0.0, 0.0), &Vector::new(0.0, 1.0, 0.0)), 40.0, (w, h))),
