@@ -4,7 +4,8 @@ use std::vec::Vec;
 
 use film::Colorf;
 use geometry::Intersection;
-use bxdf::{BxDF, BSDF, SpecularReflection, fresnel};
+use bxdf::{BxDF, BSDF, SpecularReflection};
+use bxdf::fresnel::{Fresnel, Conductor};
 use material::Material;
 
 /// The Specular Metal material describes specularly reflective metals using their
@@ -19,7 +20,7 @@ impl SpecularMetal {
     /// `k`: absorption coefficient of the metal
     pub fn new(eta: &Colorf, k: &Colorf) -> SpecularMetal {
         SpecularMetal { bxdfs: vec![Box::new(SpecularReflection::new(&Colorf::broadcast(1.0),
-                                         Box::new(fresnel::Conductor::new(eta, k)) as Box<fresnel::Fresnel + Send + Sync>))
+                                         Box::new(Conductor::new(eta, k)) as Box<Fresnel + Send + Sync>))
                                     as Box<BxDF + Send + Sync>] }
     }
 }
