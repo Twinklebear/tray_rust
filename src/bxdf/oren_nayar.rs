@@ -14,7 +14,7 @@ use bxdf::{BxDF, BxDFType};
 #[derive(Copy, Show)]
 pub struct OrenNayar {
     /// Color of the diffuse material
-    reflectance: Colorf,
+    albedo: Colorf,
     /// Precomputed and stored value of the A constant
     a: f32,
     /// Precomputed and stored value of the B constant
@@ -26,9 +26,11 @@ impl OrenNayar {
     /// `roughness` should be the variance of the Gaussian describing the
     /// microfacet distribution
     pub fn new(c: &Colorf, roughness: f32) -> OrenNayar {
-        OrenNayar { reflectance: *c,
-                    a: 1.0 - roughness / (2.0 * (roughness + 0.33)),
-                    b: 0.45 * roughness / (roughness + 0.09),
+        let mut sigma = Float::to_radians(roughness);
+        sigma *= sigma;
+        OrenNayar { albedo: *c,
+                    a: 1.0 - 0.5 * sigma / (sigma + 0.33),
+                    b: 0.45 * sigma / (sigma + 0.09),
         }
     }
 }
@@ -56,7 +58,7 @@ impl BxDF for OrenNayar {
             } else {
                 (sin_theta_i, sin_theta_o / Float::abs(bxdf::cos_theta(w_o)))
             };
-        self.reflectance * f32::consts::FRAC_1_PI * (self.a + self.b * max_cos * sin_alpha * tan_beta)
+        self.albedo * f32::consts::FRAC_1_PI * (self.a + self.b * max_cos * sin_alpha * tan_beta)
     }
 }
 
