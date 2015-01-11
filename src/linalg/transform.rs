@@ -60,7 +60,7 @@ impl Transform {
     }
     /// Construct a transform to rotate `deg` degrees about the x axis
     pub fn rotate_x(deg: f32) -> Transform {
-        let r = linalg::radians(deg);
+        let r = Float::to_radians(deg);
         let s = Float::sin(r);
         let c = Float::cos(r);
         let m = Matrix4::new([1f32, 0f32, 0f32, 0f32,
@@ -71,7 +71,7 @@ impl Transform {
     }
     /// Construct a transform to rotate `deg` degrees about the y axis
     pub fn rotate_y(deg: f32) -> Transform {
-        let r = linalg::radians(deg);
+        let r = Float::to_radians(deg);
         let s = Float::sin(r);
         let c = Float::cos(r);
         let m = Matrix4::new([c, 0f32, s, 0f32,
@@ -82,7 +82,7 @@ impl Transform {
     }
     /// Construct a transform to rotate `deg` degrees about the z axis
     pub fn rotate_z(deg: f32) -> Transform {
-        let r = linalg::radians(deg);
+        let r = Float::to_radians(deg);
         let s = Float::sin(r);
         let c = Float::cos(r);
         let m = Matrix4::new([c, -s, 0f32, 0f32,
@@ -94,7 +94,7 @@ impl Transform {
     /// Construct a transform to rotate about `axis` by `deg` degrees
     pub fn rotate(axis: &Vector, deg: f32) -> Transform {
         let a = axis.normalized();
-        let r = linalg::radians(deg);
+        let r = Float::to_radians(deg);
         let s = Float::sin(r);
         let c = Float::cos(r);
         let mut m = Matrix4::identity();
@@ -134,7 +134,7 @@ impl Transform {
              0f32, 1f32, 0f32, 0f32,
              0f32, 0f32, far / (far - near), -far * near / (far - near),
              0f32, 0f32, 1f32, 0f32]);
-        let inv_tan = 1f32 / Float::tan(linalg::radians(fovy) / 2f32);
+        let inv_tan = 1f32 / Float::tan(Float::to_radians(fovy) / 2f32);
         Transform::scale(&Vector::new(inv_tan, inv_tan, 1f32))
             * Transform::from_mat(&proj_div)
     }

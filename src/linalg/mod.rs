@@ -37,14 +37,6 @@ pub fn lerp<T: Mul<f32, Output = T> + Add<Output = T> + Copy>(t: f32, a: &T, b: 
 pub fn clamp<T: PartialOrd>(x: T, min: T, max: T) -> T {
     if x < min { min } else if x > max { max } else { x }
 }
-/// Convert `d` in degrees to radians
-pub fn radians(d: f32) -> f32 {
-    f32::consts::PI / 180f32 * d
-}
-/// Convert `r` in radians to degrees
-pub fn degrees(r: f32) -> f32 {
-    180f32 / f32::consts::PI * r
-}
 /// Compute the direction specified by `theta` and `phi` in the spherical coordinate system
 pub fn spherical_dir(sin_theta: f32, cos_theta: f32, phi: f32) -> vector::Vector {
     Vector::new(sin_theta * Float::cos(phi), sin_theta * Float::sin(phi),
