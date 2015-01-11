@@ -7,9 +7,11 @@ use bxdf::BSDF;
 
 pub use self::matte::Matte;
 pub use self::specular_metal::SpecularMetal;
+pub use self::glass::Glass;
 
 pub mod matte;
 pub mod specular_metal;
+pub mod glass;
 
 /// Trait implemented by materials. Provides method to get the BSDF describing
 /// the material properties at the intersection
