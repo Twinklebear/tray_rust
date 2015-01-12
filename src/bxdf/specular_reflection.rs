@@ -6,19 +6,20 @@ use collect::enum_set::EnumSet;
 use linalg::Vector;
 use film::Colorf;
 use bxdf;
-use bxdf::{BxDF, BxDFType, fresnel};
+use bxdf::{BxDF, BxDFType};
+use bxdf::fresnel::Fresnel;
 
 /// Specular reflection BRDF that implements a specularly reflective material model
 pub struct SpecularReflection {
     /// Color of the reflective material
     reflectance: Colorf,
     /// Fresnel term for the reflection model
-    fresnel: Box<fresnel::Fresnel + Send + Sync>
+    fresnel: Box<Fresnel + Send + Sync>
 }
 
 impl SpecularReflection {
     /// Create a specularly reflective BRDF with the reflective color and Fresnel term
-    pub fn new(c: &Colorf, fresnel: Box<fresnel::Fresnel + Send + Sync>) -> SpecularReflection {
+    pub fn new(c: &Colorf, fresnel: Box<Fresnel + Send + Sync>) -> SpecularReflection {
         SpecularReflection { reflectance: *c, fresnel: fresnel }
     }
 }
