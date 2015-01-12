@@ -6,7 +6,7 @@ use std::sync::Arc;
 use linalg::{Transform, Point, Vector, Ray};
 use film::{Camera, Colorf};
 use geometry::{Sphere, Plane, Instance};
-use material::{Matte, SpecularMetal, Material};
+use material::{Matte, SpecularMetal, Glass, Material};
 use geometry::{Geometry, Intersection};
 use integrator::{Whitted, Integrator};
 use light;
@@ -41,7 +41,7 @@ impl Scene {
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-3.0, -4.0, 6.0))),
             // The blue matte sphere
             Instance::new(sphere.clone(),
-            Arc::new(Box::new(Matte::new(&Colorf::new(0.0, 0.0, 1.0), 0.8))
+            Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(3.0, -4.0, 3.0))),
             // The back wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 10.0))
