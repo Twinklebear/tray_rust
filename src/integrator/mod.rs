@@ -35,18 +35,36 @@ pub trait Integrator {
         spec_refl.insert(BxDFType::Specular);
         spec_refl.insert(BxDFType::Reflection);
         let (f, w_i, _) = bsdf.sample(&w_o, spec_refl);
+        // TODO: include pdf val
+        let mut refl = Colorf::broadcast(0.0);
         if !f.is_black() && Float::abs(linalg::dot(&w_i, &bsdf.n)) != 0.0 {
             let mut refl_ray = ray.child(&bsdf.p, &w_i);
             refl_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut refl_ray) {
                 let li = self.illumination(scene, &refl_ray, &hit);
-                f * li * Float::abs(linalg::dot(&w_i, &bsdf.n))
-            } else {
-                Colorf::broadcast(0.0)
+                refl = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n))
             }
-        } else {
-            Colorf::broadcast(0.0)
         }
+        refl
+    }
+    /// Compute the color of specularly transmitted light through the intersection
+    fn specular_transmission(&self, scene: &Scene, ray: &Ray, bsdf: &BSDF) -> Colorf {
+        let w_o = -ray.d;
+        let mut spec_trans = EnumSet::new();
+        spec_trans.insert(BxDFType::Specular);
+        spec_trans.insert(BxDFType::Transmission);
+        let (f, w_i, _) = bsdf.sample(&w_o, spec_trans);
+        // TODO: include pdf val
+        let mut transmit = Colorf::broadcast(0.0);
+        if !f.is_black() && Float::abs(linalg::dot(&w_i, &bsdf.n)) != 0.0 {
+            let mut trans_ray = ray.child(&bsdf.p, &w_i);
+            trans_ray.min_t = 0.001;
+            if let Some(hit) = scene.intersect(&mut trans_ray) {
+                let li = self.illumination(scene, &trans_ray, &hit);
+                transmit = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n))
+            }
+        }
+        transmit
     }
 }
 
