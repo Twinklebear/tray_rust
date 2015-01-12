@@ -95,12 +95,12 @@ impl<'a> BSDF<'a> {
         // Really bad: just take the first for now. This will be ok for having very basic
         // materials like our single component diffuse and specular but is wrong for
         // more complicated ones
-        let bsdf = self.matching_at(0, flags);
+        let bxdf = self.matching_at(0, flags);
         let w_o = self.to_shading(wo_world);
-        let (f, w_i) = bsdf.sample(&w_o);
+        let (f, w_i) = bxdf.sample(&w_o);
         // TODO: Will fail for later materials - we assume only one matched. For the diffuse
         // and specular metal materials this is correct but not for more complex ones
-        (f, self.from_shading(&w_i), bsdf.bxdf_type())
+        (f, self.from_shading(&w_i), bxdf.bxdf_type())
     }
     /// Get the `i`th BxDF that matches the flags passed. There should not be fewer than i
     /// BxDFs that match the flags

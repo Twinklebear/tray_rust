@@ -10,7 +10,7 @@ use linalg;
 fn dielectric(cos_i: f32, cos_t: f32, eta_i: f32, eta_t: f32) -> Colorf {
 	let r_par = (eta_t * cos_i - eta_i * cos_t) / (eta_t * cos_i + eta_i * cos_t);
 	let r_perp = (eta_i * cos_i - eta_t * cos_t) / (eta_i * cos_i + eta_t * cos_t);
-	Colorf::broadcast((r_par * r_par + r_perp * r_perp) * 0.5)
+	Colorf::broadcast(0.5 * (r_par * r_par + r_perp * r_perp))
 }
 /// Compute the Fresnel term for a conductor given the incident angle and the material properties
 fn conductor(cos_i: f32, eta: &Colorf, k: &Colorf) -> Colorf {
@@ -51,10 +51,9 @@ impl Fresnel for Dielectric {
         // We need to find out which side of the material we're incident on so
         // we can pass the correct indices of refraction
         let ci = linalg::clamp(cos_i, -1.0, 1.0);
-        let ei = if ci > 0.0 { self.eta_i } else { self.eta_t };
-        let et = if ci > 0.0 { self.eta_t } else { self.eta_i };
+        let (ei, et) =  if ci > 0.0 { (self.eta_i, self.eta_t) } else { (self.eta_t, self.eta_i) };
         let sin_t = ei / et * Float::sqrt(Float::max(0.0, 1.0 - ci * ci));
-        //Handle total internal reflection
+        // Handle total internal reflection
         if sin_t >= 1.0 {
             Colorf::broadcast(1.0)
         } else {
