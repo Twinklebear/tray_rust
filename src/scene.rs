@@ -28,7 +28,7 @@ impl Scene {
     /// Create our (currently) hard-coded scene, passing in the render target
     /// dimensions so we can set the projection matrix for the camera
     pub fn new(w: usize, h: usize) -> Scene {
-        let sphere = Arc::new(Box::new(Sphere::new(2.0)) as Box<Geometry + Send + Sync>);
+        let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<Geometry + Send + Sync>);
         let plane = Arc::new(Box::new(Plane) as Box<Geometry + Send + Sync>);
         let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 1.0)) as Box<Material + Send + Sync>);
         let red_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0)) as Box<Material + Send + Sync>);
@@ -38,33 +38,35 @@ impl Scene {
             Instance::new(sphere.clone(),
             Arc::new(Box::new(SpecularMetal::new(&Colorf::new(0.155, 0.116, 0.138),
                                                  &Colorf::new(4.828, 3.122, 2.146)))
-                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-3.0, -4.0, 6.0))),
-            // The blue matte sphere
+                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
+                    * Transform::scale(&Vector::broadcast(5.0))),
+            // The glass sphere
             Instance::new(sphere.clone(),
-            Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
-                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(3.0, -4.0, 3.0))),
+            Arc::new(Box::new(Glass::new(&Colorf::broadcast(0.0), &Colorf::broadcast(1.0), 1.52))
+                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
+                    * Transform::scale(&Vector::broadcast(5.0))),
             // The back wall
-            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 10.0))
-                          * Transform::scale(&Vector::broadcast(20.0))),
+            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 20.0, 12.0))
+                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0)),
             // The left wall
-            Instance::new(plane.clone(), red_wall.clone(), Transform::translate(&Vector::new(-6.0, 0.0, 0.0))
-                          * Transform::scale(&Vector::broadcast(20.0)) * Transform::rotate_y(90.0)),
+            Instance::new(plane.clone(), red_wall.clone(), Transform::translate(&Vector::new(-15.0, 0.0, 12.0))
+                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(90.0)),
             // The right wall
-            Instance::new(plane.clone(), blue_wall.clone(), Transform::translate(&Vector::new(6.0, 0.0, 0.0))
-                          * Transform::scale(&Vector::broadcast(20.0)) * Transform::rotate_y(-90.0)),
+            Instance::new(plane.clone(), blue_wall.clone(), Transform::translate(&Vector::new(15.0, 0.0, 12.0))
+                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(-90.0)),
             // The top wall
-            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 6.0, 0.0))
-                          * Transform::scale(&Vector::broadcast(20.0)) * Transform::rotate_x(90.0)),
+            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 24.0))
+                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(180.0)),
             // The bottom wall
-            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, -6.0, 0.0))
-                          * Transform::scale(&Vector::broadcast(20.0)) * Transform::rotate_x(-90.0))
+            Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 0.0))
+                          * Transform::scale(&Vector::broadcast(32.0)))
         ];
         Scene {
-            camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, 0.0, -16.0),
-                &Point::new(0.0, 0.0, 0.0), &Vector::new(0.0, 1.0, 0.0)), 40.0, (w, h))),
+            camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
+                &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h))),
             instances: Arc::new(instances),
             integrator: Arc::new(Box::new(Whitted::new(8)) as Box<Integrator + Send + Sync>),
-            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 5.0, 4.5), &Colorf::broadcast(40.0)))
+            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &Colorf::broadcast(300.0)))
                             as Box<Light + Send + Sync>),
             sphere: sphere.clone(),
         }
