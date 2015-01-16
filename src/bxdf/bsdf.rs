@@ -43,7 +43,7 @@ impl<'a> BSDF<'a> {
                dg: &DifferentialGeometry<'a>)
                -> BSDF<'a> {
         let n = dg.n.normalized();
-        let tan = linalg::cross(&n,  &dg.dp_du.normalized()).normalized();
+        let tan = linalg::cross(&n, &dg.dp_du.normalized()).normalized();
         let bitan = linalg::cross(&tan, &n).normalized();
         BSDF { p: dg.p, n: n, ng: dg.ng.normalized(), tan: tan, bitan: bitan, bxdfs: bxdfs, eta: eta }
     }
