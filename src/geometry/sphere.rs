@@ -25,7 +25,7 @@ impl Geometry for Sphere {
         // Compute quadratic coefficients for sphere intersection equation
         let a = ray.d.length_sqr();
         let b = 2.0 * linalg::dot(&ray.d, &ray.o);
-        let c = ray.o.distance_sqr(&Point::broadcast(0f32)) - self.radius * self.radius;
+        let c = linalg::dot(&ray.o, &ray.o) - self.radius * self.radius;
         // Try to solve the quadratic equation to find the candidate hit t values
         // if there are no solutions then we definitely don't hit the sphere
         let t = match linalg::solve_quadratic(a, b, c) {

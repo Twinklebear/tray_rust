@@ -19,6 +19,10 @@ impl Point {
     pub fn broadcast(x: f32) -> Point {
         Point { x: x, y: x, z: x }
     }
+    /// Initialize a point to be all 0 values
+    pub fn origin() -> Point {
+        Point::broadcast(0.0)
+    }
     /// Compute the squared distance between this point and another
     pub fn distance_sqr(&self, a: &Point) -> f32 {
         (*self - *a).length_sqr()

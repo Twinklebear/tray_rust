@@ -30,7 +30,7 @@ impl Integrator for Whitted {
         let w_o = -ray.d;
         // Should we just return this in the tuple as well?
         // TODO: When we add support for multiple lights, iterate over all of them
-        let mut occlusion = OcclusionTester::test_points(&Point::broadcast(0.0), &Point::broadcast(0.0));
+        let mut occlusion = OcclusionTester::test_points(&Point::origin(), &Point::origin());
         let (li, w_i) = scene.light.sample_incident(&hit.dg.p, &mut occlusion);
         let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
         let mut illum = Colorf::broadcast(0.0);
