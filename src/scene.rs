@@ -42,7 +42,7 @@ impl Scene {
                     * Transform::scale(&Vector::broadcast(5.0))),
             // The glass sphere
             Instance::new(sphere.clone(),
-            Arc::new(Box::new(Glass::new(&Colorf::broadcast(0.0), &Colorf::broadcast(1.0), 1.52))
+            Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0))),
             // The back wall
