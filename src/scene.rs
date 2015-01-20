@@ -66,7 +66,7 @@ impl Scene {
                 &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h))),
             instances: Arc::new(instances),
             integrator: Arc::new(Box::new(Whitted::new(8)) as Box<Integrator + Send + Sync>),
-            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &Colorf::broadcast(300.0)))
+            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &Colorf::broadcast(150.0)))
                             as Box<Light + Send + Sync>),
             sphere: sphere.clone(),
         }
