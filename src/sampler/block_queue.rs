@@ -4,7 +4,7 @@
 //! block to work on
 
 use std::vec::Vec;
-use std::sync::atomic::{AtomicUint, Ordering};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use sampler::morton;
 
 /// The queue of blocks to be worked on shared immutably between worker threads.
@@ -14,7 +14,7 @@ pub struct BlockQueue {
     /// Get the dimensions of an individual block
     dimensions: (u32, u32),
     /// Index of the next block to be worked on
-    next: AtomicUint,
+    next: AtomicUsize,
 }
 
 /// Iterator to work through the queue safely
@@ -35,7 +35,7 @@ impl BlockQueue {
         let mut blocks: Vec<(u32, u32)> = (0..num_blocks.0 * num_blocks.1)
             .map(|i| (i % num_blocks.0, i / num_blocks.0)).collect();
         blocks.sort_by(|a, b| morton::morton2(a).cmp(&morton::morton2(b)));
-        BlockQueue { blocks: blocks, dimensions: dim, next: AtomicUint::new(0) }
+        BlockQueue { blocks: blocks, dimensions: dim, next: AtomicUsize::new(0) }
     }
     /// Get the dimensions of an individual block in the queue
     pub fn block_dim(&self) -> (u32, u32) { self.dimensions }
