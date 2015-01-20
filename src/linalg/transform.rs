@@ -272,13 +272,13 @@ fn test_translate() {
 }
 #[test]
 fn test_scale() {
-    let t = Transform::scale(&Vector::new(0.5.0, 0.1.0, 2.0));
+    let t = Transform::scale(&Vector::new(0.5, 0.1, 2.0));
     let p = Point::new(10.0, 20.0, 30.0);
     let v = Vector::new(10.0, 20.0, 30.0);
     let n = Normal::new(1.0, 2.0, 10.0);
-    assert_eq!(t * p, Point::new(p.x * 0.5.0, p.y * 0.1.0, p.z * 2.0));
-    assert_eq!(t * v, v * Vector::new(0.5.0, 0.1.0, 2.0));
-    assert_eq!(t * n, n * Normal::new(2.0, 10.0, 0.5.0));
+    assert_eq!(t * p, Point::new(p.x * 0.5, p.y * 0.1, p.z * 2.0));
+    assert_eq!(t * v, v * Vector::new(0.5, 0.1, 2.0));
+    assert_eq!(t * n, n * Normal::new(2.0, 10.0, 0.5));
 }
 #[test]
 fn test_rotate_x() {
