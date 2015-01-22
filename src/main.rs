@@ -1,5 +1,6 @@
 extern crate tray_rust;
 
+use std::iter;
 use std::vec::Vec;
 use std::sync::{Arc, TaskPool};
 use std::sync::mpsc;
@@ -83,6 +84,12 @@ fn main() {
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
     let d = Duration::span(|| render_parallel(&mut rt));
     println!("Rendering took {}ms", d.num_milliseconds());
-    film::write_ppm("out.ppm", WIDTH, HEIGHT, &rt.get_render()[]);
+    let mut img = rt.get_render();
+    film::write_ppm("out.ppm", WIDTH, HEIGHT, &img);
+    // Switch the image to BGR for BMP output
+    for i in iter::range_step(0us, img.len(), 3) {
+        img.as_mut_slice().swap(i, i + 2);
+    }
+    film::write_bmp("out.bmp", WIDTH as u32, HEIGHT as u32, &img);
 }
 
