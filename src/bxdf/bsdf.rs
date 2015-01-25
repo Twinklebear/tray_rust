@@ -79,7 +79,7 @@ impl<'a> BSDF<'a> {
             flags.remove(&BxDFType::Reflection);
         }
         // Find all matching BxDFs and add their contribution to the material's color
-        self.bxdfs.iter().filter(|ref x| x.matches(flags)).map(|ref x| x.eval(&w_o, &w_i))
+        self.bxdfs.iter().filter_map(|ref x| if x.matches(flags) { Some(x.eval(&w_o, &w_i)) } else { None })
             .fold(Colorf::broadcast(0.0), |x, y| x + y)
     }
     /// Sample a component of the BSDF to get an incident light direction for light
