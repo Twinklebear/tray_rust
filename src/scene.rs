@@ -16,7 +16,6 @@ use light::Light;
 /// shared immutably among the ray tracing threads
 pub struct Scene {
     pub camera: Arc<Camera>,
-    /// TODO: Only one instance for now
     pub instances: Arc<Vec<Instance>>,
     pub integrator: Arc<Box<Integrator + Send + Sync>>,
     /// TODO: Only one light for now
