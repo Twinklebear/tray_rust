@@ -85,13 +85,7 @@ fn main() {
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
     let d = Duration::span(|| render_parallel(&mut rt));
     println!("Rendering took {}ms", d.num_milliseconds());
-    let mut img = rt.get_render();
-    film::write_ppm("out.ppm", WIDTH, HEIGHT, &img);
+    let img = rt.get_render();
     image::save_buffer(&Path::new("out.png"), &img[], WIDTH as u32, HEIGHT as u32, image::RGB(8));
-    // Switch the image to BGR for BMP output
-    for i in iter::range_step(0us, img.len(), 3) {
-        img.as_mut_slice().swap(i, i + 2);
-    }
-    film::write_bmp("out.bmp", WIDTH as u32, HEIGHT as u32, &img);
 }
 
