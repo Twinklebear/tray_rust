@@ -1,7 +1,5 @@
 //! The film module provides color types and a render target that the image
-//! is written too. Functions are also provided for saving PPM images
-//! while I wait to migrate over to the Piston image library due to some
-//! compile issues TODO: https://github.com/PistonDevelopers/image
+//! is written too. Functions are also provided for saving PPM and BMP images
 
 use std::io::{File, Open, Write, BufferedWriter};
 
@@ -28,6 +26,8 @@ pub fn write_ppm(name: &str, w: usize, h: usize, img: &Vec<u8>) {
     }
 }
 /// Write the sequence of bytes as a 24bpp BMP image
+/// Note that the bytes should be in BGR order and have previously
+/// been flipped to the correct y-order for BMP output
 pub fn write_bmp(name: &str, w: u32, h: u32, img: &Vec<u8>) {
     let file = match File::open_mode(&Path::new(name), Open, Write) {
         Ok(f) => f,
