@@ -10,7 +10,7 @@ use linalg::Ray;
 
 /// Transform describes an affine transformation in 3D space
 /// and stores both the transformation and its inverse
-#[derive(Show, Copy, PartialEq)]
+#[derive(Debug, Copy, PartialEq)]
 pub struct Transform {
     pub mat: Matrix4,
     pub inv: Matrix4,

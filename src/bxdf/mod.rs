@@ -2,9 +2,9 @@
 //! material properties. Also provides the BSDF type which composes
 //! various BRDF/BTDFs to describe materials
 
-use collect::enum_set::{EnumSet, CLike};
 use std::mem;
 use std::num::Float;
+use collect::enum_set::{EnumSet, CLike};
 
 use linalg;
 use linalg::Vector;
@@ -26,7 +26,7 @@ pub mod specular_transmission;
 /// Various types of BxDFs that can be selected to specify which
 /// types of surface functions should be evaluated
 #[repr(u32)]
-#[derive(Copy, Show)]
+#[derive(Copy, Debug)]
 pub enum BxDFType {
     Reflection, Transmission, Diffuse, Glossy, Specular,
 }

@@ -6,7 +6,7 @@ use light::{Light, OcclusionTester};
 
 /// A standard point light. Has a position in the scene and light intensity. The point
 /// light does have inverse square fall-off
-#[derive(Copy, Show)]
+#[derive(Copy, Debug)]
 pub struct Point {
     /// The position of the light
     pos: linalg::Point,

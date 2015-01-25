@@ -9,7 +9,7 @@ use linalg;
 /// `a` is typically used to store the weight of a color eg. in the
 /// render target for multisampling we need to track the weight to
 /// normalize in the end and is always initialized to 0
-#[derive(Show, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Colorf {
     pub r: f32,
     pub g: f32,

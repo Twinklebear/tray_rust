@@ -3,7 +3,7 @@ use linalg::Vector;
 
 /// Point is a standard 3 component point but transforms as a point
 /// point when transformations are applied
-#[derive(Show, Copy, PartialEq)]
+#[derive(Debug, Copy, PartialEq)]
 pub struct Point {
     pub x: f32,
     pub y: f32,

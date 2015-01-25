@@ -11,7 +11,7 @@ use bxdf::fresnel;
 use bxdf::fresnel::Fresnel;
 
 /// Specular transmission BTDF that implements a specularly transmissive material model
-#[derive(Copy, Show)]
+#[derive(Copy, Debug)]
 pub struct SpecularTransmission {
     /// Color of the transmissited light
     transmission: Colorf,

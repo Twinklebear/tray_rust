@@ -6,7 +6,7 @@ use linalg::Vector;
 
 /// Normal is a standard 3 component normal but transforms as a normal
 /// normal when transformations are applied
-#[derive(Show, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Copy, PartialEq, PartialOrd)]
 pub struct Normal {
     pub x: f32,
     pub y: f32,

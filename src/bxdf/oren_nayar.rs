@@ -10,8 +10,8 @@ use film::Colorf;
 use bxdf;
 use bxdf::{BxDF, BxDFType};
 
-/// Oren-Nayar BRDf that implements the Oren-Nayar reflectance model
-#[derive(Copy, Show)]
+/// Oren-Nayar BRDF that implements the Oren-Nayar reflectance model
+#[derive(Copy, Debug)]
 pub struct OrenNayar {
     /// Color of the diffuse material
     albedo: Colorf,

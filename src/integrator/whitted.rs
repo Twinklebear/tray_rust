@@ -13,7 +13,7 @@ use light::{Light, OcclusionTester};
 
 /// The Whitted integrator implementing the Whitted recursive ray tracing algorithm
 /// See [An improved illumination model for shaded display](http://dl.acm.org/citation.cfm?id=358882)
-#[derive(Copy, Show)]
+#[derive(Copy, Debug)]
 pub struct Whitted {
     /// The maximum recursion depth for rays
     max_depth: u32,

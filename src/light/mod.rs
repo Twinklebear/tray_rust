@@ -14,7 +14,7 @@ pub mod point;
 
 /// The OcclusionTester provides a simple interface for setting up and executing
 /// occlusion queries in the scene
-#[derive(Copy, Show)]
+#[derive(Copy, Debug)]
 pub struct OcclusionTester {
     /// The ray (or ray segment) that the occlusion test is performed on
     pub ray: linalg::Ray,
