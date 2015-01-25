@@ -13,6 +13,10 @@ doc = false
 
 collect = "0.0.15"
 
+[dependencies.image]
+
+git = "https://github.com/PistonDevelopers/image"
+
 [profile.release]
 
 # How to send extra compiler flag for -march=native equivalent in Rust

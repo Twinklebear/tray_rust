@@ -3,6 +3,7 @@ name = "tray_rust"
 version = "0.0.1"
 dependencies = [
  "collect 0.0.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
 ]
 
 [[package]]
@@ -12,6 +13,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "traverse 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "image"
+version = "0.2.0-alpha.6"
+source = "git+https://github.com/PistonDevelopers/image#c90ffc4f5dfbfbb428a14651020c81081962ef27"
+dependencies = [
+ "num 0.1.10 (git+https://github.com/rust-lang/num)",
+]
+
+[[package]]
+name = "num"
+version = "0.1.10"
+source = "git+https://github.com/rust-lang/num#c05cd530dbc1cc2e56f936524400b368e07ee5cb"
+dependencies = [
+ "rustc-serialize 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "rustc-serialize"
+version = "0.2.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "traverse"
