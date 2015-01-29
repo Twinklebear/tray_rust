@@ -2,13 +2,13 @@
 name = "tray_rust"
 version = "0.0.1"
 dependencies = [
- "collect 0.0.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "collect 0.0.16 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
 ]
 
 [[package]]
 name = "collect"
-version = "0.0.15"
+version = "0.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "traverse 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
