@@ -33,11 +33,11 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
         while sampler.has_samples() {
             // Get samples for a pixel and render them
             sampler.get_samples(&mut sample_pos);
-            for px in sample_pos.iter() {
-                let mut ray = scene.camera.generate_ray(px);
+            for s in sample_pos.iter() {
+                let mut ray = scene.camera.generate_ray(s);
                 if let Some(hit) = scene.intersect(&mut ray) {
                     let c = scene.integrator.illumination(&*scene, &ray, &hit);
-                    samples.push((px.0, px.1, c));
+                    samples.push((s.0, s.1, c));
                 }
             }
             for s in samples.iter() {
