@@ -20,7 +20,6 @@ pub struct Scene {
     pub integrator: Arc<Box<Integrator + Send + Sync>>,
     /// TODO: Only one light for now
     pub light: Arc<Box<Light + Send + Sync>>,
-    sphere: Arc<Box<Geometry + Send + Sync>>,
 }
 
 impl Scene {
@@ -67,7 +66,6 @@ impl Scene {
             integrator: Arc::new(Box::new(Whitted::new(8)) as Box<Integrator + Send + Sync>),
             light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &Colorf::broadcast(150.0)))
                             as Box<Light + Send + Sync>),
-            sphere: sphere.clone(),
         }
     }
     /// Test the ray for intersections against the objects in the scene.
