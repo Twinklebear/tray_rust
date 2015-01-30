@@ -1,11 +1,9 @@
 //! Defines a standard plane piece of geometry
 
 use std::num::Float;
-use std::f32;
 
 use geometry::{Geometry, DifferentialGeometry};
-use linalg;
-use linalg::{Normal, Point, Vector, Ray};
+use linalg::{Normal, Vector, Ray};
 
 
 /// A plane centered at the origin spanning [-1, -1] to [1, 1] with a normal along [0, 0, 1]

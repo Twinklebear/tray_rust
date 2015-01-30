@@ -5,7 +5,7 @@ use std::f32;
 
 use geometry::{Geometry, DifferentialGeometry};
 use linalg;
-use linalg::{Normal, Point, Vector, Ray};
+use linalg::{Normal, Vector, Ray};
 
 /// A sphere with user-specified radius
 #[derive(Copy)]
