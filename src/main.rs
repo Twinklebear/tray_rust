@@ -1,7 +1,6 @@
 extern crate image;
 extern crate tray_rust;
 
-use std::iter;
 use std::vec::Vec;
 use std::sync::{Arc, TaskPool};
 use std::sync::mpsc;
