@@ -16,6 +16,9 @@ pub trait Sampler {
     /// Fill the vector with 2D pixel coordinate samples for a single pixel
     /// in the region being sampled. If the sampler doesn't have any more samples
     /// for the region the vector will be empty
+    /// Samplers that use randomness to compute samples will use the thread rng
+    /// TODO: Is getting the thread rng each time a performance issue? I can't
+    /// seem to pass an Rng trait through as &mut since it's not object safe?
     fn get_samples(&mut self, samples: &mut Vec<(f32, f32)>);
     /// Get the max number of samples this sampler will take per pixel
     fn max_spp(&self) -> usize;
