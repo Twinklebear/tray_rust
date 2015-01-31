@@ -10,8 +10,7 @@ pub struct Uniform {
 }
 
 impl Uniform {
-    /// Create a uniform sampler to sample the image in `dim.0 * dim.1`
-    /// sized blocks, selected in Morton order via `select_block`
+    /// Create a uniform sampler to sample the image in `dim.0 * dim.1` sized blocks
     pub fn new(dim: (u32, u32)) -> Uniform {
         Uniform { region: Region::new((0, 0), dim) }
     }
