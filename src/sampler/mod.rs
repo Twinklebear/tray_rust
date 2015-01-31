@@ -26,6 +26,38 @@ pub trait Sampler {
     /// Move to a new block of the image to sample with this sampler by specifying
     /// the starting `(x, y)` block index for the new block. The block starting
     /// position will be calculated as `dimensions * start`
-    fn select_block(&mut self, start: &(u32, u32));
+    fn select_block(&mut self, start: (u32, u32));
+}
+
+/// Defines a region of the image being sampled in pixel coordinates
+#[derive(Copy, Debug)]
+pub struct Region {
+    /// Current coordinates of the pixel to sample (x, y)
+    pub current: (u32, u32),
+    /// Coordinates of the start of region being sampled (x, y)
+    pub start: (u32, u32),
+    /// Coordinates of the end of the region being sampled (x, y)
+    pub end: (u32, u32),
+    /// Dimensions of the region being sampled
+    pub dim: (u32, u32),
+}
+
+impl Region {
+    /// Create a new region starting at `start` with dimension `dim`
+    pub fn new(start: (u32, u32), dim: (u32, u32)) -> Region {
+        Region { current: start, start: start,
+                 end: (start.0 + dim.0, start.1 + dim.1), dim: dim }
+    }
+    /// Select a new region starting at region indices `start` with the same dimensions
+    /// eg. with blocks of width 8 the 2nd region along x is at 16 so to get
+    /// this block you'd set start.0 = 2
+    pub fn select_region(&mut self, start: (u32, u32)) {
+        self.start.0 = start.0 * self.dim.0;
+        self.start.1 = start.1 * self.dim.1;
+        self.end.0 = self.start.0 + self.dim.0;
+        self.end.1 = self.start.1 + self.dim.1;
+        self.current.0 = self.start.0;
+        self.current.1 = self.start.1;
+    }
 }
 

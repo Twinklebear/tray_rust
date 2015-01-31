@@ -28,7 +28,7 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
     // Grab a block from the queue and start working on it, submitting samples
     // to the render target thread after each pixel
     for b in queue.iter() {
-        sampler.select_block(&b);
+        sampler.select_block(b);
         while sampler.has_samples() {
             // Get samples for a pixel and render them
             sampler.get_samples(&mut sample_pos);
