@@ -4,6 +4,9 @@
 
 use std::vec::Vec;
 use std::iter;
+use std::cmp;
+use std::num::Float;
+
 use linalg;
 use film::Colorf;
 
@@ -19,14 +22,21 @@ impl RenderTarget {
     /// Create a render target with `width * height` pixels
     pub fn new(width: usize, height: usize) -> RenderTarget {
         RenderTarget { width: width, height: height,
-            pixels: iter::repeat(Colorf::broadcast(0f32)).take(width * height).collect(),
+            pixels: iter::repeat(Colorf::broadcast(0.0)).take(width * height).collect(),
         }
     }
     /// Write a color value to the image at `(x, y)`
     pub fn write(&mut self, x: f32, y: f32, c: &Colorf) {
         // Compute the discrete pixel coordinates which the sample hits, no filtering for now
-        let ix = linalg::clamp(x - 0.5, 0f32, (self.width - 1) as f32) as usize;
-        let iy = linalg::clamp(y - 0.5, 0f32, (self.height - 1) as f32) as usize;
+        let img_x = x - 0.5;
+        let img_y = y - 0.5;
+        // TODO: We're just pretending to be a single pixel box filter for now
+        let x_range = (Float::max(Float::ceil(img_x - 0.5), 0.0) as usize,
+                       Float::min(Float::floor(img_x + 0.5), self.width as f32 - 1.0) as usize);
+        let y_range = (Float::max(Float::ceil(img_y - 0.5), 0.0) as usize,
+                       Float::min(Float::floor(img_y + 0.5), self.height as f32 - 1.0) as usize);
+        let ix = x_range.0;
+        let iy = y_range.0;
         self.pixels[iy * self.width + ix] = *c;
         // Set the filter weight, currently just a box filter with single pixel extent
         self.pixels[iy * self.width + ix].a += 1.0;
