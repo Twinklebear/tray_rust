@@ -74,11 +74,7 @@ impl Scene {
         // We can always return the next hit found since the ray's max_t value is updated
         // after an intersection is found. Thus if we find another hit we know that one
         // occured before any previous ones. TODO: Replace with a BVH
-        self.instances.iter().fold(None, |p, ref i|
-                                    match i.intersect(ray) {
-                                        Some(h) => Some(h),
-                                        None => p,
-                                    })
+        self.instances.iter().fold(None, |p, ref i| i.intersect(ray).or(p))
     }
 }
 
