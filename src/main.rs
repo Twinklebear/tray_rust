@@ -1,7 +1,6 @@
 extern crate image;
 extern crate tray_rust;
 
-use std::rand;
 use std::vec::Vec;
 use std::sync::{Arc, TaskPool};
 use std::sync::mpsc;
@@ -23,7 +22,7 @@ static HEIGHT: usize = 600;
 /// values recieved to the render target
 fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>,
                scene: Arc<scene::Scene>) {
-    let mut sampler = sampler::Uniform::new(queue.block_dim());
+    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 32);
     let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     // Grab a block from the queue and start working on it, submitting samples
