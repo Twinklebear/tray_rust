@@ -37,7 +37,7 @@ impl RenderTarget {
                        Float::min(Float::floor(img_y + 0.5), self.height as f32 - 1.0) as usize);
         let ix = x_range.0;
         let iy = y_range.0;
-        self.pixels[iy * self.width + ix] = *c;
+        self.pixels[iy * self.width + ix] = self.pixels[iy * self.width + ix] + *c;
         // Set the filter weight, currently just a box filter with single pixel extent
         self.pixels[iy * self.width + ix].a += 1.0;
     }
