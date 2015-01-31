@@ -47,10 +47,7 @@ impl Sampler for LowDiscrepancy {
                         self.scramble_range.ind_sample(&mut rng));
         sample_2d(&mut samples[], scramble);
         rng.shuffle(&mut samples[]);
-        let frange = Range::new(0f32, 1f32);
         for s in samples.iter_mut() {
-            s.0 = frange.ind_sample(&mut rng);
-            s.1 = frange.ind_sample(&mut rng);
             s.0 += self.region.current.0 as f32;
             s.1 += self.region.current.1 as f32;
         }
