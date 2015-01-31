@@ -108,7 +108,7 @@ impl<'a> BSDF<'a> {
         let mut it = self.bxdfs.iter().filter(|ref x| x.matches(flags)).skip(i);
         match it.next() {
             Some(b) => b,
-            None => panic!("Out of bounds index for BxDF type"),// {:?}", flags)
+            None => panic!("Out of bounds index for BxDF type {:?}", flags)
         }
     }
 }
