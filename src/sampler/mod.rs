@@ -2,6 +2,8 @@
 //! to provide stratified, low-discrepancy, adaptive sampling methods and so
 //! on through a simple trait interface
 
+use std::rand::Rng;
+
 pub use self::uniform::Uniform;
 pub use self::ld::LowDiscrepancy;
 pub use self::block_queue::BlockQueue;
@@ -19,9 +21,7 @@ pub trait Sampler {
     /// in the region being sampled. If the sampler doesn't have any more samples
     /// for the region the vector will be empty
     /// Samplers that use randomness to compute samples will use the thread rng
-    /// TODO: Is getting the thread rng each time a performance issue? I can't
-    /// seem to pass an Rng trait through as &mut since it's not object safe?
-    fn get_samples(&mut self, samples: &mut Vec<(f32, f32)>);
+    fn get_samples<R: Rng>(&mut self, samples: &mut Vec<(f32, f32)>, rng: &mut R);
     /// Get the max number of samples this sampler will take per pixel
     fn max_spp(&self) -> usize;
     /// Check if the sampler has more samples for the region being sampled

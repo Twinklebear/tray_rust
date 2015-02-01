@@ -34,7 +34,7 @@ impl LowDiscrepancy {
 }
 
 impl Sampler for LowDiscrepancy {
-    fn get_samples(&mut self, samples: &mut Vec<(f32, f32)>) {
+    fn get_samples<R: Rng>(&mut self, samples: &mut Vec<(f32, f32)>, rng: &mut R) {
         samples.clear();
         if !self.has_samples() {
             return;
@@ -42,9 +42,8 @@ impl Sampler for LowDiscrepancy {
         if samples.len() < self.spp {
             samples.resize(self.spp, (0.0, 0.0));
         }
-        let mut rng = rand::thread_rng();
-        let scramble = (self.scramble_range.ind_sample(&mut rng),
-                        self.scramble_range.ind_sample(&mut rng));
+        let scramble = (self.scramble_range.ind_sample(rng),
+                        self.scramble_range.ind_sample(rng));
         sample_2d(&mut samples[], scramble);
         rng.shuffle(&mut samples[]);
         for s in samples.iter_mut() {

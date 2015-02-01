@@ -6,6 +6,7 @@ use std::sync::{Arc, TaskPool};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use std::time::duration::Duration;
+use std::rand::StdRng;
 
 use tray_rust::film;
 use tray_rust::geometry::Geometry;
@@ -25,13 +26,17 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
     let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 32);
     let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
+    let mut rng = match StdRng::new() {
+        Ok(r) => r,
+        Err(e) => { println!("Failed to get StdRng, {}", e); return }
+    };
     // Grab a block from the queue and start working on it, submitting samples
     // to the render target thread after each pixel
     for b in queue.iter() {
         sampler.select_block(b);
         while sampler.has_samples() {
             // Get samples for a pixel and render them
-            sampler.get_samples(&mut sample_pos);
+            sampler.get_samples(&mut sample_pos, &mut rng);
             for s in sample_pos.iter() {
                 let mut ray = scene.camera.generate_ray(s);
                 if let Some(hit) = scene.intersect(&mut ray) {

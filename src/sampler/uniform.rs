@@ -1,6 +1,8 @@
 //! Provides the simplest and worst sampling method, the Uniform sampler takes
 //! a single sample at the center of each pixel in its region
 
+use std::rand::Rng;
+
 use sampler::{Sampler, Region};
 
 /// Uniform sampler that takes one sample per pixel at the center of each pixel
@@ -17,7 +19,7 @@ impl Uniform {
 }
 
 impl Sampler for Uniform {
-    fn get_samples(&mut self, samples: &mut Vec<(f32, f32)>) {
+    fn get_samples<R: Rng>(&mut self, samples: &mut Vec<(f32, f32)>, rng: &mut R) {
         samples.clear();
         if !self.has_samples() {
             return;
