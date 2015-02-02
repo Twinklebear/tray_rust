@@ -15,10 +15,12 @@ use bxdf::{BSDF, BxDFType};
 pub use self::hit_marker::HitMarker;
 pub use self::eyelight::EyeLight;
 pub use self::whitted::Whitted;
+pub use self::path::Path;
 
 pub mod hit_marker;
 pub mod eyelight;
 pub mod whitted;
+pub mod path;
 
 /// Trait implemented by the various integration methods that can be used to render
 /// the scene.

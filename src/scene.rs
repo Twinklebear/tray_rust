@@ -8,7 +8,8 @@ use film::{Camera, Colorf};
 use geometry::{Sphere, Plane, Instance};
 use material::{Matte, SpecularMetal, Glass, Material};
 use geometry::{Geometry, Intersection};
-use integrator::{Whitted, Integrator};
+use integrator;
+use integrator::Integrator;
 use light;
 use light::Light;
 
@@ -63,7 +64,7 @@ impl Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
                 &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h))),
             instances: Arc::new(instances),
-            integrator: Arc::new(Box::new(Whitted::new(8)) as Box<Integrator + Send + Sync>),
+            integrator: Arc::new(Box::new(integrator::Path::new(3, 8)) as Box<Integrator + Send + Sync>),
             light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &Colorf::broadcast(200.0)))
                             as Box<Light + Send + Sync>),
         }
