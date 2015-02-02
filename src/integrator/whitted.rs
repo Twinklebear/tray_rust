@@ -12,7 +12,7 @@ use bxdf::BxDFType;
 use light::{Light, OcclusionTester};
 
 /// The Whitted integrator implementing the Whitted recursive ray tracing algorithm
-/// See [An improved illumination model for shaded display](http://dl.acm.org/citation.cfm?id=358882)
+/// See [Whitted, An improved illumination model for shaded display](http://dl.acm.org/citation.cfm?id=358882)
 #[derive(Copy, Debug)]
 pub struct Whitted {
     /// The maximum recursion depth for rays
@@ -39,7 +39,6 @@ impl Integrator for Whitted {
             illum = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n));
         }
         if ray.depth < self.max_depth {
-            // TODO: How to overload +=?
             illum = illum + self.specular_reflection(scene, ray, &bsdf);
             illum = illum + self.specular_transmission(scene, ray, &bsdf);
         }
