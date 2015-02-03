@@ -101,8 +101,18 @@ impl<'a> BSDF<'a> {
         let bxdf = self.matching_at(comp, flags);
         let w_o = self.to_shading(wo_world);
         let (f, w_i, pdf) = bxdf.sample(&w_o, &samples[1..]);
-        // TODO sample other mats if non-specular
-        (f, self.from_shading(&w_i), pdf, bxdf.bxdf_type())
+        let wi_world = self.from_shading(&w_i);
+
+        if n_matching > 1 {
+            if !bxdf.bxdf_type().contains(&BxDFType::Specular) {
+                (self.eval(wo_world, &wi_world, flags), wi_world,
+                self.pdf(wo_world, &wi_world, flags), bxdf.bxdf_type())
+            } else {
+                (f, wi_world, pdf / n_matching as f32, bxdf.bxdf_type())
+            }
+        } else {
+            (f, wi_world, pdf, bxdf.bxdf_type())
+        }
     }
     /// Compute the pdf for sampling the pair of incident and outgoing light directions for
     /// the BxDFs matching the flags set
