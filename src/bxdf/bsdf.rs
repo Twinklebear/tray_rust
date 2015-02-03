@@ -104,6 +104,20 @@ impl<'a> BSDF<'a> {
         // TODO sample other mats if non-specular
         (f, self.from_shading(&w_i), pdf, bxdf.bxdf_type())
     }
+    /// Compute the pdf for sampling the pair of incident and outgoing light directions for
+    /// the BxDFs matching the flags set
+    pub fn pdf(&self, wo_world: &Vector, wi_world: &Vector, flags: EnumSet<BxDFType>) -> f32 {
+        let w_o = self.to_shading(wo_world);
+        let w_i = self.to_shading(wi_world);
+        let (pdf_val, n_comps) = self.bxdfs.iter()
+            .filter_map(|ref x| if x.matches(flags) { Some(x.pdf(&w_o, &w_i)) } else { None })
+            .fold((0.0, 0), |(p, n), y| (p + y, n + 1));
+        if n_comps == 0 {
+            0.0
+        } else {
+            pdf_val / n_comps as f32
+        }
+    }
     /// Get the `i`th BxDF that matches the flags passed. There should not be fewer than i
     /// BxDFs that match the flags
     fn matching_at(&self, i: usize, flags: EnumSet<BxDFType>) -> &Box<BxDF + Send + Sync> {

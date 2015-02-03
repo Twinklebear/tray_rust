@@ -2,6 +2,7 @@
 //! explicit light sampling
 
 use std::num::Float;
+use std::rand::{Rng, StdRng};
 
 use scene::Scene;
 use linalg;
@@ -28,23 +29,19 @@ impl Path {
 }
 
 impl Integrator for Path {
-    // TODO Stop pretending to be whitted! :)
-    fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection) -> Colorf {
+    fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection, rng: &mut StdRng) -> Colorf {
         let bsdf = hit.instance.material.bsdf(hit);
         let w_o = -ray.d;
-        // Should we just return this in the tuple as well?
-        // TODO: When we add support for multiple lights, iterate over all of them
-        let mut occlusion = OcclusionTester::test_points(&Point::origin(), &Point::origin());
-        let (li, w_i) = scene.light.sample_incident(&hit.dg.p, &mut occlusion);
+        let junk_samples = [0.0; 3];
+        let (li, w_i, pdf, occlusion) = scene.light.sample_incident(&hit.dg.p, &junk_samples[]);
         let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
         let mut illum = Colorf::broadcast(0.0);
         if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {
-            // TODO: Divide by pdf once we add that to lights
-            illum = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n));
+            illum = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
         }
         if ray.depth < self.max_depth {
-            illum = illum + self.specular_reflection(scene, ray, &bsdf);
-            illum = illum + self.specular_transmission(scene, ray, &bsdf);
+            illum = illum + self.specular_reflection(scene, ray, &bsdf, rng);
+            illum = illum + self.specular_transmission(scene, ray, &bsdf, rng);
         }
         illum
     }
