@@ -25,11 +25,11 @@ pub fn concentric_sample_disk(u: &[f32]) -> [f32; 2] {
 	let mut s = [2.0 * u[0] - 1.0, 2.0 * u[1] - 1.0];
 	let mut radius = 0f32;
     let mut theta = 0f32;
-	if (s[0] == 0.0 && s[1] == 0.0){
+	if s[0] == 0.0 && s[1] == 0.0 {
 		return s;
 	}
-	if (s[0] >= -s[1]){
-		if (s[0] > s[1]){
+	if s[0] >= -s[1] {
+		if s[0] > s[1] {
 			radius = s[0];
 
             if s[1] > 0.0 {
@@ -44,13 +44,13 @@ pub fn concentric_sample_disk(u: &[f32]) -> [f32; 2] {
 		}
 	}
 	else {
-		if (s[0] <= s[1]){
+		if s[0] <= s[1] {
 			radius = -s[0];
 			theta = 4.0 + s[1] / s[0];
 		}
 		else {
-			radius = -s[1];
-			if (s[1] != 0.0){
+            radius = -s[1];
+			if s[1] != 0.0 {
 				theta = 6.0 - s[0] / s[1];
 			}
 			else {
