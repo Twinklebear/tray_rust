@@ -26,6 +26,8 @@ impl Colorf {
     pub fn broadcast(r: f32) -> Colorf {
         Colorf { r: r, g: r, b: r, a: r }
     }
+    /// Create a black color
+    pub fn black() -> Colorf { Colorf::broadcast(0.0) }
     /// Clamp the color values between [0, 1]
     pub fn clamp(&self) -> Colorf {
         Colorf { r: linalg::clamp(self.r, 0.0, 1.0),
