@@ -2,19 +2,20 @@
 //! a single sample at the center of each pixel in its region
 
 use std::rand::Rng;
+use std::rand::distributions::{Range, IndependentSample};
 
 use sampler::{Sampler, Region};
 
 /// Uniform sampler that takes one sample per pixel at the center of each pixel
-#[derive(Copy, Debug)]
 pub struct Uniform {
     region: Region,
+    float_range: Range<f32>,
 }
 
 impl Uniform {
     /// Create a uniform sampler to sample the image in `dim.0 * dim.1` sized blocks
     pub fn new(dim: (u32, u32)) -> Uniform {
-        Uniform { region: Region::new((0, 0), dim) }
+        Uniform { region: Region::new((0, 0), dim), float_range: Range::new(0.0, 1.0) }
     }
 }
 
@@ -29,6 +30,17 @@ impl Sampler for Uniform {
         if self.region.current.0 == self.region.end.0 {
             self.region.current.0 = self.region.start.0;
             self.region.current.1 += 1;
+        }
+    }
+    fn get_samples_2d<R: Rng>(&mut self, samples: &mut [(f32, f32)], rng: &mut R){
+        for s in samples.iter_mut() {
+            s.0 = self.float_range.ind_sample(rng);
+            s.1 = self.float_range.ind_sample(rng);
+        }
+    }
+    fn get_samples_1d<R: Rng>(&mut self, samples: &mut [f32], rng: &mut R){
+        for s in samples.iter_mut() {
+            *s = self.float_range.ind_sample(rng);
         }
     }
     fn max_spp(&self) -> usize { 1 }

@@ -22,6 +22,10 @@ pub trait Sampler {
     /// for the region the vector will be empty
     /// Samplers that use randomness to compute samples will use the thread rng
     fn get_samples<R: Rng>(&mut self, samples: &mut Vec<(f32, f32)>, rng: &mut R);
+    /// Fill the slice with 2D samples from the sampler
+    fn get_samples_2d<R: Rng>(&mut self, samples: &mut [(f32, f32)], rng: &mut R);
+    /// Fill the slice with 1D samples from the sampler
+    fn get_samples_1d<R: Rng>(&mut self, samples: &mut [f32], rng: &mut R);
     /// Get the max number of samples this sampler will take per pixel
     fn max_spp(&self) -> usize;
     /// Check if the sampler has more samples for the region being sampled

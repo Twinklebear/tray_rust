@@ -29,7 +29,7 @@ impl LowDiscrepancy {
             println!("rounding up to {}", spp);
         }
         LowDiscrepancy { region: Region::new((0, 0), dim), spp: spp,
-                         scramble_range: Range::new(0u32, u32::MAX) }
+                         scramble_range: Range::new(0, u32::MAX) }
     }
 }
 
@@ -42,10 +42,7 @@ impl Sampler for LowDiscrepancy {
         if samples.len() < self.spp {
             samples.resize(self.spp, (0.0, 0.0));
         }
-        let scramble = (self.scramble_range.ind_sample(rng),
-                        self.scramble_range.ind_sample(rng));
-        sample_2d(&mut samples[], scramble);
-        rng.shuffle(&mut samples[]);
+        self.get_samples_2d(&mut samples[], rng);
         for s in samples.iter_mut() {
             s.0 += self.region.current.0 as f32;
             s.1 += self.region.current.1 as f32;
@@ -56,6 +53,17 @@ impl Sampler for LowDiscrepancy {
             self.region.current.0 = self.region.start.0;
             self.region.current.1 += 1;
         }
+    }
+    fn get_samples_2d<R: Rng>(&mut self, samples: &mut [(f32, f32)], rng: &mut R){
+        let scramble = (self.scramble_range.ind_sample(rng),
+                        self.scramble_range.ind_sample(rng));
+        sample_2d(samples, scramble);
+        rng.shuffle(samples);
+    }
+    fn get_samples_1d<R: Rng>(&mut self, samples: &mut [f32], rng: &mut R){
+        let scramble = self.scramble_range.ind_sample(rng);
+        sample_1d(samples, scramble);
+        rng.shuffle(samples);
     }
     fn max_spp(&self) -> usize { self.spp }
     fn has_samples(&self) -> bool { self.region.current.1 != self.region.end.1 }
@@ -70,6 +78,13 @@ impl Sampler for LowDiscrepancy {
 pub fn sample_2d(samples: &mut [(f32, f32)], scramble: (u32, u32)) {
     for s in samples.iter_mut().enumerate() {
         *s.1 = sample_02(s.0 as u32, scramble);
+    }
+}
+/// Generate a 1D pattern of low discrepancy samples to fill the slice
+/// sample values will be normalized between [0, 1]
+pub fn sample_1d(samples: &mut [f32], scramble: u32) {
+    for s in samples.iter_mut().enumerate() {
+        *s.1 = van_der_corput(s.0 as u32, scramble);
     }
 }
 /// Generate a sample from a scrambled (0, 2) sequence
