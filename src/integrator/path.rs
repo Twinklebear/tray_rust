@@ -94,7 +94,7 @@ impl Integrator for Path {
                 break;
             }
 
-            ray = ray.child(&bsdf.p, &w_i);
+            ray = ray.child(&bsdf.p, &w_i.normalized());
             ray.min_t = 0.001;
             // Find the next vertex on the path
             match scene.intersect(&mut ray) {
