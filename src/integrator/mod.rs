@@ -13,6 +13,7 @@ use geometry::Intersection;
 use film::Colorf;
 use bxdf::{BSDF, BxDFType};
 use light::{Light, OcclusionTester};
+use sampler::Sampler;
 use mc;
 
 pub use self::whitted::Whitted;
@@ -28,9 +29,11 @@ pub trait Integrator {
     /// TODO: Later we'll need to pass `&mut Sampler` through here as well
     /// for integrators that need randomness along with a memory pool once
     /// we implement that as well.
-    fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection, rng: &mut StdRng) -> Colorf;
+    fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection, sampler: &mut Sampler,
+                    rng: &mut StdRng) -> Colorf;
     /// Compute the color of specularly reflecting light off the intersection
-    fn specular_reflection(&self, scene: &Scene, ray: &Ray, bsdf: &BSDF, rng: &mut StdRng) -> Colorf {
+    fn specular_reflection(&self, scene: &Scene, ray: &Ray, bsdf: &BSDF, sampler: &mut Sampler,
+                           rng: &mut StdRng) -> Colorf {
         let w_o = -ray.d;
         let mut spec_refl = EnumSet::new();
         spec_refl.insert(BxDFType::Specular);
@@ -43,14 +46,15 @@ pub trait Integrator {
             let mut refl_ray = ray.child(&bsdf.p, &w_i);
             refl_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut refl_ray) {
-                let li = self.illumination(scene, &refl_ray, &hit, rng);
+                let li = self.illumination(scene, &refl_ray, &hit, sampler, rng);
                 refl = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n))
             }
         }
         refl
     }
     /// Compute the color of specularly transmitted light through the intersection
-    fn specular_transmission(&self, scene: &Scene, ray: &Ray, bsdf: &BSDF, rng: &mut StdRng) -> Colorf {
+    fn specular_transmission(&self, scene: &Scene, ray: &Ray, bsdf: &BSDF, sampler: &mut Sampler,
+                             rng: &mut StdRng) -> Colorf {
         let w_o = -ray.d;
         let mut spec_trans = EnumSet::new();
         spec_trans.insert(BxDFType::Specular);
@@ -64,7 +68,7 @@ pub trait Integrator {
             let mut trans_ray = ray.child(&bsdf.p, &w_i);
             trans_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut trans_ray) {
-                let li = self.illumination(scene, &trans_ray, &hit, rng);
+                let li = self.illumination(scene, &trans_ray, &hit, sampler, rng);
                 transmit = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n))
             }
         }
