@@ -31,11 +31,10 @@ pub fn concentric_sample_disk(u: &[f32]) -> [f32; 2] {
 	if s[0] >= -s[1] {
 		if s[0] > s[1] {
 			radius = s[0];
-
             if s[1] > 0.0 {
                 theta = s[1] / s[0];
             } else {
-                8.0 + s[1] / s[0];
+                theta = 8.0 + s[1] / s[0];
             }
 		}
 		else {
@@ -58,7 +57,7 @@ pub fn concentric_sample_disk(u: &[f32]) -> [f32; 2] {
 			}
 		}
 	}
-	theta *= f32::consts::PI / 4.0;
+	theta *= f32::consts::FRAC_PI_4;
     s[0] = radius * Float::cos(theta);
     s[1] = radius * Float::sin(theta);
     s
