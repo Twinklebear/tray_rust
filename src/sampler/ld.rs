@@ -3,7 +3,7 @@
 
 use std::num::UnsignedInt;
 use std::rand;
-use std::rand::Rng;
+use std::rand::{Rng, StdRng};
 use std::rand::distributions::{IndependentSample, Range};
 use std::u32;
 use std::f32;
@@ -34,7 +34,7 @@ impl LowDiscrepancy {
 }
 
 impl Sampler for LowDiscrepancy {
-    fn get_samples<R: Rng>(&mut self, samples: &mut Vec<(f32, f32)>, rng: &mut R) {
+    fn get_samples(&mut self, samples: &mut Vec<(f32, f32)>, rng: &mut StdRng) {
         samples.clear();
         if !self.has_samples() {
             return;
@@ -54,13 +54,13 @@ impl Sampler for LowDiscrepancy {
             self.region.current.1 += 1;
         }
     }
-    fn get_samples_2d<R: Rng>(&mut self, samples: &mut [(f32, f32)], rng: &mut R){
+    fn get_samples_2d(&mut self, samples: &mut [(f32, f32)], rng: &mut StdRng) {
         let scramble = (self.scramble_range.ind_sample(rng),
                         self.scramble_range.ind_sample(rng));
         sample_2d(samples, scramble);
         rng.shuffle(samples);
     }
-    fn get_samples_1d<R: Rng>(&mut self, samples: &mut [f32], rng: &mut R){
+    fn get_samples_1d(&mut self, samples: &mut [f32], rng: &mut StdRng) {
         let scramble = self.scramble_range.ind_sample(rng);
         sample_1d(samples, scramble);
         rng.shuffle(samples);
