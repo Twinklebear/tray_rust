@@ -11,6 +11,7 @@ use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
 use light::{Light, OcclusionTester};
+use sampler::Sampler;
 
 /// The Whitted integrator implementing the Whitted recursive ray tracing algorithm
 /// See [Whitted, An improved illumination model for shaded display](http://dl.acm.org/citation.cfm?id=358882)
@@ -26,7 +27,8 @@ impl Whitted {
 }
 
 impl Integrator for Whitted {
-    fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection, rng: &mut StdRng) -> Colorf {
+    fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection, sampler: &mut Sampler,
+                    rng: &mut StdRng) -> Colorf {
         let bsdf = hit.instance.material.bsdf(hit);
         let w_o = -ray.d;
         let junk_samples = [0.0; 3];
@@ -38,8 +40,8 @@ impl Integrator for Whitted {
             illum = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
         }
         if ray.depth < self.max_depth {
-            illum = illum + self.specular_reflection(scene, ray, &bsdf, rng);
-            illum = illum + self.specular_transmission(scene, ray, &bsdf, rng);
+            illum = illum + self.specular_reflection(scene, ray, &bsdf, sampler, rng);
+            illum = illum + self.specular_transmission(scene, ray, &bsdf, sampler, rng);
         }
         illum
     }

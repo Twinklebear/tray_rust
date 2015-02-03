@@ -23,7 +23,7 @@ static HEIGHT: usize = 600;
 /// values recieved to the render target
 fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>,
                scene: Arc<scene::Scene>) {
-    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 32);
+    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 16);
     let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut rng = match StdRng::new() {
@@ -40,7 +40,7 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
             for s in sample_pos.iter() {
                 let mut ray = scene.camera.generate_ray(s);
                 if let Some(hit) = scene.intersect(&mut ray) {
-                    let c = scene.integrator.illumination(&*scene, &ray, &hit, &mut rng);
+                    let c = scene.integrator.illumination(&*scene, &ray, &hit, &mut sampler, &mut rng);
                     samples.push((s.0, s.1, c));
                 }
             }
