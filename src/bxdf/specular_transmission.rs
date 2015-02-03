@@ -38,7 +38,7 @@ impl BxDF for SpecularTransmission {
     fn eval(&self, _: &Vector, _: &Vector) -> Colorf { Colorf::broadcast(0.0) }
     /// Sampling the specular BTDF just returns the specular transmission direction
     /// for the light leaving along `w_o`
-    fn sample(&self, w_o_neg: &Vector) -> (Colorf, Vector) {
+    fn sample(&self, w_o_neg: &Vector, _: &[f32]) -> (Colorf, Vector, f32) {
         // The w_o passed to us is pointing away from the surface, we want it pointing towards
         // the hit point
         let w_o = -*w_o_neg;
@@ -56,7 +56,7 @@ impl BxDF for SpecularTransmission {
         let sin_t_sqr = eta * eta * sin_i_sqr;
         // Total internal reflection, nothing is transmitted
         if sin_t_sqr >= 1.0 {
-            return (Colorf::broadcast(0.0), Vector::broadcast(0.0));
+            return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0);
         }
         let cos_t =
             if entering {
@@ -67,7 +67,7 @@ impl BxDF for SpecularTransmission {
         let w_i = Vector::new(eta * w_o.x, eta * w_o.y, cos_t);
         let f = self.fresnel.fresnel(bxdf::cos_theta(&w_o));
         let c = (Colorf::broadcast(1.0) - f) * self.transmission / Float::abs(bxdf::cos_theta(&w_i));
-        (c, w_i)
+        (c, w_i, 1.0)
     }
 }
 

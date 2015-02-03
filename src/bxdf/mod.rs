@@ -4,11 +4,13 @@
 
 use std::mem;
 use std::num::Float;
+use std::f32;
 use collect::enum_set::{EnumSet, CLike};
 
 use linalg;
 use linalg::Vector;
 use film::Colorf;
+use mc;
 
 pub use self::bsdf::BSDF;
 pub use self::lambertian::Lambertian;
@@ -89,18 +91,28 @@ pub trait BxDF {
     /// `w_i` and `w_o`.
     fn eval(&self, w_o: &Vector, w_i: &Vector) -> Colorf;
     /// Sample an incident light direction for an outgoing light direction `w_o`.
-    /// TODO: Later this will also take 2 random sample values and also return the pdf
-    /// Returns the color of the material for the pair of directions and the incident
-    /// light direction as a tuple.
-    fn sample(&self, w_o: &Vector) -> (Colorf, Vector) {
-        // TODO: We need random samples to provide an actual default implementation.
-        // for now we just return black for no reflection. The incident light
-        // direction should be sampled from a cos-weighted hemisphere sampling
-        (Colorf::broadcast(0.0), *w_o)
+    /// `samples` will be used to randomly sample a direction for the outgoing light
+    /// Returns the color of the material for the pair of directions, the incident
+    /// light direction and pdf
+    fn sample(&self, w_o: &Vector, samples: &[f32]) -> (Colorf, Vector, f32) {
+        let mut w_i = mc::cos_sample_hemisphere(samples);
+        // We may need to flip the sampled direction to be on the same hemisphere as w_o
+        if w_o.z < 0.0 {
+            w_i.z *= -1.0;
+        }
+        (self.eval(w_o, &w_i), w_i, self.pdf(w_o, &w_i))
     }
     /// Check if this BxDF matches the type flags passed
     fn matches(&self, flags: EnumSet<BxDFType>) -> bool {
         self.bxdf_type().is_subset(&flags)
+    }
+    /// Compute the pdf of sampling the pair of directions passed for this BxDF
+    fn pdf(&self, w_o: &Vector, w_i: &Vector) -> f32 {
+        if same_hemisphere(w_o, w_i) {
+            Float::abs(cos_theta(w_i)) * f32::consts::FRAC_1_PI
+        } else {
+            0.0
+        }
     }
 }
 

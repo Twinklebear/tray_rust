@@ -2,6 +2,7 @@
 //! and BTDFs that describe the surface's properties
 
 use std::vec::Vec;
+use std::cmp;
 use collect::enum_set::EnumSet;
 
 use linalg;
@@ -83,24 +84,25 @@ impl<'a> BSDF<'a> {
             .fold(Colorf::broadcast(0.0), |x, y| x + y)
     }
     /// Sample a component of the BSDF to get an incident light direction for light
-    /// leaving the surface along `w_o`. Returns the color, direction and the type
-    /// of the BxDF that was sampled. TODO: Need to take random numbers here for proper
-    /// sampling. Currently we just find the first that matches which is so incredibly wrong
-    /// for proper sampling.
-    pub fn sample(&self, wo_world: &Vector, flags: EnumSet<BxDFType>) -> (Colorf, Vector, EnumSet<BxDFType>) {
+    /// leaving the surface along `w_o`.
+    /// `samples` are the 3 random values to use when sampling a component of the BSDF
+    /// and a the chosen BSDF
+    /// Returns the color, direction, pdf and the type of BxDF that was sampled.
+    pub fn sample(&self, wo_world: &Vector, flags: EnumSet<BxDFType>, samples: &[f32])
+        -> (Colorf, Vector, f32, EnumSet<BxDFType>) {
+        // TODO: Is there a better way to accept slices but require they be of some length?
+        assert!(samples.len() > 2);
+
         let n_matching = self.num_matching(flags);
         if n_matching == 0 {
-            return (Colorf::broadcast(0.0), Vector::broadcast(0.0), EnumSet::new());
+            return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0, EnumSet::new());
         }
-        // Really bad: just take the first for now. This will be ok for having very basic
-        // materials like our single component diffuse and specular but is wrong for
-        // more complicated ones
-        let bxdf = self.matching_at(0, flags);
+        let comp = cmp::min((samples[0] * n_matching as f32) as usize, n_matching - 1);
+        let bxdf = self.matching_at(comp, flags);
         let w_o = self.to_shading(wo_world);
-        let (f, w_i) = bxdf.sample(&w_o);
-        // TODO: Will fail for later materials - we assume only one matched. For the diffuse
-        // and specular metal materials this is correct but not for more complex ones
-        (f, self.from_shading(&w_i), bxdf.bxdf_type())
+        let (f, w_i, pdf) = bxdf.sample(&w_o, &samples[1..]);
+        // TODO sample other mats if non-specular
+        (f, self.from_shading(&w_i), pdf, bxdf.bxdf_type())
     }
     /// Get the `i`th BxDF that matches the flags passed. There should not be fewer than i
     /// BxDFs that match the flags

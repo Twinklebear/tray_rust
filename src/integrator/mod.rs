@@ -36,8 +36,9 @@ pub trait Integrator {
         let mut spec_refl = EnumSet::new();
         spec_refl.insert(BxDFType::Specular);
         spec_refl.insert(BxDFType::Reflection);
-        let (f, w_i, _) = bsdf.sample(&w_o, spec_refl);
-        // TODO: include pdf val
+        // TODO: Generate actual samples here
+        let junk_samples = [0f32; 3];
+        let (f, w_i, _, pdf) = bsdf.sample(&w_o, spec_refl, &junk_samples[]);
         let mut refl = Colorf::broadcast(0.0);
         if !f.is_black() && Float::abs(linalg::dot(&w_i, &bsdf.n)) != 0.0 {
             let mut refl_ray = ray.child(&bsdf.p, &w_i);
@@ -55,7 +56,9 @@ pub trait Integrator {
         let mut spec_trans = EnumSet::new();
         spec_trans.insert(BxDFType::Specular);
         spec_trans.insert(BxDFType::Transmission);
-        let (f, w_i, _) = bsdf.sample(&w_o, spec_trans);
+        // TODO: Generate actual samples here
+        let junk_samples = [0f32; 3];
+        let (f, w_i, _, pdf) = bsdf.sample(&w_o, spec_trans, &junk_samples[]);
         // TODO: include pdf val
         let mut transmit = Colorf::broadcast(0.0);
         if !f.is_black() && Float::abs(linalg::dot(&w_i, &bsdf.n)) != 0.0 {
