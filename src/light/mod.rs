@@ -31,8 +31,9 @@ impl OcclusionTester {
         OcclusionTester { ray: linalg::Ray::segment(p, d, 0.001, f32::INFINITY) }
     }
     /// Perform the occlusion test in the scene
-    pub fn occluded(&mut self, scene: &Scene) -> bool {
-        if let Some(_) = scene.intersect(&mut self.ray) {
+    pub fn occluded(&self, scene: &Scene) -> bool {
+        let mut r = self.ray;
+        if let Some(_) = scene.intersect(&mut r) {
             true
         } else {
             false
@@ -45,8 +46,11 @@ impl OcclusionTester {
 /// its power and so on.
 pub trait Light {
     /// Sample the illumination from the light arriving at the point `p`
-    /// Returns the color and incident light direction and fills out the
-    /// occlusion tester object
-    fn sample_incident(&self, p: &linalg::Point, occlusion: &mut OcclusionTester) -> (Colorf, linalg::Vector);
+    /// Returns the color, incident light direction, pdf and occlusion tester object
+    /// `samples` will be used to randomly sample the light and should contain 3 f32s
+    /// TODO: how to require that it's at least this size?
+    fn sample_incident(&self, p: &linalg::Point, samples: &[f32]) -> (Colorf, linalg::Vector, f32, OcclusionTester);
+    /// Determine if the light is described by a delta distribution
+    fn delta_light(&self) -> bool;
 }
 

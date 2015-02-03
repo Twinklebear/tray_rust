@@ -63,4 +63,13 @@ pub fn concentric_sample_disk(u: &[f32]) -> [f32; 2] {
     s[1] = radius * Float::sin(theta);
     s
 }
+/// Power heuristic for multiple importance sampling for two functions being sampled, f & g
+/// where beta is hard-coded to be two following PBR & Veach
+/// - `n_f`, `n_g` number of samples taken of each
+/// - `pdf_f`, `pdf_g` pdf of each function
+pub fn power_heuristic(n_f: f32, pdf_f: f32, n_g: f32, pdf_g: f32) -> f32 {
+	let f = n_f * pdf_f;
+	let g = n_g * pdf_g;
+	(f * f) / (f * f + g * g)
+}
 

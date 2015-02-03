@@ -22,10 +22,10 @@ impl Point {
 }
 
 impl Light for Point {
-    fn sample_incident(&self, p: &linalg::Point, occlusion: &mut OcclusionTester) -> (Colorf, linalg::Vector) {
+    fn sample_incident(&self, p: &linalg::Point, samples: &[f32]) -> (Colorf, linalg::Vector, f32, OcclusionTester) {
         let w_i = (self.pos - *p).normalized();
-        *occlusion = OcclusionTester::test_points(p, &self.pos);
-        (self.intensity / self.pos.distance_sqr(p), w_i)
+        (self.intensity / self.pos.distance_sqr(p), w_i, 1.0, OcclusionTester::test_points(p, &self.pos))
     }
+    fn delta_light(&self) -> bool { true }
 }
 
