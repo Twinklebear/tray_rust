@@ -2,41 +2,53 @@
 name = "tray_rust"
 version = "0.0.1"
 dependencies = [
- "collect 0.0.16 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
+ "collect 0.0.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.2.0-alpha.9 (git+https://github.com/PistonDevelopers/image)",
 ]
 
 [[package]]
 name = "collect"
-version = "0.0.16"
+version = "0.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "traverse 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "image"
-version = "0.2.0-alpha.6"
-source = "git+https://github.com/PistonDevelopers/image#c90ffc4f5dfbfbb428a14651020c81081962ef27"
+version = "0.2.0-alpha.9"
+source = "git+https://github.com/PistonDevelopers/image#22d6ff19129fb4a2c44d6388e4efa7eb20f26545"
 dependencies = [
- "num 0.1.10 (git+https://github.com/rust-lang/num)",
+ "num 0.1.12 (git+https://github.com/rust-lang/num)",
 ]
 
 [[package]]
+name = "libc"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "log"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "num"
-version = "0.1.10"
-source = "git+https://github.com/rust-lang/num#c05cd530dbc1cc2e56f936524400b368e07ee5cb"
+version = "0.1.12"
+source = "git+https://github.com/rust-lang/num#e2f0b0d3270554d336c5908bb20a6cbbc0754e61"
 dependencies = [
- "rustc-serialize 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "rand"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "rustc-serialize"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "traverse"
-version = "0.0.6"
+version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 

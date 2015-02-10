@@ -1,7 +1,7 @@
 //! The film module provides color types and a render target that the image
 //! is written too. Functions are also provided for saving PPM and BMP images
 
-use std::io::{File, Open, Write, BufferedWriter};
+use std::old_io::{File, Open, Write, BufferedWriter};
 
 pub use self::color::Colorf;
 pub use self::render_target::RenderTarget;

@@ -115,7 +115,6 @@ impl Index<usize> for Point {
 }
 
 impl IndexMut<usize> for Point {
-    type Output = f32;
     /// Access the point by index
     ///
     /// - 0 = x

@@ -115,7 +115,6 @@ impl Index<usize> for Normal {
 }
 
 impl IndexMut<usize> for Normal {
-    type Output = f32;
     /// Access the normal by index
     ///
     /// - 0 = x

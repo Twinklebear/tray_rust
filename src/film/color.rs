@@ -144,7 +144,6 @@ impl Index<usize> for Colorf {
 }
 
 impl IndexMut<usize> for Colorf {
-    type Output = f32;
     /// Access the channels by index
     /// 
     /// - 0 = r

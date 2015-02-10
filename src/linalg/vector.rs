@@ -107,7 +107,6 @@ impl Index<usize> for Vector {
 }
 
 impl IndexMut<usize> for Vector {
-    type Output = f32;
     /// Access the vector by index
     ///
     /// - 0 = x

@@ -11,7 +11,7 @@ doc = false
 
 [dependencies]
 
-collect = "0.0.16"
+collect = "0.0.20"
 
 [dependencies.image]
 
