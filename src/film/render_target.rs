@@ -4,10 +4,8 @@
 
 use std::vec::Vec;
 use std::iter;
-use std::cmp;
 use std::num::Float;
 
-use linalg;
 use film::Colorf;
 
 /// RenderTarget is a RGBF render target to write our image too while rendering

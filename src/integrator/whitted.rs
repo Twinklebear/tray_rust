@@ -1,7 +1,7 @@
 //! Defines the Whitted integrator which implements Whitted recursive ray tracing
 
 use std::num::Float;
-use std::rand::{Rng, StdRng};
+use rand::StdRng;
 
 use scene::Scene;
 use linalg;
@@ -10,7 +10,7 @@ use geometry::Intersection;
 use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
-use light::{Light, OcclusionTester};
+use light::Light;
 use sampler::Sampler;
 
 /// The Whitted integrator implementing the Whitted recursive ray tracing algorithm

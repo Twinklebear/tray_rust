@@ -12,6 +12,7 @@ doc = false
 [dependencies]
 
 collect = "0.0.20"
+rand = "0.1.2"
 
 [dependencies.image]
 

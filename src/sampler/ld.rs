@@ -2,12 +2,11 @@
 //! See sec. 7.4.3 of Physically Based Rendering
 
 use std::num::UnsignedInt;
-use std::rand;
-use std::rand::{Rng, StdRng};
-use std::rand::distributions::{IndependentSample, Range};
 use std::u32;
 use std::f32;
 use std::num::Float;
+use rand::{Rng, StdRng};
+use rand::distributions::{IndependentSample, Range};
 
 use sampler::{Sampler, Region};
 

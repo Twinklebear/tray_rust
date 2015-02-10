@@ -3,16 +3,16 @@
 //! integration methods, eg. path tracing, photon mapping etc.
 
 use std::num::Float;
-use std::rand::{StdRng, Rng};
 use collect::enum_set::EnumSet;
+use rand::StdRng;
 
 use scene::Scene;
 use linalg;
-use linalg::{Ray, Point, Normal, Vector};
+use linalg::{Ray, Vector};
 use geometry::Intersection;
 use film::Colorf;
 use bxdf::{BSDF, BxDFType};
-use light::{Light, OcclusionTester};
+use light::Light;
 use sampler::Sampler;
 use mc;
 

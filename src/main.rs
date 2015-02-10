@@ -1,4 +1,5 @@
 extern crate image;
+extern crate rand;
 extern crate tray_rust;
 
 use std::vec::Vec;
@@ -6,7 +7,7 @@ use std::sync::{Arc, TaskPool};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use std::time::duration::Duration;
-use std::rand::StdRng;
+use rand::StdRng;
 
 use tray_rust::film;
 use tray_rust::geometry::Geometry;
@@ -90,6 +91,9 @@ fn main() {
     let d = Duration::span(|| render_parallel(&mut rt));
     println!("Rendering took {}ms", d.num_milliseconds());
     let img = rt.get_render();
-    image::save_buffer(&Path::new("out.png"), &img[], WIDTH as u32, HEIGHT as u32, image::RGB(8));
+    match image::save_buffer(&Path::new("out.png"), &img[], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
+        Ok(_) => {},
+        Err(e) => println!("Error saving image, {}", e),
+    };
 }
 

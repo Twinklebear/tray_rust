@@ -2,7 +2,7 @@
 //! to provide stratified, low-discrepancy, adaptive sampling methods and so
 //! on through a simple trait interface
 
-use std::rand::StdRng;
+use rand::StdRng;
 
 pub use self::uniform::Uniform;
 pub use self::ld::LowDiscrepancy;

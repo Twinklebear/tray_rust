@@ -21,7 +21,7 @@ pub fn write_ppm(name: &str, w: usize, h: usize, img: &Vec<u8>) {
     if let Err(e) = write!(&mut writer, "P6\n{} {}\n255\n", w, h) {
         panic!("Failed to write pixel data to {}: {}", name, e);
     }
-    if let Err(e) = writer.write(&img[]) {
+    if let Err(e) = writer.write_all(&img[]) {
         panic!("Failed to write pixel data to {}: {}", name, e);
     }
 }
@@ -98,12 +98,12 @@ pub fn write_bmp(name: &str, w: u32, h: u32, img: &Vec<u8>) {
     for r in (0..h) {
         let begin = 3 * w * (h - r - 1);
         let end = begin + 3 * w;
-        if let Err(e) = writer.write(&img[begin as usize..end as usize]) {
+        if let Err(e) = writer.write_all(&img[begin as usize..end as usize]) {
             panic!("Failed to write image {}: {}", name, e);
         }
         // Write any required padding, it's just padding so just throw some junk there
         if padding > 0 {
-            if let Err(e) = writer.write(&img[0..padding as usize]) {
+            if let Err(e) = writer.write_all(&img[0..padding as usize]) {
                 panic!("Failed to write image {}: {}", name, e);
             }
         }

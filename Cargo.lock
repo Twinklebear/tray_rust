@@ -4,6 +4,7 @@ version = "0.0.1"
 dependencies = [
  "collect 0.0.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.2.0-alpha.9 (git+https://github.com/PistonDevelopers/image)",
+ "rand 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

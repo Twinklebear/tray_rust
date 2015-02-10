@@ -4,16 +4,15 @@
 use std::vec::Vec;
 use std::iter;
 use std::num::Float;
-use std::rand::{Rng, StdRng};
+use rand::{Rng, StdRng};
 
 use scene::Scene;
 use linalg;
-use linalg::{Point, Ray};
+use linalg::Ray;
 use geometry::Intersection;
 use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
-use light::{Light, OcclusionTester};
 use sampler::Sampler;
 
 /// The path integrator implementing Path tracing with explicit light sampling
@@ -51,7 +50,7 @@ impl Integrator for Path {
         let mut illum = Colorf::black();
         let mut path_throughput = Colorf::broadcast(1.0);
         // Track if the previous bounce was a specular one
-        let mut specular_bounce = false;
+        //let mut specular_bounce = false;
         let mut current_hit = *hit;
         let mut ray = *r;
         let mut bounce = 0us;
@@ -77,7 +76,7 @@ impl Integrator for Path {
             if f.is_black() || pdf == 0.0 {
                 break;
             }
-            specular_bounce = sampled_type.contains(&BxDFType::Specular);
+            //specular_bounce = sampled_type.contains(&BxDFType::Specular);
             path_throughput = path_throughput * f * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
 
             // Check if we're beyond the min depth at which point we start trying to

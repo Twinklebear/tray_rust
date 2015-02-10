@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 extern crate collect;
+extern crate rand;
 
 pub mod linalg;
 pub mod film;
