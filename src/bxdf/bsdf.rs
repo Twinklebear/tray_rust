@@ -74,7 +74,7 @@ impl<'a> BSDF<'a> {
         let w_i = self.to_shading(wi_world);
         // Determine if we should evaluate reflection or transmission based on the
         // geometry normal and the light directions
-        if linalg::dot(wo_world, &self.ng) * linalg::dot(wi_world, &self.ng) > 0.0 {
+        if linalg::dot(wo_world, &self.n) * linalg::dot(wi_world, &self.n) > 0.0 {
             flags.remove(&BxDFType::Transmission);
         } else {
             flags.remove(&BxDFType::Reflection);
@@ -122,10 +122,10 @@ impl<'a> BSDF<'a> {
         let (pdf_val, n_comps) = self.bxdfs.iter()
             .filter_map(|ref x| if x.matches(flags) { Some(x.pdf(&w_o, &w_i)) } else { None })
             .fold((0.0, 0), |(p, n), y| (p + y, n + 1));
-        if n_comps == 0 {
-            0.0
-        } else {
+        if n_comps > 0 {
             pdf_val / n_comps as f32
+        } else {
+            0.0
         }
     }
     /// Get the `i`th BxDF that matches the flags passed. There should not be fewer than i

@@ -32,29 +32,24 @@ pub fn concentric_sample_disk(u: &[f32]) -> [f32; 2] {
         if s[0] > s[1] {
             radius = s[0];
             if s[1] > 0.0 {
-                theta = s[1] / s[0];
+                theta = s[1] / radius;
             } else {
-                theta = 8.0 + s[1] / s[0];
+                theta = 8.0 + s[1] / radius;
             }
         }
         else {
             radius = s[1];
-            theta = 2.0 - s[0] / s[1];
+            theta = 2.0 - s[0] / radius;
         }
     }
     else {
         if s[0] <= s[1] {
             radius = -s[0];
-            theta = 4.0 + s[1] / s[0];
+            theta = 4.0 - s[1] / radius;
         }
         else {
             radius = -s[1];
-            if s[1] != 0.0 {
-                theta = 6.0 - s[0] / s[1];
-            }
-            else {
-                theta = 0.0;
-            }
+            theta = 6.0 + s[0] / radius;
         }
     }
     theta *= f32::consts::FRAC_PI_4;

@@ -103,9 +103,9 @@ pub trait Integrator {
         let mut direct_light = Colorf::black();
         // Sample the light first
         let (li, w_i, pdf_light, occlusion) = light.sample_incident(&bsdf.p, &light_sample[1..]);
-        if pdf_light > 0.0 && !li.is_black() {
+        if pdf_light > 0.0 && !li.is_black() && !occlusion.occluded(scene) {
             let f = bsdf.eval(w_o, &w_i, flags);
-            if !f.is_black() && !occlusion.occluded(scene) {
+            if !f.is_black() {
                 if light.delta_light() {
                     direct_light = direct_light + f * li * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf_light;
                 } else {

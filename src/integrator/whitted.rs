@@ -5,7 +5,7 @@ use rand::StdRng;
 
 use scene::Scene;
 use linalg;
-use linalg::{Point, Ray};
+use linalg::Ray;
 use geometry::Intersection;
 use film::Colorf;
 use integrator::Integrator;
