@@ -48,6 +48,7 @@ impl Scene {
             // The bottom wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 0.0))
                           * Transform::scale(&Vector::broadcast(32.0))),
+            /*
             // The reflective sphere
             Instance::new(sphere.clone(),
                 Arc::new(Box::new(SpecularMetal::new(&Colorf::new(0.155, 0.116, 0.138), &Colorf::new(4.828, 3.122, 2.146)))
@@ -58,6 +59,7 @@ impl Scene {
                 Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0)))
+            */
         ];
         Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
