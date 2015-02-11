@@ -17,14 +17,16 @@ pub struct Instance {
     pub material: Arc<Box<Material + Send + Sync>>,
     /// The transform to world space
     transform: linalg::Transform,
+    /// Tag to identify the instance
+    pub tag: String,
 }
 
 impl Instance {
     /// Create a new instance of some geometry in the scene
     pub fn new(geom: Arc<Box<Geometry + Send + Sync>>, material: Arc<Box<Material + Send + Sync>>,
-               transform: linalg::Transform)
+               transform: linalg::Transform, tag: &str)
                -> Instance {
-        Instance { geom: geom, material: material, transform: transform }
+        Instance { geom: geom, material: material, transform: transform, tag: String::from_str(tag) }
     }
     /// Test the ray for intersection against this insance of geometry.
     /// returns Some(Intersection) if an intersection was found and None if not.

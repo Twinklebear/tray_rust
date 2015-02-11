@@ -35,31 +35,29 @@ impl Scene {
         let instances = vec![
             // The back wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 20.0, 12.0))
-                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0)),
+                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0), "back_wall"),
             // The left wall
             Instance::new(plane.clone(), red_wall.clone(), Transform::translate(&Vector::new(-15.0, 0.0, 12.0))
-                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(90.0)),
+                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(90.0), "left_wall"),
             // The right wall
             Instance::new(plane.clone(), blue_wall.clone(), Transform::translate(&Vector::new(15.0, 0.0, 12.0))
-                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(-90.0)),
+                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(-90.0), "right_wall"),
             // The top wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 24.0))
-                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(180.0)),
+                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(180.0), "top_wall"),
             // The bottom wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 0.0))
-                          * Transform::scale(&Vector::broadcast(32.0))),
-            /*
+                          * Transform::scale(&Vector::broadcast(32.0)), "bottom_wall"),
             // The reflective sphere
             Instance::new(sphere.clone(),
                 Arc::new(Box::new(SpecularMetal::new(&Colorf::new(0.155, 0.116, 0.138), &Colorf::new(4.828, 3.122, 2.146)))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
-                    * Transform::scale(&Vector::broadcast(5.0))),
+                    * Transform::scale(&Vector::broadcast(5.0)), "metal_sphere"),
             // The glass sphere
             Instance::new(sphere.clone(),
                 Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
-                    * Transform::scale(&Vector::broadcast(5.0)))
-            */
+                    * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere")
         ];
         Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
