@@ -74,7 +74,7 @@ impl<'a> BSDF<'a> {
         let w_i = self.to_shading(wi_world);
         // Determine if we should evaluate reflection or transmission based on the
         // geometry normal and the light directions
-        if linalg::dot(wo_world, &self.n) * linalg::dot(wi_world, &self.n) > 0.0 {
+        if linalg::dot(wo_world, &self.ng) * linalg::dot(wi_world, &self.ng) > 0.0 {
             flags.remove(&BxDFType::Transmission);
         } else {
             flags.remove(&BxDFType::Reflection);
