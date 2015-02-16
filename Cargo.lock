@@ -2,20 +2,20 @@
 name = "tray_rust"
 version = "0.0.1"
 dependencies = [
- "collect 0.0.20 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.2.0-alpha.9 (git+https://github.com/PistonDevelopers/image)",
+ "collect 0.0.20 (git+https://github.com/Gankro/collect-rs.git)",
+ "image 0.2.0-alpha.10 (git+https://github.com/PistonDevelopers/image)",
  "rand 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "collect"
 version = "0.0.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+source = "git+https://github.com/Gankro/collect-rs.git#e37b604e6a366aebc44bd2c691ee70928cff86b4"
 
 [[package]]
 name = "image"
-version = "0.2.0-alpha.9"
-source = "git+https://github.com/PistonDevelopers/image#22d6ff19129fb4a2c44d6388e4efa7eb20f26545"
+version = "0.2.0-alpha.10"
+source = "git+https://github.com/PistonDevelopers/image#5b589d98e53da920a28dbed8b3ea83452280cdd2"
 dependencies = [
  "num 0.1.12 (git+https://github.com/rust-lang/num)",
 ]
@@ -36,7 +36,7 @@ version = "0.1.12"
 source = "git+https://github.com/rust-lang/num#e2f0b0d3270554d336c5908bb20a6cbbc0754e61"
 dependencies = [
  "rand 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.2.13 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -50,6 +50,6 @@ dependencies = [
 
 [[package]]
 name = "rustc-serialize"
-version = "0.2.12"
+version = "0.2.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
