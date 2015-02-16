@@ -61,7 +61,7 @@ impl Integrator for Path {
             if bounce == 0 || specular_bounce {
             }
             */
-            let bsdf = current_hit.instance.material.bsdf(hit);
+            let bsdf = current_hit.instance.material.bsdf(&current_hit);
             let w_o = -ray.d;
             // TODO: The way of passing the samples as 3 floats through doesn't work well at all
             let li = self.sample_one_light(scene, &w_o, &bsdf, &[l_samples_comp[bounce], l_samples[bounce].0,
