@@ -2,15 +2,15 @@
 name = "tray_rust"
 version = "0.0.1"
 dependencies = [
- "collect 0.0.20 (git+https://github.com/Gankro/collect-rs.git)",
+ "collect 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.2.0-alpha.10 (git+https://github.com/PistonDevelopers/image)",
  "rand 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "collect"
-version = "0.0.20"
-source = "git+https://github.com/Gankro/collect-rs.git#e37b604e6a366aebc44bd2c691ee70928cff86b4"
+version = "0.0.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "image"

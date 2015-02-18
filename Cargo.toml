@@ -12,14 +12,11 @@ doc = false
 [dependencies]
 
 rand = "0.1.2"
+collect = "0.0.21"
 
 [dependencies.image]
 
 git = "https://github.com/PistonDevelopers/image"
-
-[dependencies.collect]
-
-git = "https://github.com/Gankro/collect-rs.git"
 
 [profile.release]
 
