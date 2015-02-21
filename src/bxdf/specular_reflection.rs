@@ -36,7 +36,7 @@ impl BxDF for SpecularReflection {
     fn eval(&self, _: &Vector, _: &Vector) -> Colorf { Colorf::broadcast(0.0) }
     /// Sampling the specular BRDF just returns the specular reflection direction
     /// for the light leaving along `w_o`
-    fn sample(&self, w_o: &Vector, _: &[f32]) -> (Colorf, Vector, f32) {
+    fn sample(&self, w_o: &Vector, _: &(f32, f32)) -> (Colorf, Vector, f32) {
         let w_i = Vector::new(-w_o.x, -w_o.y, w_o.z);
         let c = self.fresnel.fresnel(-bxdf::cos_theta(w_o)) * self.reflectance / Float::abs(bxdf::cos_theta(&w_i));
         (c, w_i, 1.0)

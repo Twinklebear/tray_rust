@@ -10,6 +10,7 @@ use linalg::{Normal, Vector, Point};
 use film::Colorf;
 use geometry::DifferentialGeometry;
 use bxdf::{BxDF, BxDFType};
+use sampler::Sample;
 
 /// The BSDF contains the various BRDFs and BTDFs that describe the surface's properties
 /// at some point. It also transforms incident and outgoing light directions into
@@ -88,19 +89,16 @@ impl<'a> BSDF<'a> {
     /// `samples` are the 3 random values to use when sampling a component of the BSDF
     /// and a the chosen BSDF
     /// Returns the color, direction, pdf and the type of BxDF that was sampled.
-    pub fn sample(&self, wo_world: &Vector, flags: EnumSet<BxDFType>, samples: &[f32])
+    pub fn sample(&self, wo_world: &Vector, flags: EnumSet<BxDFType>, samples: &Sample)
         -> (Colorf, Vector, f32, EnumSet<BxDFType>) {
-        // TODO: Is there a better way to accept slices but require they be of some length?
-        assert!(samples.len() > 2);
-
         let n_matching = self.num_matching(flags);
         if n_matching == 0 {
             return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0, EnumSet::new());
         }
-        let comp = cmp::min((samples[0] * n_matching as f32) as usize, n_matching - 1);
+        let comp = cmp::min((samples.one_d * n_matching as f32) as usize, n_matching - 1);
         let bxdf = self.matching_at(comp, flags);
         let w_o = self.to_shading(wo_world);
-        let (f, w_i, pdf) = bxdf.sample(&w_o, &samples[1..]);
+        let (f, w_i, pdf) = bxdf.sample(&w_o, &samples.two_d);
         let wi_world = self.from_shading(&w_i);
 
         if n_matching > 1 {

@@ -13,7 +13,7 @@ use geometry::Intersection;
 use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
-use sampler::Sampler;
+use sampler::{Sampler, Sample};
 
 /// The path integrator implementing Path tracing with explicit light sampling
 /// See [Kajiya, The Rendering Equation](http://dl.acm.org/citation.cfm?id=15902)
@@ -63,16 +63,14 @@ impl Integrator for Path {
             */
             let bsdf = current_hit.instance.material.bsdf(&current_hit);
             let w_o = -ray.d;
-            // TODO: The way of passing the samples as 3 floats through doesn't work well at all
-            let li = self.sample_one_light(scene, &w_o, &bsdf, &[l_samples_comp[bounce], l_samples[bounce].0,
-                                           l_samples[bounce].1], &[bsdf_samples_comp[bounce],
-                                           bsdf_samples[bounce].0, bsdf_samples[bounce].1]);
+            let light_sample = Sample::new(&l_samples[bounce], l_samples_comp[bounce]);
+            let bsdf_sample = Sample::new(&bsdf_samples[bounce], bsdf_samples_comp[bounce]);
+            let li = self.sample_one_light(scene, &w_o, &bsdf, &light_sample, &bsdf_sample);
             illum = illum + path_throughput * li;
 
             // Determine the next direction to take the path by sampling the BSDF
-            let (f, w_i, pdf, sampled_type) = bsdf.sample(&w_o, BxDFType::all(),
-                                                &[path_samples_comp[bounce], path_samples[bounce].0,
-                                                path_samples[bounce].1]);
+            let path_sample = Sample::new(&path_samples[bounce], path_samples_comp[bounce]);
+            let (f, w_i, pdf, sampled_type) = bsdf.sample(&w_o, BxDFType::all(), &path_sample);
             if f.is_black() || pdf == 0.0 {
                 break;
             }

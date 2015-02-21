@@ -94,7 +94,7 @@ pub trait BxDF {
     /// `samples` will be used to randomly sample a direction for the outgoing light
     /// Returns the color of the material for the pair of directions, the incident
     /// light direction and pdf
-    fn sample(&self, w_o: &Vector, samples: &[f32]) -> (Colorf, Vector, f32) {
+    fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Colorf, Vector, f32) {
         let mut w_i = mc::cos_sample_hemisphere(samples);
         // We may need to flip the sampled direction to be on the same hemisphere as w_o
         if w_o.z < 0.0 {

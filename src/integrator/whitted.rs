@@ -31,9 +31,10 @@ impl Integrator for Whitted {
                     rng: &mut StdRng) -> Colorf {
         let bsdf = hit.instance.material.bsdf(hit);
         let w_o = -ray.d;
-        let junk_samples = [0.0; 3];
+        let mut sample_2d = [(0.0, 0.0)];
+        sampler.get_samples_2d(&mut sample_2d[], rng);
         // TODO: When we add support for multiple lights, iterate over all of them
-        let (li, w_i, pdf, occlusion) = scene.light.sample_incident(&hit.dg.p, &junk_samples[]);
+        let (li, w_i, pdf, occlusion) = scene.light.sample_incident(&hit.dg.p, &sample_2d[0]);
         let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
         let mut illum = Colorf::broadcast(0.0);
         if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {

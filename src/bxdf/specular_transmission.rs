@@ -38,7 +38,7 @@ impl BxDF for SpecularTransmission {
     fn eval(&self, _: &Vector, _: &Vector) -> Colorf { Colorf::broadcast(0.0) }
     /// Sampling the specular BTDF just returns the specular transmission direction
     /// for the light leaving along `w_o`
-    fn sample(&self, w_o_neg: &Vector, _: &[f32]) -> (Colorf, Vector, f32) {
+    fn sample(&self, w_o_neg: &Vector, _: &(f32, f32)) -> (Colorf, Vector, f32) {
         // The w_o passed to us is pointing away from the surface, we want it pointing towards
         // the hit point
         let w_o = -*w_o_neg;

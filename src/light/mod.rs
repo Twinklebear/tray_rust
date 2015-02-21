@@ -49,7 +49,7 @@ pub trait Light {
     /// Returns the color, incident light direction, pdf and occlusion tester object
     /// `samples` will be used to randomly sample the light and should contain 3 f32s
     /// TODO: how to require that it's at least this size?
-    fn sample_incident(&self, p: &linalg::Point, samples: &[f32]) -> (Colorf, linalg::Vector, f32, OcclusionTester);
+    fn sample_incident(&self, p: &linalg::Point, samples: &(f32, f32)) -> (Colorf, linalg::Vector, f32, OcclusionTester);
     /// Determine if the light is described by a delta distribution
     fn delta_light(&self) -> bool;
 }
