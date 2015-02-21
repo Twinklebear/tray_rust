@@ -64,7 +64,7 @@ fn spawn_workers(pool: &TaskPool, n: usize, scene: Arc<scene::Scene>) -> Receive
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
     // TODO: the .. operator precedence is very low so we need this paren here at the moment
     // once (hopefully) it's raised we can remove the parens
-    for _ in (0..n) {
+    for _ in 0..n {
         let q = block_queue.clone();
         let t = tx.clone();
         let s = scene.clone();

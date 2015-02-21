@@ -95,7 +95,7 @@ pub fn write_bmp(name: &str, w: u32, h: u32, img: &Vec<u8>) {
     }
     // Finally we can write the image, since BMP is upside-down we need
     // to flip the rows though. We also handle padding of rows here
-    for r in (0..h) {
+    for r in 0..h {
         let begin = 3 * w * (h - r - 1);
         let end = begin + 3 * w;
         if let Err(e) = writer.write_all(&img[begin as usize..end as usize]) {
