@@ -24,7 +24,7 @@ static HEIGHT: usize = 600;
 /// values recieved to the render target
 fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>,
                scene: Arc<scene::Scene>) {
-    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 32);
+    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 64);
     let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut rng = match StdRng::new() {
@@ -62,8 +62,6 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
 fn spawn_workers(pool: &TaskPool, n: usize, scene: Arc<scene::Scene>) -> Receiver<(f32, f32, film::Colorf)> {
     let (tx, rx) = mpsc::channel();
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
-    // TODO: the .. operator precedence is very low so we need this paren here at the moment
-    // once (hopefully) it's raised we can remove the parens
     for _ in 0..n {
         let q = block_queue.clone();
         let t = tx.clone();

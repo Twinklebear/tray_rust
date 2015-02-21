@@ -59,12 +59,13 @@ impl Scene {
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere")
         ];
+        let light_color = Colorf::broadcast(200.0) * Colorf::new(0.780131, 0.780409, 0.775833);
         Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
                 &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h))),
             instances: Arc::new(instances),
             integrator: Arc::new(Box::new(integrator::Path::new(3, 8)) as Box<Integrator + Send + Sync>),
-            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &Colorf::broadcast(200.0)))
+            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &light_color))
                             as Box<Light + Send + Sync>),
         }
     }
