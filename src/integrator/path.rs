@@ -80,7 +80,7 @@ impl Integrator for Path {
             // Check if we're beyond the min depth at which point we start trying to
             // terminate rays using Russian Roulette
             if bounce > self.min_depth {
-                let cont_prob = Float::min(0.5, path_throughput.luminance());
+                let cont_prob = Float::max(0.5, path_throughput.luminance());
                 if rng.next_f32() > cont_prob {
                     break;
                 }
