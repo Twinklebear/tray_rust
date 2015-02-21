@@ -38,6 +38,23 @@ pub trait Sampler {
     fn select_block(&mut self, start: (u32, u32));
 }
 
+/// Provides a simple way to pass around a 3 component sample consisting of one 2D and
+/// one 1D sample
+#[derive(Debug)]
+pub struct Sample {
+    /// The 2D sample
+    pub two_d: (f32, f32),
+    /// The 1D sample
+    pub one_d: f32,
+}
+
+impl Sample {
+    /// Create a new sample taking the 2D sample values from the slice
+    pub fn new(two_d: &(f32, f32), one_d: f32) -> Sample {
+        Sample { two_d: *two_d, one_d: one_d }
+    }
+}
+
 /// Defines a region of the image being sampled in pixel coordinates
 #[derive(Copy, Debug)]
 pub struct Region {
