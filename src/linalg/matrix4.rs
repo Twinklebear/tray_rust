@@ -1,4 +1,4 @@
-use std::iter::FromIterator;
+use std::iter::{FromIterator, IntoIterator};
 use std::ops::{Add, Sub, Mul};
 
 /// Matrix4 is a 4x4 matrix stored in row-major format
@@ -176,9 +176,9 @@ impl FromIterator<f32> for Matrix4 {
     /// the rows of the matrix one after another. The first 16 values returned will
     /// be used to set the matrix elements. If fewer than 16 values are returned the
     /// remaining entries will be 0
-    fn from_iter<T: Iterator<Item = f32>>(it: T) -> Matrix4 {
+    fn from_iter<T: IntoIterator<Item = f32>>(it: T) -> Matrix4 {
         let mut m = Matrix4::zero();
-        for (r, x) in m.mat.iter_mut().zip(it) {
+        for (r, x) in m.mat.iter_mut().zip(it.into_iter()) {
             *r = x;
         }
         m
