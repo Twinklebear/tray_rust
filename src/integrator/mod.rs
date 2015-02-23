@@ -40,8 +40,8 @@ pub trait Integrator {
         spec_refl.insert(BxDFType::Reflection);
         let mut sample_2d = [(0.0, 0.0)];
         let mut sample_1d = [0.0];
-        sampler.get_samples_2d(&mut sample_2d[], rng);
-        sampler.get_samples_1d(&mut sample_1d[], rng);
+        sampler.get_samples_2d(&mut sample_2d[..], rng);
+        sampler.get_samples_1d(&mut sample_1d[..], rng);
         let sample = Sample::new(&sample_2d[0], sample_1d[0]);
         let (f, w_i, pdf, _) = bsdf.sample(&w_o, spec_refl, &sample);
         let mut refl = Colorf::broadcast(0.0);
@@ -64,8 +64,8 @@ pub trait Integrator {
         spec_trans.insert(BxDFType::Transmission);
         let mut sample_2d = [(0.0, 0.0)];
         let mut sample_1d = [0.0];
-        sampler.get_samples_2d(&mut sample_2d[], rng);
-        sampler.get_samples_1d(&mut sample_1d[], rng);
+        sampler.get_samples_2d(&mut sample_2d[..], rng);
+        sampler.get_samples_1d(&mut sample_1d[..], rng);
         let sample = Sample::new(&sample_2d[0], sample_1d[0]);
         let (f, w_i, pdf, _) = bsdf.sample(&w_o, spec_trans, &sample);
         let mut transmit = Colorf::broadcast(0.0);

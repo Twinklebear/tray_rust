@@ -52,7 +52,7 @@ impl RenderTarget {
                 let c = &self.pixels[y * self.width + x];
                 if c.a != 0.0 {
                     let cn = (*c / c.a).clamp().to_srgb();
-                    for i in 0..3us {
+                    for i in 0..3 {
                         render[y * self.width * 3 + x * 3 + i] = (cn[i] * 255.0) as u8;
                     }
                 }

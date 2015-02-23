@@ -89,7 +89,7 @@ fn main() {
     let d = Duration::span(|| render_parallel(&mut rt));
     println!("Rendering took {}ms", d.num_milliseconds());
     let img = rt.get_render();
-    match image::save_buffer(&Path::new("out.png"), &img[], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
+    match image::save_buffer(&Path::new("out.png"), &img[..], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
         Ok(_) => {},
         Err(e) => println!("Error saving image, {}", e),
     };

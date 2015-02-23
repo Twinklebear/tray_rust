@@ -36,8 +36,8 @@ impl Matrix4 {
     /// Compute and return the transpose of this matrix
     pub fn transpose(&self) -> Matrix4 {
         let mut res = Matrix4::zero();
-        for i in 0..4us {
-            for j in 0..4us {
+        for i in 0..4 {
+            for j in 0..4 {
                 *res.at_mut(i, j) = *self.at(j, i);
             }
         }
@@ -206,8 +206,8 @@ impl Mul for Matrix4 {
     /// Multiply two matrices
     fn mul(self, rhs: Matrix4) -> Matrix4 {
         let mut res = Matrix4::zero();
-        for i in 0..4us {
-            for j in 0..4us {
+        for i in 0..4 {
+            for j in 0..4 {
                 *res.at_mut(i, j) = *self.at(i, 0) * *rhs.at(0, j)
                     + *self.at(i, 1) * *rhs.at(1, j)
                     + *self.at(i, 2) * *rhs.at(2, j)

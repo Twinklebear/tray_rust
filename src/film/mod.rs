@@ -21,7 +21,7 @@ pub fn write_ppm(name: &str, w: usize, h: usize, img: &Vec<u8>) {
     if let Err(e) = write!(&mut writer, "P6\n{} {}\n255\n", w, h) {
         panic!("Failed to write pixel data to {}: {}", name, e);
     }
-    if let Err(e) = writer.write_all(&img[]) {
+    if let Err(e) = writer.write_all(&img[..]) {
         panic!("Failed to write pixel data to {}: {}", name, e);
     }
 }

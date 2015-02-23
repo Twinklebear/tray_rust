@@ -41,7 +41,7 @@ impl Sampler for LowDiscrepancy {
         if samples.len() < self.spp {
             samples.resize(self.spp, (0.0, 0.0));
         }
-        self.get_samples_2d(&mut samples[], rng);
+        self.get_samples_2d(&mut samples[..], rng);
         for s in samples.iter_mut() {
             s.0 += self.region.current.0 as f32;
             s.1 += self.region.current.1 as f32;

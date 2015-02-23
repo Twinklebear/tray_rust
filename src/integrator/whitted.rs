@@ -32,7 +32,7 @@ impl Integrator for Whitted {
         let bsdf = hit.instance.material.bsdf(hit);
         let w_o = -ray.d;
         let mut sample_2d = [(0.0, 0.0)];
-        sampler.get_samples_2d(&mut sample_2d[], rng);
+        sampler.get_samples_2d(&mut sample_2d[..], rng);
         // TODO: When we add support for multiple lights, iterate over all of them
         let (li, w_i, pdf, occlusion) = scene.light.sample_incident(&hit.dg.p, &sample_2d[0]);
         let f = bsdf.eval(&w_o, &w_i, BxDFType::all());

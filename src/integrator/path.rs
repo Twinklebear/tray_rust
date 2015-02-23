@@ -34,18 +34,18 @@ impl Integrator for Path {
     fn illumination(&self, scene: &Scene, r: &Ray, hit: &Intersection, sampler: &mut Sampler,
                     rng: &mut StdRng) -> Colorf {
         // TODO: We really need the memory pool now
-        let mut l_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1us).collect();
-        let mut l_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1us).collect();
-        let mut bsdf_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1us).collect();
-        let mut bsdf_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1us).collect();
-        let mut path_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1us).collect();
-        let mut path_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1us).collect();
-        sampler.get_samples_2d(&mut l_samples[], rng);
-        sampler.get_samples_2d(&mut bsdf_samples[], rng);
-        sampler.get_samples_2d(&mut path_samples[], rng);
-        sampler.get_samples_1d(&mut l_samples_comp[], rng);
-        sampler.get_samples_1d(&mut bsdf_samples_comp[], rng);
-        sampler.get_samples_1d(&mut path_samples_comp[], rng);
+        let mut l_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1).collect();
+        let mut l_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1).collect();
+        let mut bsdf_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1).collect();
+        let mut bsdf_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1).collect();
+        let mut path_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1).collect();
+        let mut path_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1).collect();
+        sampler.get_samples_2d(&mut l_samples[..], rng);
+        sampler.get_samples_2d(&mut bsdf_samples[..], rng);
+        sampler.get_samples_2d(&mut path_samples[..], rng);
+        sampler.get_samples_1d(&mut l_samples_comp[..], rng);
+        sampler.get_samples_1d(&mut bsdf_samples_comp[..], rng);
+        sampler.get_samples_1d(&mut path_samples_comp[..], rng);
 
         let mut illum = Colorf::black();
         let mut path_throughput = Colorf::broadcast(1.0);
@@ -53,7 +53,7 @@ impl Integrator for Path {
         //let mut specular_bounce = false;
         let mut current_hit = *hit;
         let mut ray = *r;
-        let mut bounce = 0us;
+        let mut bounce = 0;
         loop {
             // TODO: Sample emissive objects on first bounce and specular bounces
             // when emissive objects are added

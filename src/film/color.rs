@@ -52,7 +52,7 @@ impl Colorf {
         let a = 0.055f32;
         let b = 1f32 / 2.4;
         let mut srgb = Colorf::broadcast(0.0);
-        for i in 0..3us {
+        for i in 0..3 {
             if self[i] <= 0.0031308 {
                 srgb[i] = 12.92 * self[i];
             } else {
