@@ -89,7 +89,7 @@ fn spawn_workers(pool: &TaskPool, n: usize, scene: Arc<scene::Scene>) -> Receive
     rx
 }
 
-/// Render in the scene in parallel to the render target
+/// Render the scene in parallel to the render target
 fn render_parallel(rt: &mut film::RenderTarget){
     let scene = Arc::new(scene::Scene::new(WIDTH, HEIGHT));
     let n = 8;
