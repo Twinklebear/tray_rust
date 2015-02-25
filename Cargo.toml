@@ -13,7 +13,9 @@ doc = false
 
 rand = "0.1.2"
 collect = "0.0.23"
-rustc-serialize = "0.3.0"
+# num which is used by image depends on this version of rust serialize
+# and causes conflicts when trying to use 0.3.0
+rustc-serialize = "^0.2.0"
 docopt = "0.6.39"
 
 [dependencies.image]

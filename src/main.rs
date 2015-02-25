@@ -102,15 +102,14 @@ fn render_parallel(rt: &mut film::RenderTarget){
 
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
-    println!("Args: {:?}", args);
 
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
     let d = Duration::span(|| render_parallel(&mut rt));
     println!("Rendering took {}ms", d.num_milliseconds());
     let img = rt.get_render();
     let out_file = match args.flag_o {
-        Some(f) => &f[..],
-        None => "out.png",
+        Some(f) => f,
+        None => "out.png".to_string(),
     };
     match image::save_buffer(&Path::new(out_file), &img[..], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
         Ok(_) => {},
