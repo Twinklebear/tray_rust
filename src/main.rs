@@ -1,5 +1,7 @@
 extern crate image;
 extern crate rand;
+extern crate docopt;
+extern crate "rustc-serialize" as rustc_serialize;
 extern crate tray_rust;
 
 use std::vec::Vec;
@@ -8,6 +10,7 @@ use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use std::time::duration::Duration;
 use rand::StdRng;
+use docopt::Docopt;
 
 use tray_rust::film;
 use tray_rust::geometry::Geometry;
@@ -18,6 +21,19 @@ use tray_rust::integrator::Integrator;
 
 static WIDTH: usize = 800;
 static HEIGHT: usize = 600;
+static USAGE: &'static str = "
+Usage: tray_rust [options]
+
+Options:
+    -o <file>   Specify the output file to save the image. Supported formats are
+                PNG, JPG, PPM and BMP (although the BMP won't currently be picked up with the flag).
+                Default is 'out.png'.
+";
+
+#[derive(RustcDecodable, Debug)]
+struct Args {
+    flag_o: Option<String>,
+}
 
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
@@ -85,11 +101,18 @@ fn render_parallel(rt: &mut film::RenderTarget){
 }
 
 fn main() {
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    println!("Args: {:?}", args);
+
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
     let d = Duration::span(|| render_parallel(&mut rt));
     println!("Rendering took {}ms", d.num_milliseconds());
     let img = rt.get_render();
-    match image::save_buffer(&Path::new("out.png"), &img[..], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
+    let out_file = match args.flag_o {
+        Some(f) => &f[..],
+        None => "out.png",
+    };
+    match image::save_buffer(&Path::new(out_file), &img[..], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
         Ok(_) => {},
         Err(e) => println!("Error saving image, {}", e),
     };

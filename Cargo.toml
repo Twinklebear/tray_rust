@@ -13,6 +13,8 @@ doc = false
 
 rand = "0.1.2"
 collect = "0.0.23"
+rustc-serialize = "0.3.0"
+docopt = "0.6.39"
 
 [dependencies.image]
 
