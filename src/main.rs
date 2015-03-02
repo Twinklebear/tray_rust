@@ -31,6 +31,7 @@ Options:
                 Default is 'out.png'.
   -n <number>   Specify the number of threads to use for rendering. Defaults to the number of cores
                 on the system.
+  -h, --help    Show this message.
 ";
 
 #[derive(RustcDecodable, Debug)]
