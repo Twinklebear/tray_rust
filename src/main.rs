@@ -9,6 +9,7 @@ use std::sync::{Arc, TaskPool};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use std::time::duration::Duration;
+use std::os;
 use rand::StdRng;
 use docopt::Docopt;
 
@@ -25,14 +26,17 @@ static USAGE: &'static str = "
 Usage: tray_rust [options]
 
 Options:
-    -o <file>   Specify the output file to save the image. Supported formats are
+  -o <file>     Specify the output file to save the image. Supported formats are
                 PNG, JPG, PPM and BMP (although the BMP won't currently be picked up with the flag).
                 Default is 'out.png'.
+  -n <number>   Specify the number of threads to use for rendering. Defaults to the number of cores
+                on the system.
 ";
 
 #[derive(RustcDecodable, Debug)]
 struct Args {
     flag_o: Option<String>,
+    flag_n: Option<usize>,
 }
 
 /// Threads are each sent a sender end of the channel that is
@@ -90,9 +94,8 @@ fn spawn_workers(pool: &TaskPool, n: usize, scene: Arc<scene::Scene>) -> Receive
 }
 
 /// Render the scene in parallel to the render target
-fn render_parallel(rt: &mut film::RenderTarget){
+fn render_parallel(rt: &mut film::RenderTarget, n: usize){
     let scene = Arc::new(scene::Scene::new(WIDTH, HEIGHT));
-    let n = 8;
     let pool = TaskPool::new(n);
     let rx = spawn_workers(&pool, n, scene);
     for m in rx.iter() {
@@ -104,7 +107,11 @@ fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
-    let d = Duration::span(|| render_parallel(&mut rt));
+    let n = match args.flag_n {
+        Some(n) => n,
+        None => os::num_cpus(),
+    };
+    let d = Duration::span(|| render_parallel(&mut rt, n));
     println!("Rendering took {}ms", d.num_milliseconds());
     let img = rt.get_render();
     let out_file = match args.flag_o {
