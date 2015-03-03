@@ -34,12 +34,13 @@ impl Integrator for Path {
     fn illumination(&self, scene: &Scene, r: &Ray, hit: &Intersection, sampler: &mut Sampler,
                     rng: &mut StdRng) -> Colorf {
         // TODO: We really need the memory pool now
-        let mut l_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1).collect();
-        let mut l_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1).collect();
-        let mut bsdf_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1).collect();
-        let mut bsdf_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1).collect();
-        let mut path_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(self.max_depth as usize + 1).collect();
-        let mut path_samples_comp: Vec<_> = iter::repeat(0.0).take(self.max_depth as usize + 1).collect();
+        let num_samples = self.max_depth as usize + 1;
+        let mut l_samples = vec![(0.0, 0.0); num_samples];
+        let mut l_samples_comp = vec![0.0; num_samples];
+        let mut bsdf_samples = vec![(0.0, 0.0); num_samples];
+        let mut bsdf_samples_comp = vec![0.0; num_samples];
+        let mut path_samples = vec![(0.0, 0.0); num_samples];
+        let mut path_samples_comp = vec![0.0; num_samples];
         sampler.get_samples_2d(&mut l_samples[..], rng);
         sampler.get_samples_2d(&mut bsdf_samples[..], rng);
         sampler.get_samples_2d(&mut path_samples[..], rng);
