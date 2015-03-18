@@ -1,8 +1,6 @@
 //! Defines the Path integrator which implements path tracing with
 //! explicit light sampling
 
-use std::vec::Vec;
-use std::iter;
 use std::num::Float;
 use rand::{Rng, StdRng};
 

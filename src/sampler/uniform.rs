@@ -20,7 +20,7 @@ impl Uniform {
 }
 
 impl Sampler for Uniform {
-    fn get_samples(&mut self, samples: &mut Vec<(f32, f32)>, rng: &mut StdRng) {
+    fn get_samples(&mut self, samples: &mut Vec<(f32, f32)>, _: &mut StdRng) {
         samples.clear();
         if !self.has_samples() {
             return;

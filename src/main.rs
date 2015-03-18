@@ -11,6 +11,7 @@ use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use std::time::duration::Duration;
 use std::os;
+
 use threadpool::ThreadPool;
 use rand::StdRng;
 use docopt::Docopt;
