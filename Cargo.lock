@@ -2,27 +2,13 @@
 name = "tray_rust"
 version = "0.0.1"
 dependencies = [
- "collect 0.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt 0.6.52 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.2.1 (git+https://github.com/PistonDevelopers/image)",
+ "enum-set 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "threadpool 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "collect"
-version = "0.0.26"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "compare 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "ordered_iter 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "traverse 0.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "compare"
-version = "0.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "docopt"
@@ -35,9 +21,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "enum-set"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "image"
 version = "0.2.1"
-source = "git+https://github.com/PistonDevelopers/image#3589b613b6baa9ce84b7abbca2e7c301993834da"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "num 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -60,11 +51,6 @@ dependencies = [
  "rand 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "ordered_iter"
-version = "0.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rand"
@@ -100,7 +86,7 @@ version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "traverse"
-version = "0.0.7"
+name = "threadpool"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 

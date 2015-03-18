@@ -3,7 +3,7 @@
 
 use std::vec::Vec;
 use std::cmp;
-use collect::enum_set::EnumSet;
+use enum_set::EnumSet;
 
 use linalg;
 use linalg::{Normal, Vector, Point};

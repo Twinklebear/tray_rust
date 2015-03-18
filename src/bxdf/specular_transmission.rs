@@ -1,7 +1,7 @@
 //! Defines a BTDF that describes specular transmission
 
 use std::num::Float;
-use collect::enum_set::EnumSet;
+use enum_set::EnumSet;
 
 use linalg::Vector;
 use film::Colorf;

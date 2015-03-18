@@ -2,14 +2,16 @@ extern crate image;
 extern crate rand;
 extern crate docopt;
 extern crate "rustc-serialize" as rustc_serialize;
+extern crate threadpool;
 extern crate tray_rust;
 
 use std::vec::Vec;
-use std::sync::{Arc, TaskPool};
+use std::sync::{Arc};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use std::time::duration::Duration;
 use std::os;
+use threadpool::ThreadPool;
 use rand::StdRng;
 use docopt::Docopt;
 
@@ -80,7 +82,7 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
 /// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
 /// of the channel where the threads will write their samples so that the receiver
 /// can write these samples to the render target
-fn spawn_workers(pool: &TaskPool, n: usize, scene: Arc<scene::Scene>) -> Receiver<(f32, f32, film::Colorf)> {
+fn spawn_workers(pool: &ThreadPool, n: usize, scene: Arc<scene::Scene>) -> Receiver<(f32, f32, film::Colorf)> {
     let (tx, rx) = mpsc::channel();
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
     for _ in 0..n {
@@ -97,7 +99,7 @@ fn spawn_workers(pool: &TaskPool, n: usize, scene: Arc<scene::Scene>) -> Receive
 /// Render the scene in parallel to the render target
 fn render_parallel(rt: &mut film::RenderTarget, n: usize){
     let scene = Arc::new(scene::Scene::new(WIDTH, HEIGHT));
-    let pool = TaskPool::new(n);
+    let pool = ThreadPool::new(n);
     let rx = spawn_workers(&pool, n, scene);
     for m in rx.iter() {
         rt.write(m.0, m.1, &m.2);

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-extern crate collect;
+extern crate "enum-set" as enum_set;
 extern crate rand;
 
 pub mod linalg;

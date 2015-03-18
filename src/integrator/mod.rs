@@ -3,7 +3,7 @@
 //! integration methods, eg. path tracing, photon mapping etc.
 
 use std::num::Float;
-use collect::enum_set::EnumSet;
+use enum_set::EnumSet;
 use rand::StdRng;
 
 use scene::Scene;

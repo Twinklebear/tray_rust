@@ -1,7 +1,7 @@
 //! Defines a BRDF that describes specular reflection
 
 use std::num::Float;
-use collect::enum_set::EnumSet;
+use enum_set::EnumSet;
 
 use linalg::Vector;
 use film::Colorf;

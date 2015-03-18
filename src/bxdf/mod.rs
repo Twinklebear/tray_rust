@@ -5,7 +5,7 @@
 use std::mem;
 use std::num::Float;
 use std::f32;
-use collect::enum_set::{EnumSet, CLike};
+use enum_set::{EnumSet, CLike};
 
 use linalg;
 use linalg::Vector;

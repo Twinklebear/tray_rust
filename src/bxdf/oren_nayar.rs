@@ -3,7 +3,7 @@
 
 use std::f32;
 use std::num::Float;
-use collect::enum_set::EnumSet;
+use enum_set::EnumSet;
 
 use linalg::Vector;
 use film::Colorf;
