@@ -20,13 +20,13 @@ impl Camera {
         let aspect_ratio = (dims.0 as f32) / (dims.1 as f32);
         let screen =
             if aspect_ratio > 1.0 {
-                [aspect_ratio, 1.0]
+                [-aspect_ratio, aspect_ratio, -1.0, 1.0]
             } else {
-                [1.0, 1.0 / aspect_ratio]
+                [-1.0, 1.0, -1.0 / aspect_ratio, -1.0 / aspect_ratio]
             };
         let screen_raster = Transform::scale(&Vector::new(dims.0 as f32, dims.1 as f32, 1.0))
-            * Transform::scale(&Vector::new(1.0 / (2.0 * screen[0]), 1.0 / (2.0 * screen[1]), 1.0))
-            * Transform::translate(&Vector::new(screen[0], screen[1], 0.0));
+            * Transform::scale(&Vector::new(1.0 / (screen[1] - screen[0]), 1.0 / (screen[2] - screen[3]), 1.0))
+            * Transform::translate(&Vector::new(-screen[0], -screen[3], 0.0));
         let raster_screen = screen_raster.inverse();
         let cam_screen = Transform::perspective(fov, 1.0, 1000.0);
         Camera { cam_world: cam_world, raster_cam: cam_screen.inverse() * raster_screen }
