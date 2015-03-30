@@ -22,7 +22,7 @@ impl Camera {
             if aspect_ratio > 1.0 {
                 [-aspect_ratio, aspect_ratio, -1.0, 1.0]
             } else {
-                [-1.0, 1.0, -1.0 / aspect_ratio, -1.0 / aspect_ratio]
+                [-1.0, 1.0, -1.0 / aspect_ratio, 1.0 / aspect_ratio]
             };
         let screen_raster = Transform::scale(&Vector::new(dims.0 as f32, dims.1 as f32, 1.0))
             * Transform::scale(&Vector::new(1.0 / (screen[1] - screen[0]), 1.0 / (screen[2] - screen[3]), 1.0))
