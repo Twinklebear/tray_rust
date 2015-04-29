@@ -9,7 +9,7 @@ use film::Colorf;
 use bxdf::{BxDF, BxDFType};
 
 /// Lambertian BRDF that implements the Lambertian reflectance model
-#[derive(Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Lambertian {
     /// Color of the diffuse material
     reflectance: Colorf,

@@ -1,6 +1,5 @@
 //! Defines a Sphere type which implements the Geometry trait
 
-use std::num::Float;
 use std::f32;
 
 use geometry::{Geometry, DifferentialGeometry};
@@ -8,7 +7,7 @@ use linalg;
 use linalg::{Normal, Vector, Ray};
 
 /// A sphere with user-specified radius
-#[derive(Copy)]
+#[derive(Clone, Copy)]
 pub struct Sphere {
     radius: f32,
 }
@@ -49,15 +48,15 @@ impl Geometry for Sphere {
         ray.max_t = t_hit;
         let p = ray.at(t_hit);
         let n = Normal::new(p.x, p.y, p.z);
-        let theta = Float::acos(linalg::clamp(p.z / self.radius, -1.0, 1.0));
+        let theta = f32::acos(linalg::clamp(p.z / self.radius, -1.0, 1.0));
 
         // Compute derivatives for point vs. parameterization
-        let inv_z = 1.0 / Float::sqrt(p.x * p.x + p.y * p.y);
+        let inv_z = 1.0 / f32::sqrt(p.x * p.x + p.y * p.y);
         let cos_phi = p.x * inv_z;
         let sin_phi = p.y * inv_z;
         let dp_du = Vector::new(-p.y, p.x, 0.0) * f32::consts::PI_2;
         let dp_dv = Vector::new(p.z * cos_phi, p.z * sin_phi,
-                                -self.radius * Float::sin(theta)) * f32::consts::PI;
+                                -self.radius * f32::sin(theta)) * f32::consts::PI;
 
         Some(DifferentialGeometry::new(&p, &n, &dp_du, &dp_dv, self))
     }

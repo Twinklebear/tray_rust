@@ -4,7 +4,7 @@
 
 use std::vec::Vec;
 use std::iter;
-use std::num::Float;
+use std::f32;
 
 use film::Colorf;
 
@@ -29,10 +29,10 @@ impl RenderTarget {
         let img_x = x - 0.5;
         let img_y = y - 0.5;
         // TODO: We're just pretending to be a single pixel box filter for now
-        let x_range = (Float::max(Float::ceil(img_x - 0.5), 0.0) as usize,
-                       Float::min(Float::floor(img_x + 0.5), self.width as f32 - 1.0) as usize);
-        let y_range = (Float::max(Float::ceil(img_y - 0.5), 0.0) as usize,
-                       Float::min(Float::floor(img_y + 0.5), self.height as f32 - 1.0) as usize);
+        let x_range = (f32::max(f32::ceil(img_x - 0.5), 0.0) as usize,
+                       f32::min(f32::floor(img_x + 0.5), self.width as f32 - 1.0) as usize);
+        let y_range = (f32::max(f32::ceil(img_y - 0.5), 0.0) as usize,
+                       f32::min(f32::floor(img_y + 0.5), self.height as f32 - 1.0) as usize);
         let ix = x_range.0;
         let iy = y_range.0;
         // TODO: Can't currently overload the += operator

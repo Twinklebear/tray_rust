@@ -1,4 +1,4 @@
-use std::num::Float;
+use std::f32;
 use std::ops::Mul;
 
 use linalg;
@@ -10,7 +10,7 @@ use linalg::Ray;
 
 /// Transform describes an affine transformation in 3D space
 /// and stores both the transformation and its inverse
-#[derive(Debug, Copy, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Transform {
     pub mat: Matrix4,
     pub inv: Matrix4,
@@ -60,9 +60,9 @@ impl Transform {
     }
     /// Construct a transform to rotate `deg` degrees about the x axis
     pub fn rotate_x(deg: f32) -> Transform {
-        let r = Float::to_radians(deg);
-        let s = Float::sin(r);
-        let c = Float::cos(r);
+        let r = f32::to_radians(deg);
+        let s = f32::sin(r);
+        let c = f32::cos(r);
         let m = Matrix4::new([1.0, 0.0, 0.0, 0.0,
                               0.0, c, -s, 0.0,
                               0.0, s, c, 0.0,
@@ -71,9 +71,9 @@ impl Transform {
     }
     /// Construct a transform to rotate `deg` degrees about the y axis
     pub fn rotate_y(deg: f32) -> Transform {
-        let r = Float::to_radians(deg);
-        let s = Float::sin(r);
-        let c = Float::cos(r);
+        let r = f32::to_radians(deg);
+        let s = f32::sin(r);
+        let c = f32::cos(r);
         let m = Matrix4::new([c, 0.0, s, 0.0,
                               0.0, 1.0, 0.0, 0.0,
                               -s, 0.0, c, 0.0,
@@ -82,9 +82,9 @@ impl Transform {
     }
     /// Construct a transform to rotate `deg` degrees about the z axis
     pub fn rotate_z(deg: f32) -> Transform {
-        let r = Float::to_radians(deg);
-        let s = Float::sin(r);
-        let c = Float::cos(r);
+        let r = f32::to_radians(deg);
+        let s = f32::sin(r);
+        let c = f32::cos(r);
         let m = Matrix4::new([c, -s, 0.0, 0.0,
                               s, c, 0.0, 0.0,
                               0.0, 0.0, 1.0, 0.0,
@@ -94,9 +94,9 @@ impl Transform {
     /// Construct a transform to rotate about `axis` by `deg` degrees
     pub fn rotate(axis: &Vector, deg: f32) -> Transform {
         let a = axis.normalized();
-        let r = Float::to_radians(deg);
-        let s = Float::sin(r);
-        let c = Float::cos(r);
+        let r = f32::to_radians(deg);
+        let s = f32::sin(r);
+        let c = f32::cos(r);
         let mut m = Matrix4::identity();
         *m.at_mut(0, 0) = a.x * a.x + (1.0 - a.x * a.x) * c;
         *m.at_mut(0, 1) = a.x * a.y * (1.0 - c) - a.z * s;
@@ -133,7 +133,7 @@ impl Transform {
              0.0, 1.0, 0.0, 0.0,
              0.0, 0.0, far / (far - near), -far * near / (far - near),
              0.0, 0.0, 1.0, 0.0]);
-        let inv_tan = 1.0 / Float::tan(Float::to_radians(fovy) / 2.0);
+        let inv_tan = 1.0 / f32::tan(f32::to_radians(fovy) / 2.0);
         Transform::scale(&Vector::new(inv_tan, inv_tan, 1.0))
             * Transform::from_mat(&proj_div)
     }
@@ -288,15 +288,15 @@ fn test_rotate_x() {
     let n = t * Normal::new(0.0, 1.0, 0.0);
     // Need to now deal with some floating annoyances in these tests
     assert_eq!(p.x, 0.0);
-    assert_eq!(Float::abs_sub(p.y, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(p.y, 0.0), 0.0);
     assert_eq!(p.z, 1.0);
 
     assert_eq!(v.x, 0.0);
-    assert_eq!(Float::abs_sub(v.y, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(v.y, 0.0), 0.0);
     assert_eq!(v.z, 1.0);
 
     assert_eq!(n.x, 0.0);
-    assert_eq!(Float::abs_sub(n.y, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(n.y, 0.0), 0.0);
     assert_eq!(n.z, 1.0);
 }
 #[test]
@@ -306,15 +306,15 @@ fn test_rotate_y() {
     let v = t * Vector::new(1.0, 0.0, 0.0);
     let n = t * Normal::new(1.0, 0.0, 0.0);
     // Need to now deal with some floating annoyances in these tests
-    assert_eq!(Float::abs_sub(p.x, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(p.x, 0.0), 0.0);
     assert_eq!(p.y, 0.0);
     assert_eq!(p.z, 1.0);
 
-    assert_eq!(Float::abs_sub(v.x, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(v.x, 0.0), 0.0);
     assert_eq!(v.y, 0.0);
     assert_eq!(v.z, 1.0);
 
-    assert_eq!(Float::abs_sub(n.x, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(n.x, 0.0), 0.0);
     assert_eq!(n.y, 0.0);
     assert_eq!(n.z, 1.0);
 }
@@ -325,15 +325,15 @@ fn test_rotate_z() {
     let v = t * Vector::new(1.0, 0.0, 0.0);
     let n = t * Normal::new(1.0, 0.0, 0.0);
     // Need to now deal with some floating annoyances in these tests
-    assert_eq!(Float::abs_sub(p.x, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(p.x, 0.0), 0.0);
     assert_eq!(p.y, 1.0);
     assert_eq!(p.z, 0.0);
 
-    assert_eq!(Float::abs_sub(v.x, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(v.x, 0.0), 0.0);
     assert_eq!(v.y, 1.0);
     assert_eq!(v.z, 0.0);
 
-    assert_eq!(Float::abs_sub(n.x, 0.0), 0.0);
+    assert_eq!(f32::abs_sub(n.x, 0.0), 0.0);
     assert_eq!(n.y, 1.0);
     assert_eq!(n.z, 0.0);
 }

@@ -56,7 +56,7 @@ impl Sample {
 }
 
 /// Defines a region of the image being sampled in pixel coordinates
-#[derive(Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Region {
     /// Current coordinates of the pixel to sample (x, y)
     pub current: (u32, u32),

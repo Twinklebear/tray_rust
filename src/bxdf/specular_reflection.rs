@@ -1,6 +1,6 @@
 //! Defines a BRDF that describes specular reflection
 
-use std::num::Float;
+use std::f32;
 use enum_set::EnumSet;
 
 use linalg::Vector;
@@ -39,7 +39,7 @@ impl BxDF for SpecularReflection {
     fn sample(&self, w_o: &Vector, _: &(f32, f32)) -> (Colorf, Vector, f32) {
         if w_o.z != 0.0 {
             let w_i = Vector::new(-w_o.x, -w_o.y, w_o.z);
-            let c = self.fresnel.fresnel(-bxdf::cos_theta(w_o)) * self.reflectance / Float::abs(bxdf::cos_theta(&w_i));
+            let c = self.fresnel.fresnel(-bxdf::cos_theta(w_o)) * self.reflectance / f32::abs(bxdf::cos_theta(&w_i));
             (c, w_i, 1.0)
         } else {
             (Colorf::black(), Vector::broadcast(0.0), 0.0)

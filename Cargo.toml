@@ -1,25 +1,22 @@
 [package]
-
 name = "tray_rust"
 version = "0.0.1"
 authors = ["Will Usher <willusher.life@gmail.com>"]
 
 [[bin]]
-
 name = "tray_rust"
 doc = false
 
 [dependencies]
-
-rand = "0.2.0"
-enum-set = "0.0.1"
-threadpool = "0.1.1"
-rustc-serialize = "0.3.0"
-docopt = "0.6.52"
-image = "0.2.1"
+enum-set = "0.0.4"
+rand = "0.3.8"
+threadpool = "0.1.4"
+rustc-serialize = "0.3.14"
+docopt = "0.6.63"
+image = "0.3.8"
+num_cpus = "0.2.3"
 
 [profile.release]
-
 # How to send extra compiler flag for -march=native equivalent in Rust
 # flag is `-C target-cpu=native`
 opt-level = 3

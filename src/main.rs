@@ -1,8 +1,11 @@
+#![feature(std_misc)]
+
 extern crate image;
 extern crate rand;
 extern crate docopt;
-extern crate "rustc-serialize" as rustc_serialize;
+extern crate rustc_serialize as rustc_serialize;
 extern crate threadpool;
+extern crate num_cpus;
 extern crate tray_rust;
 
 use std::vec::Vec;
@@ -10,7 +13,7 @@ use std::sync::{Arc};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use std::time::duration::Duration;
-use std::os;
+use std::path::Path;
 
 use threadpool::ThreadPool;
 use rand::StdRng;
@@ -30,8 +33,7 @@ Usage: tray_rust [options]
 
 Options:
   -o <file>     Specify the output file to save the image. Supported formats are
-                PNG, JPG, PPM and BMP (although the BMP won't currently be picked up with the flag).
-                Default is 'out.png'.
+                PNG, JPG and PPM. Default is 'out.png'.
   -n <number>   Specify the number of threads to use for rendering. Defaults to the number of cores
                 on the system.
   -h, --help    Show this message.
@@ -113,7 +115,7 @@ fn main() {
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
     let n = match args.flag_n {
         Some(n) => n,
-        None => os::num_cpus(),
+        None => num_cpus::get(),
     };
     let d = Duration::span(|| render_parallel(&mut rt, n));
     println!("Rendering took {}ms", d.num_milliseconds());
@@ -122,7 +124,7 @@ fn main() {
         Some(f) => f,
         None => "out.png".to_string(),
     };
-    match image::save_buffer(&Path::new(out_file), &img[..], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
+    match image::save_buffer(&Path::new(&out_file), &img[..], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
         Ok(_) => {},
         Err(e) => println!("Error saving image, {}", e),
     };

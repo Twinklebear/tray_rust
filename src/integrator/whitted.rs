@@ -1,6 +1,6 @@
 //! Defines the Whitted integrator which implements Whitted recursive ray tracing
 
-use std::num::Float;
+use std::f32;
 use rand::StdRng;
 
 use scene::Scene;
@@ -15,7 +15,7 @@ use sampler::Sampler;
 
 /// The Whitted integrator implementing the Whitted recursive ray tracing algorithm
 /// See [Whitted, An improved illumination model for shaded display](http://dl.acm.org/citation.cfm?id=358882)
-#[derive(Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Whitted {
     /// The maximum recursion depth for rays
     max_depth: u32,
@@ -38,7 +38,7 @@ impl Integrator for Whitted {
         let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
         let mut illum = Colorf::broadcast(0.0);
         if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {
-            illum = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
+            illum = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
         }
         if ray.depth < self.max_depth {
             illum = illum + self.specular_reflection(scene, ray, &bsdf, sampler, rng);

@@ -1,7 +1,7 @@
 //! Defines the Path integrator which implements path tracing with
 //! explicit light sampling
 
-use std::num::Float;
+use std::f32;
 use rand::{Rng, StdRng};
 
 use scene::Scene;
@@ -15,7 +15,7 @@ use sampler::{Sampler, Sample};
 
 /// The path integrator implementing Path tracing with explicit light sampling
 /// See [Kajiya, The Rendering Equation](http://dl.acm.org/citation.cfm?id=15902)
-#[derive(Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Path {
     min_depth: usize,
     max_depth: usize,
@@ -74,12 +74,12 @@ impl Integrator for Path {
                 break;
             }
             //specular_bounce = sampled_type.contains(&BxDFType::Specular);
-            path_throughput = path_throughput * f * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
+            path_throughput = path_throughput * f * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
 
             // Check if we're beyond the min depth at which point we start trying to
             // terminate rays using Russian Roulette
             if bounce > self.min_depth {
-                let cont_prob = Float::max(0.5, path_throughput.luminance());
+                let cont_prob = f32::max(0.5, path_throughput.luminance());
                 if rng.next_f32() > cont_prob {
                     break;
                 }

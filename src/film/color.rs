@@ -1,6 +1,6 @@
 //! Defines types for operating with floating point and 8 bit RGB colors
 
-use std::num::Float;
+use std::f32;
 use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 
 use linalg;
@@ -45,7 +45,7 @@ impl Colorf {
     }
     /// Check if any of the color channels are NaN
     pub fn has_nans(&self) -> bool {
-        Float::is_nan(self.r) || Float::is_nan(self.g) || Float::is_nan(self.b) || Float::is_nan(self.a)
+        f32::is_nan(self.r) || f32::is_nan(self.g) || f32::is_nan(self.b) || f32::is_nan(self.a)
     }
     /// Convert the linear RGB color to sRGB
     pub fn to_srgb(&self) -> Colorf {
@@ -56,15 +56,15 @@ impl Colorf {
             if self[i] <= 0.0031308 {
                 srgb[i] = 12.92 * self[i];
             } else {
-                srgb[i] = (1.0 + a) * Float::powf(self[i], b) - a;
+                srgb[i] = (1.0 + a) * f32::powf(self[i], b) - a;
             }
         }
         srgb
     }
     /// Return the color with values { e^r, e^g, e^b }
     pub fn exp(&self) -> Colorf {
-        Colorf { r: Float::exp(self.r), g: Float::exp(self.g),
-                 b: Float::exp(self.b), a: Float::exp(self.a) }
+        Colorf { r: f32::exp(self.r), g: f32::exp(self.g),
+                 b: f32::exp(self.b), a: f32::exp(self.a) }
     }
 }
 
@@ -132,8 +132,8 @@ impl Index<usize> for Colorf {
     /// - 1 = g
     /// - 2 = b
     /// - 3 = a
-    fn index(&self, i: &usize) -> &f32 {
-        match *i {
+    fn index(&self, i: usize) -> &f32 {
+        match i {
             0 => &self.r,
             1 => &self.g,
             2 => &self.b,
@@ -150,8 +150,8 @@ impl IndexMut<usize> for Colorf {
     /// - 1 = g
     /// - 2 = b
     /// - 3 = a
-    fn index_mut(&mut self, i: &usize) -> &mut f32 {
-        match *i {
+    fn index_mut(&mut self, i: usize) -> &mut f32 {
+        match i {
             0 => &mut self.r,
             1 => &mut self.g,
             2 => &mut self.b,

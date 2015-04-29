@@ -2,7 +2,6 @@
 //! points/directions on objects and computing the corresponding pdfs
 
 use std::f32;
-use std::num::Float;
 
 use linalg::Vector;
 
@@ -13,7 +12,7 @@ pub fn cos_sample_hemisphere(u: &(f32, f32)) -> Vector {
     //We use Malley's method here, generate samples on a disk then project
     //them up to the hemisphere
     let d = concentric_sample_disk(u);
-    return Vector::new(d.0, d.1, Float::sqrt(Float::max(0.0, 1.0 - d.0 * d.0 - d.1 * d.1)));
+    return Vector::new(d.0, d.1, f32::sqrt(f32::max(0.0, 1.0 - d.0 * d.0 - d.1 * d.1)));
 }
 /// Compute the PDF of the cosine weighted hemisphere sampling
 pub fn cos_hemisphere_pdf(cos_theta: f32) -> f32 { cos_theta * f32::consts::FRAC_1_PI }
@@ -53,8 +52,8 @@ pub fn concentric_sample_disk(u: &(f32, f32)) -> (f32, f32) {
         }
     }
     theta *= f32::consts::FRAC_PI_4;
-    s.0 = radius * Float::cos(theta);
-    s.1 = radius * Float::sin(theta);
+    s.0 = radius * f32::cos(theta);
+    s.1 = radius * f32::sin(theta);
     s
 }
 /// Power heuristic for multiple importance sampling for two functions being sampled, f & g

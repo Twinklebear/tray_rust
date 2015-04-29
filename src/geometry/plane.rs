@@ -1,19 +1,19 @@
 //! Defines a standard plane piece of geometry
 
-use std::num::Float;
+use std::f32;
 
 use geometry::{Geometry, DifferentialGeometry};
 use linalg::{Normal, Vector, Ray};
 
 
 /// A plane centered at the origin spanning [-1, -1] to [1, 1] with a normal along [0, 0, 1]
-#[derive(Copy)]
+#[derive(Clone, Copy)]
 pub struct Plane;
 
 impl Geometry for Plane {
     fn intersect(&self, ray: &mut Ray) -> Option<DifferentialGeometry> {
         // If the ray is perpindicular to the normal it can't intersect
-        if Float::abs(ray.d.z) < 1e-8 {
+        if f32::abs(ray.d.z) < 1e-8 {
             return None;
         }
         // Test for intersection against an infinite plane. Later we will

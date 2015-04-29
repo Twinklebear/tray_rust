@@ -1,6 +1,9 @@
 #![allow(dead_code)]
+#![feature(std_misc)]
+#![feature(core)]
+#![feature(collections)]
 
-extern crate "enum-set" as enum_set;
+extern crate enum_set as enum_set;
 extern crate rand;
 
 pub mod linalg;

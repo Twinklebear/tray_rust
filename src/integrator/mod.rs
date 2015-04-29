@@ -2,7 +2,7 @@
 //! the various surface integrators used to render the scene with different
 //! integration methods, eg. path tracing, photon mapping etc.
 
-use std::num::Float;
+use std::f32;
 use enum_set::EnumSet;
 use rand::StdRng;
 
@@ -45,12 +45,12 @@ pub trait Integrator {
         let sample = Sample::new(&sample_2d[0], sample_1d[0]);
         let (f, w_i, pdf, _) = bsdf.sample(&w_o, spec_refl, &sample);
         let mut refl = Colorf::broadcast(0.0);
-        if pdf > 0.0 && !f.is_black() && Float::abs(linalg::dot(&w_i, &bsdf.n)) != 0.0 {
+        if pdf > 0.0 && !f.is_black() && f32::abs(linalg::dot(&w_i, &bsdf.n)) != 0.0 {
             let mut refl_ray = ray.child(&bsdf.p, &w_i);
             refl_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut refl_ray) {
                 let li = self.illumination(scene, &refl_ray, &hit, sampler, rng);
-                refl = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
+                refl = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
             }
         }
         refl
@@ -69,12 +69,12 @@ pub trait Integrator {
         let sample = Sample::new(&sample_2d[0], sample_1d[0]);
         let (f, w_i, pdf, _) = bsdf.sample(&w_o, spec_trans, &sample);
         let mut transmit = Colorf::broadcast(0.0);
-        if pdf > 0.0 && !f.is_black() && Float::abs(linalg::dot(&w_i, &bsdf.n)) != 0.0 {
+        if pdf > 0.0 && !f.is_black() && f32::abs(linalg::dot(&w_i, &bsdf.n)) != 0.0 {
             let mut trans_ray = ray.child(&bsdf.p, &w_i);
             trans_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut trans_ray) {
                 let li = self.illumination(scene, &trans_ray, &hit, sampler, rng);
-                transmit = f * li * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
+                transmit = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
             }
         }
         transmit
@@ -112,11 +112,11 @@ pub trait Integrator {
             let f = bsdf.eval(w_o, &w_i, flags);
             if !f.is_black() {
                 if light.delta_light() {
-                    direct_light = direct_light + f * li * Float::abs(linalg::dot(&w_i, &bsdf.n)) / pdf_light;
+                    direct_light = direct_light + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf_light;
                 } else {
                     let pdf_bsdf = bsdf.pdf(w_o, &w_i, flags);
                     let w = mc::power_heuristic(1.0, pdf_light, 1.0, pdf_bsdf);
-                    direct_light = direct_light + f * li * Float::abs(linalg::dot(&w_i, &bsdf.n)) * w / pdf_light;
+                    direct_light = direct_light + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) * w / pdf_light;
                 }
             }
         }

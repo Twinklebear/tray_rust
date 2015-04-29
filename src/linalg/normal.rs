@@ -1,4 +1,4 @@
-use std::num::Float;
+use std::f32;
 use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 
 use linalg;
@@ -6,7 +6,7 @@ use linalg::Vector;
 
 /// Normal is a standard 3 component normal but transforms as a normal
 /// normal when transformations are applied
-#[derive(Debug, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub struct Normal {
     pub x: f32,
     pub y: f32,
@@ -28,7 +28,7 @@ impl Normal {
     }
     /// Compute the length of the normal
     pub fn length(&self) -> f32 {
-        Float::sqrt(self.length_sqr())
+        f32::sqrt(self.length_sqr())
     }
     /// Get a normalized copy of this normal
     pub fn normalized(&self) -> Normal {
@@ -104,8 +104,8 @@ impl Index<usize> for Normal {
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index(&self, i: &usize) -> &f32 {
-        match *i {
+    fn index(&self, i: usize) -> &f32 {
+        match i {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
@@ -120,8 +120,8 @@ impl IndexMut<usize> for Normal {
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index_mut(&mut self, i: &usize) -> &mut f32 {
-        match *i {
+    fn index_mut(&mut self, i: usize) -> &mut f32 {
+        match i {
             0 => &mut self.x,
             1 => &mut self.y,
             2 => &mut self.z,

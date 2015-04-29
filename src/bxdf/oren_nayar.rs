@@ -2,7 +2,6 @@
 //! See [Oren-Nayar reflectance model](https://en.wikipedia.org/wiki/Oren%E2%80%93Nayar_reflectance_model)
 
 use std::f32;
-use std::num::Float;
 use enum_set::EnumSet;
 
 use linalg::Vector;
@@ -11,7 +10,7 @@ use bxdf;
 use bxdf::{BxDF, BxDFType};
 
 /// Oren-Nayar BRDF that implements the Oren-Nayar reflectance model
-#[derive(Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct OrenNayar {
     /// Color of the diffuse material
     albedo: Colorf,
@@ -26,7 +25,7 @@ impl OrenNayar {
     /// `roughness` should be the variance of the Gaussian describing the
     /// microfacet distribution
     pub fn new(c: &Colorf, roughness: f32) -> OrenNayar {
-        let mut sigma = Float::to_radians(roughness);
+        let mut sigma = f32::to_radians(roughness);
         sigma *= sigma;
         OrenNayar { albedo: *c,
                     a: 1.0 - 0.5 * sigma / (sigma + 0.33),
@@ -47,16 +46,16 @@ impl BxDF for OrenNayar {
         let sin_theta_i = bxdf::sin_theta(w_i);
         let max_cos =
             if sin_theta_i > 1e-4 && sin_theta_o > 1e-4 {
-                Float::max(0.0, bxdf::cos_phi(w_i) * bxdf::cos_phi(w_o)
+                f32::max(0.0, bxdf::cos_phi(w_i) * bxdf::cos_phi(w_o)
                            + bxdf::sin_phi(w_i) * bxdf::sin_phi(w_o))
             } else {
                 0.0
             };
         let (sin_alpha, tan_beta) =
-            if Float::abs(bxdf::cos_theta(w_i)) > Float::abs(bxdf::cos_theta(w_o)) {
-                (sin_theta_o, sin_theta_i / Float::abs(bxdf::cos_theta(w_i)))
+            if f32::abs(bxdf::cos_theta(w_i)) > f32::abs(bxdf::cos_theta(w_o)) {
+                (sin_theta_o, sin_theta_i / f32::abs(bxdf::cos_theta(w_i)))
             } else {
-                (sin_theta_i, sin_theta_o / Float::abs(bxdf::cos_theta(w_o)))
+                (sin_theta_i, sin_theta_o / f32::abs(bxdf::cos_theta(w_o)))
             };
         self.albedo * f32::consts::FRAC_1_PI * (self.a + self.b * max_cos * sin_alpha * tan_beta)
     }

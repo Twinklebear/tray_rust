@@ -3,7 +3,7 @@ use linalg::Vector;
 
 /// Point is a standard 3 component point but transforms as a point
 /// point when transformations are applied
-#[derive(Debug, Copy, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Point {
     pub x: f32,
     pub y: f32,
@@ -104,8 +104,8 @@ impl Index<usize> for Point {
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index(&self, i: &usize) -> &f32 {
-        match *i {
+    fn index(&self, i: usize) -> &f32 {
+        match i {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
@@ -120,8 +120,8 @@ impl IndexMut<usize> for Point {
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index_mut(&mut self, i: &usize) -> &mut f32 {
-        match *i {
+    fn index_mut(&mut self, i: usize) -> &mut f32 {
+        match i {
             0 => &mut self.x,
             1 => &mut self.y,
             2 => &mut self.z,

@@ -1,8 +1,8 @@
-use std::num::Float;
+use std::f32;
 use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 
 /// Vector is a standard 3 component vector
-#[derive(Debug, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub struct Vector {
     pub x: f32,
     pub y: f32,
@@ -24,7 +24,7 @@ impl Vector {
     }
     /// Compute the length of the vector
     pub fn length(&self) -> f32 {
-        Float::sqrt(self.length_sqr())
+        f32::sqrt(self.length_sqr())
     }
     /// Get a normalized copy of this vector
     pub fn normalized(&self) -> Vector {
@@ -96,8 +96,8 @@ impl Index<usize> for Vector {
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index(&self, i: &usize) -> &f32 {
-        match *i {
+    fn index(&self, i: usize) -> &f32 {
+        match i {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
@@ -112,8 +112,8 @@ impl IndexMut<usize> for Vector {
     /// - 0 = x
     /// - 1 = y
     /// - 2 = z
-    fn index_mut(&mut self, i: &usize) -> &mut f32 {
-        match *i {
+    fn index_mut(&mut self, i: usize) -> &mut f32 {
+        match i {
             0 => &mut self.x,
             1 => &mut self.y,
             2 => &mut self.z,

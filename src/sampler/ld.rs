@@ -1,10 +1,8 @@
 //! Provides a high quality sampling scheme based on (0, 2)-sequences
 //! See sec. 7.4.3 of Physically Based Rendering
 
-use std::num::UnsignedInt;
 use std::u32;
 use std::f32;
-use std::num::Float;
 use rand::{Rng, StdRng};
 use rand::distributions::{IndependentSample, Range};
 
@@ -100,7 +98,7 @@ pub fn van_der_corput(mut n: u32, scramble: u32) -> f32 {
 	n = ((n & 0x33333333) << 2) | ((n & 0xcccccccc) >> 2);
 	n = ((n & 0x55555555) << 1) | ((n & 0xaaaaaaaa) >> 1);
 	n ^= scramble;
-	Float::min(((n >> 8) & 0xffffff) as f32 / ((1 << 24) as f32), 1.0 - f32::EPSILON)
+	f32::min(((n >> 8) & 0xffffff) as f32 / ((1 << 24) as f32), 1.0 - f32::EPSILON)
 }
 /// Generate a scrambled Sobol' sequence value
 /// as described by Kollig & Keller (2002) and in PBR
@@ -114,6 +112,6 @@ pub fn sobol(mut n: u32, mut scramble: u32) -> f32 {
         n >>= 1;
         i ^= i >> 1;
     }
-    Float::min(((scramble >> 8) & 0xffffff) as f32 / ((1 << 24) as f32), 1.0 - f32::EPSILON)
+    f32::min(((scramble >> 8) & 0xffffff) as f32 / ((1 << 24) as f32), 1.0 - f32::EPSILON)
 }
 

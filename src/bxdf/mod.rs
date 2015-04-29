@@ -3,7 +3,6 @@
 //! various BRDF/BTDFs to describe materials
 
 use std::mem;
-use std::num::Float;
 use std::f32;
 use enum_set::{EnumSet, CLike};
 
@@ -28,7 +27,7 @@ pub mod specular_transmission;
 /// Various types of BxDFs that can be selected to specify which
 /// types of surface functions should be evaluated
 #[repr(u32)]
-#[derive(Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BxDFType {
     Reflection, Transmission, Diffuse, Glossy, Specular,
 }
@@ -109,7 +108,7 @@ pub trait BxDF {
     /// Compute the pdf of sampling the pair of directions passed for this BxDF
     fn pdf(&self, w_o: &Vector, w_i: &Vector) -> f32 {
         if same_hemisphere(w_o, w_i) {
-            Float::abs(cos_theta(w_i)) * f32::consts::FRAC_1_PI
+            f32::abs(cos_theta(w_i)) * f32::consts::FRAC_1_PI
         } else {
             0.0
         }
@@ -119,9 +118,9 @@ pub trait BxDF {
 /// Compute the value of cosine theta for a vector in shading space
 pub fn cos_theta(v: &Vector) -> f32 { v.z }
 /// Compute the value of (sine theta)^2  for a vector in shading space
-pub fn sin_theta_sqr(v: &Vector) -> f32 { Float::max(0.0, 1.0 - v.z * v.z) }
+pub fn sin_theta_sqr(v: &Vector) -> f32 { f32::max(0.0, 1.0 - v.z * v.z) }
 /// Compute the value of sine theta for a vector in shading space
-pub fn sin_theta(v: &Vector) -> f32 { Float::sqrt(sin_theta_sqr(v)) }
+pub fn sin_theta(v: &Vector) -> f32 { f32::sqrt(sin_theta_sqr(v)) }
 /// Compute the value of cosine phi for a vector in shading space
 pub fn cos_phi(v: &Vector) -> f32 {
     let sin_theta = sin_theta(v);

@@ -3,6 +3,7 @@
 //! to them
 
 use std::sync::Arc;
+use std::string::ToString;
 
 use geometry::{Geometry, Intersection};
 use material::Material;
@@ -26,7 +27,7 @@ impl Instance {
     pub fn new(geom: Arc<Box<Geometry + Send + Sync>>, material: Arc<Box<Material + Send + Sync>>,
                transform: linalg::Transform, tag: &str)
                -> Instance {
-        Instance { geom: geom, material: material, transform: transform, tag: String::from_str(tag) }
+        Instance { geom: geom, material: material, transform: transform, tag: tag.to_string() }
     }
     /// Test the ray for intersection against this insance of geometry.
     /// returns Some(Intersection) if an intersection was found and None if not.

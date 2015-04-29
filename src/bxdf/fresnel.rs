@@ -1,6 +1,6 @@
 //! Provides the Fresnel term trait and implementations for conductors and dielectric materials
 
-use std::num::Float;
+use std::f32;
 
 use film::Colorf;
 use linalg;
@@ -31,7 +31,7 @@ pub trait Fresnel {
 }
 
 /// Computes the Fresnel term for dielectric materials
-#[derive(Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Dielectric {
     /// Refractive index of the material the light is coming from
     pub eta_i: f32,
@@ -52,19 +52,19 @@ impl Fresnel for Dielectric {
         // we can pass the correct indices of refraction
         let ci = linalg::clamp(cos_i, -1.0, 1.0);
         let (ei, et) =  if ci > 0.0 { (self.eta_i, self.eta_t) } else { (self.eta_t, self.eta_i) };
-        let sin_t = ei / et * Float::sqrt(Float::max(0.0, 1.0 - ci * ci));
+        let sin_t = ei / et * f32::sqrt(f32::max(0.0, 1.0 - ci * ci));
         // Handle total internal reflection
         if sin_t >= 1.0 {
             Colorf::broadcast(1.0)
         } else {
-            let ct = Float::sqrt(Float::max(0.0, 1.0 - sin_t * sin_t));
-            dielectric(Float::abs(ci), ct, ei, et)
+            let ct = f32::sqrt(f32::max(0.0, 1.0 - sin_t * sin_t));
+            dielectric(f32::abs(ci), ct, ei, et)
         }
     }
 }
 
 /// Computes the Fresnel term for conductive materials
-#[derive(Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Conductor {
     /// Refractive index of the material being hit
     pub eta: Colorf,
@@ -80,6 +80,6 @@ impl Conductor {
 }
 
 impl Fresnel for Conductor {
-    fn fresnel(&self, cos_i: f32) -> Colorf { conductor(Float::abs(cos_i), &self.eta, &self.k) }
+    fn fresnel(&self, cos_i: f32) -> Colorf { conductor(f32::abs(cos_i), &self.eta, &self.k) }
 }
 
