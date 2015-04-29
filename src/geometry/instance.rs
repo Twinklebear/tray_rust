@@ -5,7 +5,7 @@
 use std::sync::Arc;
 use std::string::ToString;
 
-use geometry::{Geometry, Intersection};
+use geometry::{Intersection, Boundable, BBox, BoundableGeom};
 use material::Material;
 use linalg;
 
@@ -13,7 +13,7 @@ use linalg;
 pub struct Instance {
     /// The geometry that's being instanced. TODO: We must Box for now but this
     /// restriction will be lifted later
-    geom: Arc<Box<Geometry + Send + Sync>>,
+    geom: Arc<Box<BoundableGeom + Send + Sync>>,
     /// The material being used by this instance.
     pub material: Arc<Box<Material + Send + Sync>>,
     /// The transform to world space
@@ -24,7 +24,7 @@ pub struct Instance {
 
 impl Instance {
     /// Create a new instance of some geometry in the scene
-    pub fn new(geom: Arc<Box<Geometry + Send + Sync>>, material: Arc<Box<Material + Send + Sync>>,
+    pub fn new(geom: Arc<Box<BoundableGeom + Send + Sync>>, material: Arc<Box<Material + Send + Sync>>,
                transform: linalg::Transform, tag: &str)
                -> Instance {
         Instance { geom: geom, material: material, transform: transform, tag: tag.to_string() }
@@ -45,6 +45,12 @@ impl Instance {
         dg.dp_du = self.transform * dg.dp_du;
         dg.dp_dv = self.transform * dg.dp_dv;
         Some(Intersection::new(dg, self))
+    }
+}
+
+impl Boundable for Instance {
+    fn bounds(&self) -> BBox {
+        self.transform * self.geom.bounds()
     }
 }
 

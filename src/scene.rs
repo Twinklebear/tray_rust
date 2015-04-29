@@ -5,9 +5,8 @@ use std::sync::Arc;
 
 use linalg::{Transform, Point, Vector, Ray};
 use film::{Camera, Colorf};
-use geometry::{Sphere, Plane, Instance};
+use geometry::{Sphere, Plane, Instance, BoundableGeom, Intersection};
 use material::{Matte, SpecularMetal, Glass, Material};
-use geometry::{Geometry, Intersection};
 use integrator;
 use integrator::Integrator;
 use light;
@@ -27,8 +26,8 @@ impl Scene {
     /// Create our (currently) hard-coded scene, passing in the render target
     /// dimensions so we can set the projection matrix for the camera
     pub fn new(w: usize, h: usize) -> Scene {
-        let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<Geometry + Send + Sync>);
-        let plane = Arc::new(Box::new(Plane) as Box<Geometry + Send + Sync>);
+        let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<BoundableGeom + Send + Sync>);
+        let plane = Arc::new(Box::new(Plane) as Box<BoundableGeom + Send + Sync>);
         let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 1.0)) as Box<Material + Send + Sync>);
         let red_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0)) as Box<Material + Send + Sync>);
         let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0)) as Box<Material + Send + Sync>);
