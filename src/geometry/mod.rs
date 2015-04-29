@@ -10,6 +10,7 @@ pub use self::instance::Instance;
 pub use self::sphere::Sphere;
 pub use self::plane::Plane;
 pub use self::bbox::BBox;
+pub use self::bvh::BVH;
 
 pub mod differential_geometry;
 pub mod intersection;
@@ -17,6 +18,7 @@ pub mod instance;
 pub mod sphere;
 pub mod plane;
 pub mod bbox;
+pub mod bvh;
 
 /// Trait implemented by geometric primitives
 pub trait Geometry {
