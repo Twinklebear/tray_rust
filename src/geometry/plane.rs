@@ -2,9 +2,8 @@
 
 use std::f32;
 
-use geometry::{Geometry, DifferentialGeometry};
-use linalg::{Normal, Vector, Ray};
-
+use geometry::{Geometry, DifferentialGeometry, Boundable, BBox};
+use linalg::{Normal, Vector, Ray, Point};
 
 /// A plane centered at the origin spanning [-1, -1] to [1, 1] with a normal along [0, 0, 1]
 #[derive(Clone, Copy)]
@@ -32,6 +31,12 @@ impl Geometry for Plane {
         } else {
             None
         }
+    }
+}
+
+impl Boundable for Plane {
+    fn bounds(&self) -> BBox {
+        BBox::span(Point::new(-1.0, -1.0, 0.0), Point::new(1.0, 1.0, 0.0))
     }
 }
 

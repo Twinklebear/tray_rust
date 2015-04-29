@@ -2,9 +2,9 @@
 
 use std::f32;
 
-use geometry::{Geometry, DifferentialGeometry};
+use geometry::{Geometry, DifferentialGeometry, Boundable, BBox};
 use linalg;
-use linalg::{Normal, Vector, Ray};
+use linalg::{Normal, Vector, Ray, Point};
 
 /// A sphere with user-specified radius
 #[derive(Clone, Copy)]
@@ -59,6 +59,13 @@ impl Geometry for Sphere {
                                 -self.radius * f32::sin(theta)) * f32::consts::PI;
 
         Some(DifferentialGeometry::new(&p, &n, &dp_du, &dp_dv, self))
+    }
+}
+
+impl Boundable for Sphere {
+    fn bounds(&self) -> BBox {
+        BBox::span(Point::new(-self.radius, -self.radius, -self.radius),
+                   Point::new(self.radius, self.radius, self.radius))
     }
 }
 
