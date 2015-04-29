@@ -9,12 +9,14 @@ pub use self::intersection::Intersection;
 pub use self::instance::Instance;
 pub use self::sphere::Sphere;
 pub use self::plane::Plane;
+pub use self::bbox::BBox;
 
 pub mod differential_geometry;
 pub mod intersection;
 pub mod instance;
 pub mod sphere;
 pub mod plane;
+pub mod bbox;
 
 /// Trait implemented by geometric primitives
 pub trait Geometry {
@@ -24,5 +26,11 @@ pub trait Geometry {
     /// Returns the differential geometry containing the hit information if the
     /// ray hit the object and set's the ray's `max_t` member accordingly
     fn intersect(&self, ray: &mut linalg::Ray) -> Option<DifferentialGeometry>;
+}
+
+/// Trait implemented by scene objects that can report an AABB describing their bounds
+pub trait Boundable {
+    /// Get an AABB reporting the object's bounds in space
+    fn bounds(&self) -> BBox;
 }
 

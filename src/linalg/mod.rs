@@ -19,6 +19,9 @@ pub mod ray;
 pub mod matrix4;
 pub mod transform;
 
+/// Enum representing on of the 3 spatial axes
+pub enum Axis { X, Y, Z }
+
 /// Convert value in degrees to radians
 /// TODO: See where `f32::to_radians` ends up, if it gets stabilized into Rust switch back to it
 pub fn to_radians(d: f32) -> f32 {

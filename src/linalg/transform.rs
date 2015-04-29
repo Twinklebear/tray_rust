@@ -7,6 +7,7 @@ use linalg::Vector;
 use linalg::Point;
 use linalg::Normal;
 use linalg::Ray;
+use geometry::BBox;
 
 /// Transform describes an affine transformation in 3D space
 /// and stores both the transformation and its inverse
@@ -246,6 +247,33 @@ impl Mul<Ray> for Transform {
         res.o = self * res.o;
         res.d = self * res.d;
         res
+    }
+}
+
+impl Mul<BBox> for Transform {
+    type Output = BBox;
+    /// Apply the transformation to the AABB. This is an implementation of
+    /// Arvo (1990) AABB transformation
+    fn mul(self, b: BBox) -> BBox {
+        let mut out = BBox::new();
+        for i in 0..3 {
+            out.min[i] = *self.mat.at(i, 3);
+            out.max[i] = *self.mat.at(i, 3);
+        }
+        for i in 0..3 {
+            for j in 0..3 {
+                let x = *self.mat.at(i, j) * b.min[j];
+                let y = *self.mat.at(i, j) * b.max[j];
+                if x < y {
+                    out.min[i] += x;
+                    out.max[i] += y;
+                } else {
+                    out.min[i] += y;
+                    out.max[i] += x;
+                }
+            }
+        }
+        out
     }
 }
 
