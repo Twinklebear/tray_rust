@@ -17,7 +17,6 @@ use geometry::BVH;
 /// shared immutably among the ray tracing threads
 pub struct Scene {
     pub camera: Arc<Camera>,
-    pub instances: Arc<Vec<Instance>>,
     pub bvh: BVH<Instance>,
     pub integrator: Arc<Box<Integrator + Send + Sync>>,
     /// TODO: Only one light for now
@@ -64,8 +63,7 @@ impl Scene {
         Scene {
             camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
                 &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h))),
-            instances: instances.clone(),
-            bvh: BVH::new(4, instances.clone()),
+            bvh: BVH::new(4, instances),
             integrator: Arc::new(Box::new(integrator::Path::new(3, 8)) as Box<Integrator + Send + Sync>),
             light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &light_color))
                             as Box<Light + Send + Sync>),
@@ -74,11 +72,7 @@ impl Scene {
     /// Test the ray for intersections against the objects in the scene.
     /// Returns Some(Intersection) if an intersection was found and None if not.
     pub fn intersect(&self, ray: &mut Ray) -> Option<Intersection> {
-        // We can always return the next hit found since the ray's max_t value is updated
-        // after an intersection is found. Thus if we find another hit we know that one
-        // occured before any previous ones. TODO: Replace with a BVH
-        self.bvh.intersect(&mut ray, |ref mut r, ref i| i.intersect(r))
-        //self.instances.iter().fold(None, |p, ref i| i.intersect(ray).or(p))
+        self.bvh.intersect(ray, |r, i| i.intersect(r))
     }
 }
 

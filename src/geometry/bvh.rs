@@ -1,7 +1,6 @@
 //! Provides a simple SAH split based BVH2 that stores types implementing the Boundable trait
 
 use std::sync::Arc;
-use std::ops::FnMut;
 
 use geometry::Boundable;
 use linalg::Ray;
@@ -21,10 +20,12 @@ impl<T: Boundable> BVH<T> {
     /// completes.
     /// TODO: I've tried to base this interface on that of `Iterator::map` however they don't seem
     /// to take `f` as a mutable parameter?
-    pub fn intersect<F, R>(&self, ray: &mut Ray, mut f: F) -> Option<R>
-            where F: FnMut(&mut Ray, &T) -> Option<R> {
+    pub fn intersect<'a, F, R>(&'a self, ray: &mut Ray, mut f: F) -> Option<R>
+            where F: FnMut(&mut Ray, &'a T) -> Option<R> {
         let mut result = None;
-        result = f(ray, &self.objects[0]).or(result);
+		for o in &*self.objects {
+			result = f(ray, o).or(result);
+		}
         result
     }
 }
