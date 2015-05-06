@@ -20,8 +20,8 @@ impl<T: Boundable> BVH<T> {
     /// completes.
     /// TODO: I've tried to base this interface on that of `Iterator::map` however they don't seem
     /// to take `f` as a mutable parameter?
-    pub fn intersect<'a, F, R>(&'a self, ray: &mut Ray, mut f: F) -> Option<R>
-            where F: FnMut(&mut Ray, &'a T) -> Option<R> {
+    pub fn intersect<'a, F, R>(&'a self, ray: &mut Ray, f: F) -> Option<R>
+            where F: Fn(&mut Ray, &'a T) -> Option<R> {
         let mut result = None;
 		for o in &*self.objects {
 			result = f(ray, o).or(result);
