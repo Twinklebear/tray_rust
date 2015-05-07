@@ -10,8 +10,8 @@ pub struct BVH<T> {
     max_geom: usize,
     /// Reference to the vec containing the unordered objects in the BVH
     objects: Arc<Vec<T>>,
-    /// Should this be a vec of references? or of indices?
-    /// doing ordered_geom: Vec<&T> seems to be a lifetime annotation nightmare
+    // Should this be a vec of references? or of indices?
+    // doing ordered_geom: Vec<&T> seems to be a lifetime annotation nightmare
 }
 
 impl<T: Boundable> BVH<T> {
