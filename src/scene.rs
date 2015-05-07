@@ -16,7 +16,7 @@ use geometry::BVH;
 /// The scene containing the objects and camera configuration we'd like to render,
 /// shared immutably among the ray tracing threads
 pub struct Scene {
-    pub camera: Arc<Camera>,
+    pub camera: Camera,
     pub bvh: BVH<Instance>,
     pub integrator: Arc<Box<Integrator + Send + Sync>>,
     /// TODO: Only one light for now
@@ -32,7 +32,7 @@ impl Scene {
         let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 1.0)) as Box<Material + Send + Sync>);
         let red_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0)) as Box<Material + Send + Sync>);
         let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0)) as Box<Material + Send + Sync>);
-        let instances = Arc::new(vec![
+        let instances = vec![
             // The back wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 20.0, 12.0))
                           * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0), "back_wall"),
@@ -58,11 +58,11 @@ impl Scene {
                 Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere")
-        ]);
+        ];
         let light_color = Colorf::broadcast(200.0) * Colorf::new(0.780131, 0.780409, 0.775833);
         Scene {
-            camera: Arc::new(Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
-                &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h))),
+            camera: Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
+                &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h)),
             bvh: BVH::new(4, instances),
             integrator: Arc::new(Box::new(integrator::Path::new(3, 8)) as Box<Integrator + Send + Sync>),
             light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &light_color))
