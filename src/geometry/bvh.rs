@@ -12,6 +12,10 @@ pub struct BVH<T> {
     objects: Arc<Vec<T>>,
     // Should this be a vec of references? or of indices?
     // doing ordered_geom: Vec<&T> seems to be a lifetime annotation nightmare
+    // I'm not sure how to express that the refered to objects live as long as
+    // `objects`, it seems like adding a lifetime parameter requires polluting
+    // everything with lifetime annotations that I think should be unecessary
+    // ordered_geom: Vec<&'a T>,
 }
 
 impl<T: Boundable> BVH<T> {
