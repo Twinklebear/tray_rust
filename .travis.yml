@@ -1,0 +1,20 @@
+language: rust
+# TODO: Project doesn't currently build on nightly due to some dependencies 
+rust:
+    - nightly
+sudo: false
+before_script:
+    - pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
+script:
+    - travis-cargo build
+    - travis-cargo doc
+after_success:
+    - git config user.name "Travis-CI Doc Bot"
+    - git config user.email "willusher.life@gmail.com"
+      # upload the documentation from the build with beta (automatically only actually
+      # runs on the master branch)
+    - travis-cargo --only beta doc-upload
+env:
+    global:
+        secure: dtn9JgG7d2pFG/Y429JmXx4N8XsU5G6EQ7Jg2yQF6Xzq7m0jCReDVPjsIcukJqyHWiXAUUVKOpe2G86u9BRQbT6b/lPeCQxZRrEwtM1rJRqfrEJd1s4n1g7kK9H0u86IlvMXA5qEmPvyj5AcmTb+wPL4gqRxCl+hSEcSuPp7/ZQ=
+
