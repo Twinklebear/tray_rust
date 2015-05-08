@@ -24,3 +24,6 @@ debug = false
 rpath = false
 lto = true
 
+[features]
+unstable = []
+
