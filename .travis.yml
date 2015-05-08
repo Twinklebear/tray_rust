@@ -1,5 +1,4 @@
 language: rust
-# TODO: Project doesn't currently build on nightly due to some dependencies 
 rust:
     - nightly
 sudo: false
