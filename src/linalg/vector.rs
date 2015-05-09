@@ -65,6 +65,14 @@ impl Mul<f32> for Vector {
     }
 }
 
+impl Mul<Vector> for f32 {
+    type Output = Vector;
+    /// Scale the vector by some value
+    fn mul(self, rhs: Vector) -> Vector {
+        Vector { x: self * rhs.x, y: self * rhs.y, z: self * rhs.z }
+    }
+}
+
 impl Div for Vector {
     type Output = Vector;
     /// Divide the vectors components by the right hand side's components

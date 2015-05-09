@@ -73,6 +73,14 @@ impl Mul<f32> for Normal {
     }
 }
 
+impl Mul<Normal> for f32 {
+    type Output = Normal;
+    /// Scale the normal by some value
+    fn mul(self, rhs: Normal) -> Normal {
+        Normal { x: self * rhs.x, y: self * rhs.y, z: self * rhs.z }
+    }
+}
+
 impl Div for Normal {
     type Output = Normal;
     /// Divide the normals components by the right hand side's components
