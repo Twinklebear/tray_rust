@@ -1,7 +1,9 @@
 //! Provides a simple SAH split based BVH2 that stores types implementing the Boundable trait
 
 use std::f32;
+use std::iter::repeat;
 
+use partition::partition;
 use geometry::{BBox, Boundable};
 use linalg::{Point, Ray, Axis};
 
@@ -35,6 +37,7 @@ impl<'a, T: Boundable> GeomInfo<'a, T> {
 }
 
 /// Data needed by a build node during construction
+#[derive(Debug)]
 enum BuildNodeData {
     /// Interior node of a BVH, stores two child nodes
     Interior {
@@ -55,6 +58,7 @@ enum BuildNodeData {
 
 /// Temporary datastructure for constructing the BVH into a tree before
 /// flattening it down into a Vec for performance
+#[derive(Debug)]
 struct BuildNode {
     /// The data stored at this node, either information about an Interior
     /// or Lead node
@@ -72,9 +76,31 @@ impl BuildNode {
     fn leaf(ngeom: usize, geom_offset: usize, bounds: BBox) -> BuildNode {
         BuildNode { node: BuildNodeData::Leaf { ngeom: ngeom, geom_offset: geom_offset }, bounds: bounds }
     }
+    fn print_tree(&self, depth: usize) {
+        let ident: String = repeat(" ").take(depth).collect();
+        println!("{}BuildNode: {{", ident);
+        let pad: String = repeat(" ").take(depth + 2).collect();
+        println!("{}bounds: {:?}", pad, self.bounds);
+        match self.node {
+            BuildNodeData::Interior { children: ref c, split_axis: ref a } => {
+                println!("{}type: Interior", pad);
+                println!("{}split axis: {:?}", pad, a);
+                println!("{}left child:", pad);
+                c[0].print_tree(depth + 2);
+                println!("{}right child:", pad);
+                c[1].print_tree(depth + 2);
+            },
+            BuildNodeData::Leaf { ngeom: ref n, geom_offset: ref o } => {
+                println!("{}type: Leaf", pad);
+                println!("{}ngeom: {}", pad, n);
+                println!("{}geom offset: {}", pad, o);
+            },
+        }
+        println!("{}}}", ident);
+    }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 struct SAHBucket {
     count: usize,
     bounds: BBox,
@@ -105,6 +131,8 @@ impl<T: Boundable> BVH<T> {
             let mut ordered_geom = Vec::with_capacity(geometry.len());
             let root = BVH::build(&mut build_geom[..], &mut ordered_geom, &mut total_nodes,
                                   max_geom);
+            root.print_tree(0);
+            println!("Ordered geom = {:?}", ordered_geom);
         }
         // TODO: does the BVH even need to store max geom after building?
         BVH { max_geom: max_geom, geometry: geometry }
@@ -126,6 +154,7 @@ impl<T: Boundable> BVH<T> {
     /// tree ordering for more efficient access
     fn build(build_info: &mut [GeomInfo<T>], ordered_geom: &mut Vec<usize>,
              total_nodes: &mut usize, max_geom: usize) -> BuildNode {
+        println!("Building node {}", total_nodes);
         *total_nodes += 1;
         // Find bounding box for all geometry we're trying to store at this level
         let bounds = build_info.iter().fold(BBox::new(), |b, g| b.box_union(&g.geom.bounds()));
@@ -138,7 +167,7 @@ impl<T: Boundable> BVH<T> {
         // the axis along which there is the most variation in the geometry's centroids
         let centroids = build_info.iter().fold(BBox::new(), |b, g| b.point_union(&g.center));
         let split_axis = centroids.max_extent();
-        let mid = build_info.len() / 2;
+        let mut mid = build_info.len() / 2;
         // If all the geometry's centers are on the same point there's no partitioning that makes
         // sense to do
         if centroids.max[split_axis] == centroids.min[split_axis] {
@@ -154,7 +183,7 @@ impl<T: Boundable> BVH<T> {
         }
         // If there's only a few objects just use an equal partitioning to split
         // Otherwise do a full SAH based split on the geometry
-        if ngeom < 5 {
+        if ngeom < 3 {
             // TODO: I'd prefer to use something like nth_element like I do in tray
             // here, but I guess a full sort is kind of meh on 5 elements
             // There shouldn't be NaNs in these positions so just give up if there are
@@ -167,14 +196,17 @@ impl<T: Boundable> BVH<T> {
         } else {
             // We only consider binning into 12 buckets
             let mut buckets = [SAHBucket::new(); 12];
+            println!("build_info.len() = {}", build_info.len());
             // Place geometry into nearest bucket
             for g in build_info.iter() {
                 let b = ((g.center[split_axis] - centroids.min[split_axis])
                     / (centroids.max[split_axis] - centroids.min[split_axis]) * buckets.len() as f32) as usize;
                 let b = if b == buckets.len() { b - 1 } else { b };
+                println!("building buckets geom idx {} fell into bucket {}", g.geom_idx, b);
                 buckets[b].count += 1;
                 buckets[b].bounds = buckets[b].bounds.box_union(&g.bounds);
             }
+            println!("Buckets: {:?}", buckets);
             // Compute cost of each bucket but the last using the surface area heuristic
             let mut cost = [0.0; 11];
             for (i, c) in cost.iter_mut().enumerate() {
@@ -190,16 +222,36 @@ impl<T: Boundable> BVH<T> {
                 });
                 *c = 0.125 * (left.count as f32 * left.bounds.surface_area()
                              + right.count as f32 * right.bounds.surface_area()) / bounds.surface_area();
+                println!("For i = {}\n\tleft = {:?}\n\tright = {:?}\n\tcost = {}", i, left, right, c);
             }
             let (min_bucket, min_cost) = cost.iter().enumerate().fold((0, f32::INFINITY),
                 |(pi, pc), (i, c)| {
                     if *c < pc { (i, *c) } else { (pi, pc) }
                 });
+            println!("min bucket cost = {}, index = {}", min_cost, min_bucket);
             // If we're forced to split by the amount of geometry or it's cheaper to split, do so
             if ngeom > max_geom || min_cost < ngeom as f32 {
-                // TODO: Implement partition
+                mid = partition(build_info.iter_mut(),
+                    |g| {
+                        let b = ((g.center[split_axis] - centroids.min[split_axis])
+                                 / (centroids.max[split_axis] - centroids.min[split_axis]) * buckets.len() as f32) as usize;
+                        let b = if b == buckets.len() { b - 1 } else { b };
+                        println!("partitioning geom idx {} fell into bucket {}", g.geom_idx, b);
+                        b <= min_bucket
+                    });
+                // partition returns the index of the first element in the false group
+                mid = mid - 1;
+                println!("mid point = {}", mid);
+                println!("build info = ");
+                for b in build_info.iter() {
+                    println!("\tgeom idx = {}", b.geom_idx);
+                }
+            }
+            else {
+                return BVH::build_leaf(build_info, ordered_geom, bounds);
             }
         }
+        assert!(mid != 0 && mid != build_info.len());
         let l = Box::new(BVH::build(&mut build_info[..mid], ordered_geom,
                                     total_nodes, max_geom));
         let r = Box::new(BVH::build(&mut build_info[mid..], ordered_geom,
