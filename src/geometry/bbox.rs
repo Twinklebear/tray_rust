@@ -64,6 +64,11 @@ impl BBox {
     pub fn offset(&self, p: &Point) -> Vector {
         (*p - self.min) / (self.max - self.min)
     }
+    /// Compute the surface area of the box
+	pub fn surface_area(&self) -> f32 {
+		let d = self.max - self.min;
+		2.0 * (d.x * d.y + d.x * d.z + d.y * d.z)
+	}
     /// Optimized ray-box intersection test, for use in the BVH traversal where we have
     /// pre-computed the ray's inverse direction and which directions are negative, indicated
     /// by a 1 for negative and 0 for non-negative

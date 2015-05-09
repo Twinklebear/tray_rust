@@ -1,5 +1,5 @@
 use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
-use linalg::Vector;
+use linalg::{Vector, Axis};
 
 /// Point is a standard 3 component point but transforms as a point
 /// point when transformations are applied
@@ -110,6 +110,22 @@ impl Index<usize> for Point {
             1 => &self.y,
             2 => &self.z,
             _ => panic!("Invalid index into point"),
+        }
+    }
+}
+
+impl Index<Axis> for Point {
+    type Output = f32;
+    /// Access the point by index
+    ///
+    /// - 0 = x
+    /// - 1 = y
+    /// - 2 = z
+    fn index(&self, i: Axis) -> &f32 {
+        match i {
+            Axis::X => &self.x,
+            Axis::Y => &self.y,
+            Axis::Z => &self.z,
         }
     }
 }
