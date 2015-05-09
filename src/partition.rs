@@ -14,9 +14,8 @@ pub fn partition<'a, T: 'a, I, F>(mut it: I, pred: F) -> usize
         let mut front = None;
         let mut back = None;
         while let Some(f) = it.next() {
-            if pred(f) {
-                split_idx += 1;
-            } else {
+            split_idx += 1;
+            if !pred(f) {
                 front = Some(f);
                 break;
             }
@@ -39,9 +38,11 @@ pub fn partition<'a, T: 'a, I, F>(mut it: I, pred: F) -> usize
 fn test_partition() {
     // This test just partitions the odd and even numbers
     let mut vals = vec![1u32, 2, 3, 4, 5, 6];
-    partition(vals.iter_mut(), |x| *x % 2 == 0);
+    let idx = partition(vals.iter_mut(), |x| *x % 2 == 0);
+    println!("Partition idx = {}", idx);
     // The first 3 items should be even the next 3 should be odd
     println!("Partitioned: {:?}", vals);
+    assert_eq!(idx, 3);
     assert!(vals.iter().take(3).fold(true, |f, x| *x % 2 == 0 && f));
     assert!(vals.iter().skip(3).fold(true, |f, x| *x % 2 != 0 && f));
 }
