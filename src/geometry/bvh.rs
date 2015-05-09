@@ -1,6 +1,5 @@
 //! Provides a simple SAH split based BVH2 that stores types implementing the Boundable trait
 
-use std::mem;
 use std::f32;
 
 use geometry::{BBox, Boundable};
@@ -220,34 +219,5 @@ impl<T: Boundable> BVH<T> {
         }
         BuildNode::leaf(build_info.len(), geom_offset, bounds)
     }
-}
-
-pub fn partition<'a, T: 'a, I, F>(mut it: I, pred: F) -> usize
-        where I: DoubleEndedIterator<Item = &'a mut T>,
-        F: Fn(&T) -> bool {
-    let mut split_idx = 0;
-    loop {
-        let mut front = None;
-        let mut back = None;
-        while let Some(f) = it.next() {
-            if pred(f) {
-                split_idx += 1;
-            } else {
-                front = Some(f);
-                break;
-            }
-        }
-        while let Some(b) = it.next_back() {
-            if pred(b) {
-                back = Some(b);
-                break;
-            }
-        }
-        match (front, back) {
-            (Some(f), Some(b)) => mem::swap(f, b),
-            _ => break,
-        }
-    }
-    split_idx
 }
 

@@ -16,4 +16,5 @@ pub mod bxdf;
 pub mod material;
 pub mod light;
 pub mod mc;
+pub mod partition;
 
