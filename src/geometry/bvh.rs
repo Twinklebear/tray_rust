@@ -10,12 +10,13 @@ use linalg::{Point, Ray, Axis};
 /// A standard BVH2 that stores objects that can report their bounds in some space
 /// via the `Boundable` trait. The BVH is constructed using a SAH partitioning scheme
 pub struct BVH<T> {
-    /// Maximum amount of geometry we're willing to put in a leaf
-    max_geom: usize,
     /// The geometry stored in this BVH, this will be re-ordered to
     /// fit the BVH construction layout. TODO: We may want to make
     /// the geometry accessible by index
     geometry: Vec<T>,
+    /// Indices into `geometry` sorted by the order they're accessed by BVH leaf nodes
+    /// TODO: How can we re-sort `geometry to match this ordering?
+    ordered_geom: Vec<usize>,
     /// The flattened tree structure of the BVH
     tree: Vec<FlatNode>,
 }
@@ -25,6 +26,7 @@ impl<T: Boundable> BVH<T> {
     pub fn new(max_geom: usize, mut geometry: Vec<T>) -> BVH<T> {
         assert!(!geometry.is_empty());
         let mut flat_tree = Vec::new();
+        let mut ordered_geom = Vec::with_capacity(geometry.len());
         {
             let mut build_geom = Vec::with_capacity(geometry.len());
             for (i, g) in geometry.iter().enumerate() {
@@ -36,7 +38,6 @@ impl<T: Boundable> BVH<T> {
             // Should we move things into/out of build_geom instead of borrowing?
             // it knows the index of the items
             let mut total_nodes = 0;
-            let mut ordered_geom = Vec::with_capacity(geometry.len());
             let root = Box::new(BVH::build(&mut build_geom[..], &mut ordered_geom, &mut total_nodes,
                                   max_geom));
             root.print_tree(0);
@@ -44,13 +45,15 @@ impl<T: Boundable> BVH<T> {
             flat_tree.reserve(total_nodes);
             BVH::<T>::flatten_tree(&root, &mut flat_tree);
             assert_eq!(flat_tree.len(), total_nodes);
+            assert_eq!(ordered_geom.len(), geometry.len());
             println!("Flattened tree:");
             for n in &flat_tree {
                 println!("\t{:?}", n);
             }
+            // TODO: I'm not sure if there's a better way that we can re-sort the geometry by the
+            // indices in ordered geom
         }
-        // TODO: does the BVH even need to store max geom after building?
-        BVH { max_geom: max_geom, geometry: geometry, tree: flat_tree }
+        BVH { geometry: geometry, ordered_geom: ordered_geom, tree: flat_tree }
     }
     /// Traverse the BVH and call the function passed on the objects in the leaf nodes
     /// of the BVH, returning the value returned by the function after traversal completes
