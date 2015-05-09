@@ -20,7 +20,7 @@ pub mod matrix4;
 pub mod transform;
 
 /// Enum representing on of the 3 spatial axes
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Axis { X, Y, Z }
 
 /// Convert value in degrees to radians
