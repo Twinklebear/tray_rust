@@ -19,6 +19,7 @@ pub mod sphere;
 pub mod plane;
 pub mod bbox;
 pub mod bvh;
+pub mod mesh;
 
 /// Trait implemented by geometric primitives
 pub trait Geometry {
