@@ -13,8 +13,5 @@ after_success:
     - git config user.email "willusher.life@gmail.com"
       # upload the documentation from the build with beta (automatically only actually
       # runs on the master branch)
-    - travis-cargo --only nightly doc-upload
-env:
-    global:
-        secure: dtn9JgG7d2pFG/Y429JmXx4N8XsU5G6EQ7Jg2yQF6Xzq7m0jCReDVPjsIcukJqyHWiXAUUVKOpe2G86u9BRQbT6b/lPeCQxZRrEwtM1rJRqfrEJd1s4n1g7kK9H0u86IlvMXA5qEmPvyj5AcmTb+wPL4gqRxCl+hSEcSuPp7/ZQ=
+      #- travis-cargo --only nightly doc-upload
 
