@@ -255,6 +255,12 @@ impl<T: Boundable> BVH<T> {
     }
 }
 
+impl<T: Boundable> Boundable for BVH<T> {
+    fn bounds(&self) -> BBox {
+        self.tree[0].bounds
+    }
+}
+
 /// Data for flattened BVH nodes
 #[derive(Debug)]
 enum FlatNodeData {
