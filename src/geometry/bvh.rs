@@ -5,7 +5,7 @@ use std::iter::repeat;
 
 use partition::partition;
 use geometry::{BBox, Boundable};
-use linalg::{Point, Ray, Axis};
+use linalg::{Point, Ray, Axis, Vector};
 
 /// A standard BVH2 that stores objects that can report their bounds in some space
 /// via the `Boundable` trait. The BVH is constructed using a SAH partitioning scheme
@@ -23,7 +23,7 @@ pub struct BVH<T> {
 
 impl<T: Boundable> BVH<T> {
     /// Create a new BVH using a SAH construction algorithm
-    pub fn new(max_geom: usize, mut geometry: Vec<T>) -> BVH<T> {
+    pub fn new(max_geom: usize, geometry: Vec<T>) -> BVH<T> {
         assert!(!geometry.is_empty());
         let mut flat_tree = Vec::new();
         let mut ordered_geom = Vec::with_capacity(geometry.len());
@@ -60,9 +60,51 @@ impl<T: Boundable> BVH<T> {
     pub fn intersect<'a, F, R>(&'a self, ray: &mut Ray, f: F) -> Option<R>
             where F: Fn(&mut Ray, &'a T) -> Option<R> {
         let mut result = None;
-		for o in &*self.geometry {
-			result = f(ray, o).or(result);
-		}
+        let inv_dir = Vector::new(1.0 / ray.d.x, 1.0 / ray.d.y, 1.0 / ray.d.z);
+        let neg_dir = [(ray.d.x < 0.0) as usize, (ray.d.y < 0.0) as usize, (ray.d.z < 0.0) as usize];
+        let mut stack = [0; 64];
+        let mut stack_ptr = 0;
+        let mut current = 0;
+        loop {
+            let node = &self.tree[current];
+            if node.bounds.fast_intersect(ray, &inv_dir, &neg_dir) {
+                match node.node {
+                    FlatNodeData::Leaf { ref geom_offset, ref ngeom } => {
+                        // Call function on all geometry in this leaf
+                        for i in &self.ordered_geom[*geom_offset..*geom_offset + *ngeom] {
+                            let o = &self.geometry[*i];
+                            result = f(ray, o).or(result);
+                        }
+                        if stack_ptr == 0 {
+                            break;
+                        }
+                        stack_ptr -= 1;
+                        current = stack[stack_ptr];
+                    },
+                    FlatNodeData::Interior { ref second_child, ref axis } => {
+                        let a = match *axis {
+                            Axis::X => 0,
+                            Axis::Y => 1,
+                            Axis::Z => 2,
+                        };
+                        if neg_dir[a] != 0 {
+                            stack[stack_ptr] = current + 1;
+                            current = *second_child;
+                        } else {
+                            stack[stack_ptr] = *second_child;
+                            current += 1;
+                        }
+                        stack_ptr += 1;
+                    },
+                }
+            } else {
+                if stack_ptr == 0 {
+                    break;
+                }
+                stack_ptr -= 1;
+                current = stack[stack_ptr];
+            }
+        }
         result
     }
     /// Construct the BVH tree using SAH splitting heuristic to determine split locations
