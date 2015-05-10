@@ -187,7 +187,13 @@ impl<T: Boundable> BVH<T> {
                         b <= min_bucket
                     });
                 // partition returns the index of the first element in the false group
-                mid = mid - 1;
+                // TODO: Something is wrong, we shouldn't be getting mid like this
+                mid =
+                    if mid > 1 { mid - 1 }
+                    else {
+                        println!("Bad mid encountered! mid = {}, build_info.len() = {}", mid, build_info.len());
+                        mid
+                    };
             }
             else {
                 return BVH::build_leaf(build_info, ordered_geom, bounds);
