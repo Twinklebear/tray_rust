@@ -75,6 +75,20 @@ pub fn solve_quadratic(a: f32, b: f32, c: f32) -> Option<(f32, f32)> {
         }
     }
 }
+/// Compute a local ortho-normal coordinate system from a single vector.
+pub fn coordinate_system(e1: &Vector) -> (Vector, Vector) {
+	let e2 = 
+        if f32::abs(e1.x) > f32::abs(e1.y) {
+            let inv_len = 1.0 / f32::sqrt(e1.x * e1.x + e1.z * e1.z);
+            Vector::new(-e1.z * inv_len, 0.0, e1.x * inv_len)
+        }
+        else {
+            let inv_len = 1.0 / f32::sqrt(e1.y * e1.y + e1.z * e1.z);
+            Vector::new(0.0, e1.z * inv_len, -e1.y * inv_len)
+        };
+    let e3 = cross(e1, &e2);
+	(e2, e3)
+}
 
 #[test]
 fn test_cross() {
