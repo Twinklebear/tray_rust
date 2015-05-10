@@ -11,6 +11,7 @@ pub use self::sphere::Sphere;
 pub use self::plane::Plane;
 pub use self::bbox::BBox;
 pub use self::bvh::BVH;
+pub use self::mesh::Mesh;
 
 pub mod differential_geometry;
 pub mod intersection;

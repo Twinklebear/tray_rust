@@ -40,16 +40,10 @@ impl<T: Boundable> BVH<T> {
             let mut total_nodes = 0;
             let root = Box::new(BVH::build(&mut build_geom[..], &mut ordered_geom, &mut total_nodes,
                                   max_geom));
-            root.print_tree(0);
-            println!("Ordered geom = {:?}", ordered_geom);
             flat_tree.reserve(total_nodes);
             BVH::<T>::flatten_tree(&root, &mut flat_tree);
             assert_eq!(flat_tree.len(), total_nodes);
             assert_eq!(ordered_geom.len(), geometry.len());
-            println!("Flattened tree:");
-            for n in &flat_tree {
-                println!("\t{:?}", n);
-            }
             // TODO: I'm not sure if there's a better way that we can re-sort the geometry by the
             // indices in ordered geom
         }
@@ -114,7 +108,6 @@ impl<T: Boundable> BVH<T> {
     /// tree ordering for more efficient access
     fn build(build_info: &mut [GeomInfo<T>], ordered_geom: &mut Vec<usize>,
              total_nodes: &mut usize, max_geom: usize) -> BuildNode {
-        println!("Building node {}", total_nodes);
         *total_nodes += 1;
         // Find bounding box for all geometry we're trying to store at this level
         let bounds = build_info.iter().fold(BBox::new(), |b, g| b.box_union(&g.geom.bounds()));
@@ -156,17 +149,14 @@ impl<T: Boundable> BVH<T> {
         } else {
             // We only consider binning into 12 buckets
             let mut buckets = [SAHBucket::new(); 12];
-            println!("build_info.len() = {}", build_info.len());
             // Place geometry into nearest bucket
             for g in build_info.iter() {
                 let b = ((g.center[split_axis] - centroids.min[split_axis])
                     / (centroids.max[split_axis] - centroids.min[split_axis]) * buckets.len() as f32) as usize;
                 let b = if b == buckets.len() { b - 1 } else { b };
-                println!("building buckets geom idx {} fell into bucket {}", g.geom_idx, b);
                 buckets[b].count += 1;
                 buckets[b].bounds = buckets[b].bounds.box_union(&g.bounds);
             }
-            println!("Buckets: {:?}", buckets);
             // Compute cost of each bucket but the last using the surface area heuristic
             let mut cost = [0.0; 11];
             for (i, c) in cost.iter_mut().enumerate() {
@@ -182,13 +172,11 @@ impl<T: Boundable> BVH<T> {
                 });
                 *c = 0.125 * (left.count as f32 * left.bounds.surface_area()
                              + right.count as f32 * right.bounds.surface_area()) / bounds.surface_area();
-                println!("For i = {}\n\tleft = {:?}\n\tright = {:?}\n\tcost = {}", i, left, right, c);
             }
             let (min_bucket, min_cost) = cost.iter().enumerate().fold((0, f32::INFINITY),
                 |(pi, pc), (i, c)| {
                     if *c < pc { (i, *c) } else { (pi, pc) }
                 });
-            println!("min bucket cost = {}, index = {}", min_cost, min_bucket);
             // If we're forced to split by the amount of geometry or it's cheaper to split, do so
             if ngeom > max_geom || min_cost < ngeom as f32 {
                 mid = partition(build_info.iter_mut(),
@@ -196,16 +184,10 @@ impl<T: Boundable> BVH<T> {
                         let b = ((g.center[split_axis] - centroids.min[split_axis])
                                  / (centroids.max[split_axis] - centroids.min[split_axis]) * buckets.len() as f32) as usize;
                         let b = if b == buckets.len() { b - 1 } else { b };
-                        println!("partitioning geom idx {} fell into bucket {}", g.geom_idx, b);
                         b <= min_bucket
                     });
                 // partition returns the index of the first element in the false group
                 mid = mid - 1;
-                println!("mid point = {}", mid);
-                println!("build info = ");
-                for b in build_info.iter() {
-                    println!("\tgeom idx = {}", b.geom_idx);
-                }
             }
             else {
                 return BVH::build_leaf(build_info, ordered_geom, bounds);
