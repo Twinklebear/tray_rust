@@ -6,3 +6,5 @@ to look at if you're trying to find well written Rust code, since I'm learning t
 
 Documentation can be found on the [project site](http://www.willusher.io/tray_rust/tray_rust/).
 
+[![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)
+

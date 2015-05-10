@@ -3,9 +3,9 @@
 
 use std::sync::Arc;
 
-use linalg::{Transform, Point, Vector, Ray};
+use linalg::{Transform, Point, Vector, Ray, Normal};
 use film::{Camera, Colorf};
-use geometry::{Sphere, Plane, Instance, BoundableGeom, Intersection};
+use geometry::{Sphere, Plane, Instance, BoundableGeom, Intersection, Mesh};
 use material::{Matte, SpecularMetal, Glass, Material};
 use integrator;
 use integrator::Integrator;
@@ -29,10 +29,18 @@ impl Scene {
     pub fn new(w: usize, h: usize) -> Scene {
         let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<BoundableGeom + Send + Sync>);
         let plane = Arc::new(Box::new(Plane) as Box<BoundableGeom + Send + Sync>);
+        let test_mesh = Arc::new(Box::new(Mesh::new(Arc::new(vec![Point::new(0.0, 0.0, 0.0), Point::new(1.0, 0.0, 0.0), Point::new(0.0, 0.0, 1.0)]),
+                                  Arc::new(vec![Normal::new(0.0, 1.0, 0.0), Normal::new(0.0, 1.0, 0.0), Normal::new(0.0, 1.0, 0.0)]),
+                                  Arc::new(vec![Point::new(0.0, 0.0, 0.0), Point::new(1.0, 0.0, 0.0), Point::new(0.0, 1.0, 0.0)]),
+                                  vec![0, 1, 2])) as Box<BoundableGeom + Send + Sync>);
+
         let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 1.0)) as Box<Material + Send + Sync>);
         let red_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0)) as Box<Material + Send + Sync>);
         let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0)) as Box<Material + Send + Sync>);
+
         let instances = vec![
+            Instance::new(test_mesh.clone(), red_wall.clone(), Transform::translate(&Vector::new(-4.0, 0.0, 8.0))
+                          * Transform::rotate_x(65.0) * Transform::scale(&Vector::broadcast(8.0)), "triangle"),
             // The back wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 20.0, 12.0))
                           * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0), "back_wall"),
