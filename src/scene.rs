@@ -34,11 +34,11 @@ impl Scene {
         let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 1.0)) as Box<Material + Send + Sync>);
         let red_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0)) as Box<Material + Send + Sync>);
         let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0)) as Box<Material + Send + Sync>);
-        let merl_mat = Arc::new(Box::new(Merl::load_file(Path::new("two-layer-silver.binary"))) as Box<Material + Send + Sync>);
+        let merl_mat = Arc::new(Box::new(Merl::load_file(Path::new("brass.binary"))) as Box<Material + Send + Sync>);
 
         let instances = vec![
             Instance::new(mesh.clone(), merl_mat.clone(), Transform::translate(&Vector::new(0.0, 4.0, 12.0))
-                          * Transform::rotate_x(65.0) * Transform::scale(&Vector::broadcast(6.0)), "model"),
+                          * Transform::rotate_x(60.0) * Transform::scale(&Vector::broadcast(6.0)), "model"),
             // The back wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 20.0, 12.0))
                           * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0), "back_wall"),
@@ -70,7 +70,7 @@ impl Scene {
             camera: Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
                 &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h)),
             bvh: BVH::new(4, instances),
-            integrator: Arc::new(Box::new(integrator::Path::new(3, 8)) as Box<Integrator + Send + Sync>),
+            integrator: Arc::new(Box::new(integrator::Path::new(4, 8)) as Box<Integrator + Send + Sync>),
             light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 20.0), &light_color))
                             as Box<Light + Send + Sync>),
         }

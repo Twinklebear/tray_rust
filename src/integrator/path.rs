@@ -78,6 +78,9 @@ impl Integrator for Path {
 
             // Check if we're beyond the min depth at which point we start trying to
             // terminate rays using Russian Roulette
+            // TODO: Am I re-weighting properly? The Russian roulette results don't look quite as
+            // nice, eg. damping light in transparent objects and such.
+            /*
             if bounce > self.min_depth {
                 let cont_prob = f32::max(0.5, path_throughput.luminance());
                 if rng.next_f32() > cont_prob {
@@ -86,6 +89,7 @@ impl Integrator for Path {
                 // Re-weight the sum terms accordingly with the Russian roulette weight
                 path_throughput = path_throughput / cont_prob;
             }
+            */
             if bounce == self.max_depth {
                 break;
             }
