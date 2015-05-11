@@ -39,6 +39,9 @@ impl RenderTarget {
         self.pixels[iy * self.width + ix] = self.pixels[iy * self.width + ix] + *c;
         // Set the filter weight, currently just a box filter with single pixel extent
         self.pixels[iy * self.width + ix].a += 1.0;
+        if self.pixels[iy * self.width + ix].a > 4.0 {
+            println!("Pixel [{}, {}] has passed expected weight", ix, iy);
+        }
     }
     /// Get the dimensions of the render target
     pub fn dimensions(&self) -> (usize, usize) {
@@ -46,18 +49,23 @@ impl RenderTarget {
     }
     /// Convert the floating point color buffer to 24bpp sRGB for output to an image
     pub fn get_render(&self) -> Vec<u8> {
+        let mut avg_weight = 0.0;
         let mut render: Vec<u8> = iter::repeat(0u8).take(self.width * self.height * 3).collect();
         for y in 0..self.height {
             for x in 0..self.width {
                 let c = &self.pixels[y * self.width + x];
+                avg_weight += c.a;
                 if c.a != 0.0 {
-                    let cn = (*c / c.a).clamp().to_srgb();
+                    let cn = (*c / 4.0).clamp().to_srgb();
                     for i in 0..3 {
                         render[y * self.width * 3 + x * 3 + i] = (cn[i] * 255.0) as u8;
+
                     }
                 }
             }
         }
+        avg_weight = avg_weight / ((self.width * self.height) as f32);
+        println!("Average pixel weight = {}", avg_weight);
         render
     }
 }
