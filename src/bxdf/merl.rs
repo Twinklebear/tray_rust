@@ -47,13 +47,14 @@ impl BxDF for Merl {
     fn eval(&self, w_oi: &Vector, w_ii: &Vector) -> Colorf {
         // Find the half-vector and transform into the half angle coordinate system used by MERL
         // BRDF files
-        let (w_o, w_i, w_h) =
-            if w_oi.z + w_ii.z < 0.0 {
-                (-*w_oi, -*w_ii, -(*w_oi + *w_ii))
-            } else {
-                (*w_oi, *w_ii, *w_oi + *w_ii)
-            };
-
+        let mut w_o = *w_oi;
+        let mut w_i = *w_ii;
+        let mut w_h = w_o + w_i;
+        if w_h.z < 0.0 {
+            w_o = -w_o;
+            w_i = -w_i;
+            w_h = -w_h;
+        }
         if w_h.length_sqr() == 0.0 {
             return Colorf::black();
         }

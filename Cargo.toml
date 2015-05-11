@@ -16,6 +16,7 @@ docopt = "0.6.63"
 image = "0.3.8"
 num_cpus = "0.2.3"
 tobj = "0.0.8"
+byteorder = "0.3.9"
 
 [profile.release]
 # How to send extra compiler flag for -march=native equivalent in Rust
