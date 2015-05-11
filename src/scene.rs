@@ -37,8 +37,8 @@ impl Scene {
         let merl_mat = Arc::new(Box::new(Merl::load_file(Path::new("two-layer-silver.binary"))) as Box<Material + Send + Sync>);
 
         let instances = vec![
-            Instance::new(mesh.clone(), merl_mat.clone(), Transform::translate(&Vector::new(0.0, 4.0, 8.0))
-                          * Transform::rotate_x(65.0) * Transform::scale(&Vector::broadcast(8.0)), "model"),
+            Instance::new(mesh.clone(), merl_mat.clone(), Transform::translate(&Vector::new(0.0, 4.0, 12.0))
+                          * Transform::rotate_x(65.0) * Transform::scale(&Vector::broadcast(6.0)), "model"),
             // The back wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 20.0, 12.0))
                           * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0), "back_wall"),
@@ -54,16 +54,16 @@ impl Scene {
             // The bottom wall
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 0.0))
                           * Transform::scale(&Vector::broadcast(32.0)), "bottom_wall"),
-            /*
             // The reflective sphere
-            Instance::new(sphere.clone(), merl_mat.clone(), Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
+            Instance::new(sphere.clone(),
+            Arc::new(Box::new(SpecularMetal::new(&Colorf::new(0.155, 0.116, 0.138), &Colorf::new(4.828, 3.122, 2.146)))
+                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0)), "metal_sphere"),
             // The glass sphere
             Instance::new(sphere.clone(),
-                Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
+            Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere")
-            */
         ];
         let light_color = Colorf::broadcast(200.0) * Colorf::new(0.780131, 0.780409, 0.775833);
         Scene {
