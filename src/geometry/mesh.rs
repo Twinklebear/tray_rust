@@ -21,9 +21,11 @@ impl Mesh {
     /// Create a new Mesh from the triangles described in the buffers passed
     /// This data could come from an OBJ file via [tobj](https://github.com/Twinklebear/tobj)
     /// for example.
-    pub fn new(positions: Arc<Vec<Point>>, normals: Arc<Vec<Normal>>, texcoords: Arc<Vec<Point>>, indices: Vec<u32>) -> Mesh {
+    pub fn new(positions: Arc<Vec<Point>>, normals: Arc<Vec<Normal>>, texcoords: Arc<Vec<Point>>,
+               indices: Vec<u32>) -> Mesh {
         let triangles = indices.chunks(3).map(|i| {
-            Triangle::new(i[0] as usize, i[1] as usize, i[2] as usize, positions.clone(), normals.clone(), texcoords.clone())
+            Triangle::new(i[0] as usize, i[1] as usize, i[2] as usize, positions.clone(),
+                          normals.clone(), texcoords.clone())
             }).collect();
         Mesh { bvh: BVH::new(16, triangles) }
     }
@@ -38,13 +40,17 @@ impl Mesh {
                     println!("Loading model {}", m.name);
                     let mesh = m.mesh;
                     if mesh.normals.is_empty() || mesh.texcoords.is_empty() {
-                        println!("Mesh::load_obj error! Normals and texture coordinates are required! Skipping {}", m.name);
+                        print!("Mesh::load_obj error! Normals and texture coordinates are required!");
+                        println!("Skipping {}", m.name);
                         continue;
                     }
                     println!("Number of triangles {}", mesh.indices.len() / 3);
-                    let positions = Arc::new(mesh.positions.chunks(3).map(|i| Point::new(i[0], i[1], i[2])).collect());
-                    let normals = Arc::new(mesh.normals.chunks(3).map(|i| Normal::new(i[0], i[1], i[2])).collect());
-                    let texcoords = Arc::new(mesh.texcoords.chunks(2).map(|i| Point::new(i[0], i[1], 0.0)).collect());
+                    let positions = Arc::new(mesh.positions.chunks(3).map(|i| Point::new(i[0], i[1], i[2]))
+                                             .collect());
+                    let normals = Arc::new(mesh.normals.chunks(3).map(|i| Normal::new(i[0], i[1], i[2]))
+                                           .collect());
+                    let texcoords = Arc::new(mesh.texcoords.chunks(2).map(|i| Point::new(i[0], i[1], 0.0))
+                                             .collect());
                     meshes.insert(m.name, Mesh::new(positions, normals, texcoords, mesh.indices));
                 }
                 meshes
@@ -145,7 +151,7 @@ impl Geometry for Triangle {
         let dv = [ta.y - tc.y, tb.y - tc.y];
         let det = du[0] * dv[1] - dv[0] * du[1];
         //If the texcoords are degenerate pick arbitrary coordinate system
-        let (dp_du, dp_dv) = 
+        let (dp_du, dp_dv) =
             if det == 0.0 {
                 linalg::coordinate_system(&linalg::cross(&e[1], &e[0]).normalized())
             }

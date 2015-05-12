@@ -38,9 +38,6 @@ pub trait Boundable {
     fn bounds(&self) -> BBox;
 }
 
-/// TODO: This is a workaround for lack of support for bounding on user defined traits
-/// Eg. at the time of writing it's not possible to do something like:
-/// Box<Geometry + Boundable + Send + Sync> so we use this combo trait
 pub trait BoundableGeom: Geometry + Boundable {}
 impl<T: ?Sized> BoundableGeom for T where T: Geometry + Boundable {}
 

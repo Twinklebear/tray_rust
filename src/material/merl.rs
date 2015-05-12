@@ -35,7 +35,8 @@ impl Merl {
         let n_theta_h = 90;
         let n_theta_d = 90;
         let n_phi_d = 180;
-        let dims = [reader.read_i32::<LittleEndian>().unwrap() as usize, reader.read_i32::<LittleEndian>().unwrap() as usize,
+        let dims = [reader.read_i32::<LittleEndian>().unwrap() as usize,
+                    reader.read_i32::<LittleEndian>().unwrap() as usize,
                     reader.read_i32::<LittleEndian>().unwrap() as usize];
         if n_theta_h != dims[0] || n_theta_d != dims[1] || n_phi_d != dims[2] {
             panic!("material::Merl::load_file - Invalid MERL file header, aborting");
