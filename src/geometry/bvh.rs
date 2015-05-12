@@ -9,7 +9,7 @@ use linalg::{Point, Ray, Axis, Vector};
 
 /// A standard BVH2 that stores objects that can report their bounds in some space
 /// via the `Boundable` trait. The BVH is constructed using a SAH partitioning scheme
-pub struct BVH<T> {
+pub struct BVH<T: Boundable> {
     /// The geometry stored in this BVH, this will be re-ordered to
     /// fit the BVH construction layout. TODO: We may want to make
     /// the geometry accessible by index
