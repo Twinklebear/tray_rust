@@ -11,7 +11,7 @@ script:
 after_success:
     - git config user.name "Travis-CI Doc Bot"
     - git config user.email "willusher.life@gmail.com"
-      # upload the documentation from the build with beta (automatically only actually
-      # runs on the master branch)
-      #- travis-cargo --only nightly doc-upload
-
+    - travis-cargo --only nightly doc-upload
+env:
+  global:
+    secure: Tcwn04OZmCAntcLiAMoOJwgIW6r55veMD3d4Yy+qco6KE8FCnYww8zsp1vb4BeRe6asVxsPxJgP2EZeoDdPayZqTAgCw7AVVL1umlhik8XN86cm/BcTDbu7azF8PS0LFh7HaAEarRYBlBn7mFpLZwKjoGGoMxwsKsbmdnCZz9Yk=
