@@ -26,8 +26,8 @@ use tray_rust::sampler::{Sampler};
 use tray_rust::scene;
 use tray_rust::integrator::Integrator;
 
-static WIDTH: usize = 1920;
-static HEIGHT: usize = 1080;
+static WIDTH: usize = 800;
+static HEIGHT: usize = 600;
 static USAGE: &'static str = "
 Usage: tray_rust [options]
 
@@ -50,7 +50,7 @@ struct Args {
 /// values recieved to the render target
 fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>,
                scene: Arc<scene::Scene>) {
-    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 8);
+    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 64);
     let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut rng = match StdRng::new() {
