@@ -3,9 +3,9 @@ tray\_rust - A Toy Ray Tracer in Rust
 tray\_rust is a toy physically based ray tracer built off of the techniques
 discussed in [Physically Based Rendering](http://pbrt.org/). It began life as a port of
 [tray](https://github.com/Twinklebear/tray) to [Rust](http://www.rust-lang.org) to check out the language.
-So far I've been pretty happy with Rust during this project, and the community has been very helpful.
-I've also written a few posts about my experience porting the project over, they can be
-found [on my site](http://www.willusher.io/). See the posts titled "Porting a Ray Tracer to Rust, part #".
+The renderer is currently capable of path tracing, supports triangle meshes (MTL support coming soon),
+and various physically based material models (including measured data from the
+[MERL BRDF Database](http://www.merl.com/brdf/)).
 
 Building
 ---
