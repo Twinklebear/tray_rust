@@ -9,8 +9,8 @@ found [on my site](http://www.willusher.io/). See the posts titled "Porting a Ra
 
 Building
 ---
-Unfortunately the project does currently require Rust 1.1.0, it may compile on beta 1.1.0 but I haven't
-tested this yet. It will definitely build on the 1.1.0 nightly.
+Unfortunately the project does currently require Rust nightly as I make use of some unstable features
+(eg. Vec::resize). I hope to get things running on stable Rust once these features get stabilized.
 
 [![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)
 
