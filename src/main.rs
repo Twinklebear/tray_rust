@@ -1,5 +1,3 @@
-#![feature(std_misc)]
-
 extern crate image;
 extern crate rand;
 extern crate docopt;
@@ -10,9 +8,7 @@ extern crate tray_rust;
 
 use std::vec::Vec;
 use std::sync::{Arc};
-use std::sync::mpsc;
-use std::sync::mpsc::{Sender, Receiver};
-use std::time::duration::Duration;
+use std::sync::mpsc::{self, Sender, Receiver};
 use std::path::Path;
 
 use threadpool::ThreadPool;
@@ -21,8 +17,7 @@ use docopt::Docopt;
 
 use tray_rust::film;
 use tray_rust::geometry::Geometry;
-use tray_rust::sampler;
-use tray_rust::sampler::{Sampler};
+use tray_rust::sampler::{self, Sampler};
 use tray_rust::scene;
 use tray_rust::integrator::Integrator;
 
@@ -118,8 +113,11 @@ fn main() {
         None => num_cpus::get(),
     };
     println!("Rendering using {} threads", n);
-    let d = Duration::span(|| render_parallel(&mut rt, n));
-    println!("Rendering took {}ms", d.num_milliseconds());
+    render_parallel(&mut rt, n);
+    // TODO: Migrate to the new duration API that landed
+    // See: https://github.com/rust-lang/rust/pull/24920
+    //let d = std::time::duration::Duration::span(|| render_parallel(&mut rt, n));
+    //println!("Rendering took {}ms", d.num_milliseconds());
     let img = rt.get_render();
     let out_file = match args.flag_o {
         Some(f) => f,
