@@ -160,17 +160,17 @@ impl<T: Boundable> BVH<T> {
             // Compute cost of each bucket but the last using the surface area heuristic
             let mut cost = [0.0; 11];
             for (i, c) in cost.iter_mut().enumerate() {
-                let left = buckets.iter().take(i).fold(SAHBucket::new(), |mut s, b| {
+                let left = buckets.iter().take(i + 1).fold(SAHBucket::new(), |mut s, b| {
                     s.bounds = s.bounds.box_union(&b.bounds);
                     s.count += b.count;
                     s
                 });
-                let right = buckets.iter().skip(i).fold(SAHBucket::new(), |mut s, b| {
+                let right = buckets.iter().skip(i + 1).fold(SAHBucket::new(), |mut s, b| {
                     s.bounds = s.bounds.box_union(&b.bounds);
                     s.count += b.count;
                     s
                 });
-                *c = 0.125 * (left.count as f32 * left.bounds.surface_area()
+                *c = 0.125 + (left.count as f32 * left.bounds.surface_area()
                              + right.count as f32 * right.bounds.surface_area()) / bounds.surface_area();
             }
             let (min_bucket, min_cost) = cost.iter().enumerate().fold((0, f32::INFINITY),
@@ -182,7 +182,8 @@ impl<T: Boundable> BVH<T> {
                 mid = partition(build_info.iter_mut(),
                     |g| {
                         let b = ((g.center[split_axis] - centroids.min[split_axis])
-                                 / (centroids.max[split_axis] - centroids.min[split_axis]) * buckets.len() as f32) as usize;
+                                 / (centroids.max[split_axis] - centroids.min[split_axis])
+                                 * buckets.len() as f32) as usize;
                         let b = if b == buckets.len() { b - 1 } else { b };
                         b <= min_bucket
                     });
@@ -281,7 +282,7 @@ impl FlatNode {
     }
 }
 
-/// Information about the location and bounds of some geometry 
+/// Information about the location and bounds of some geometry
 struct GeomInfo<'a, T: 'a> {
     geom: &'a T,
     geom_idx: usize,
