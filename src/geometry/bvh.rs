@@ -152,7 +152,8 @@ impl<T: Boundable> BVH<T> {
             // Place geometry into nearest bucket
             for g in build_info.iter() {
                 let b = ((g.center[split_axis] - centroids.min[split_axis])
-                    / (centroids.max[split_axis] - centroids.min[split_axis]) * buckets.len() as f32) as usize;
+                         / (centroids.max[split_axis] - centroids.min[split_axis])
+                        * buckets.len() as f32) as usize;
                 let b = if b == buckets.len() { b - 1 } else { b };
                 buckets[b].count += 1;
                 buckets[b].bounds = buckets[b].bounds.box_union(&g.bounds);
@@ -183,18 +184,10 @@ impl<T: Boundable> BVH<T> {
                     |g| {
                         let b = ((g.center[split_axis] - centroids.min[split_axis])
                                  / (centroids.max[split_axis] - centroids.min[split_axis])
-                                 * buckets.len() as f32) as usize;
+                                * buckets.len() as f32) as usize;
                         let b = if b == buckets.len() { b - 1 } else { b };
                         b <= min_bucket
                     });
-                // partition returns the index of the first element in the false group
-                // TODO: Something is wrong, we shouldn't be getting mid like this
-                mid =
-                    if mid > 1 { mid - 1 }
-                    else {
-                        println!("Bad mid encountered! mid = {}, build_info.len() = {}", mid, build_info.len());
-                        mid
-                    };
             }
             else {
                 return BVH::build_leaf(build_info, ordered_geom, bounds);
