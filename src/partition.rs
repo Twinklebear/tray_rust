@@ -14,10 +14,11 @@ pub fn partition<'a, T: 'a, I, F>(mut it: I, pred: F) -> usize
         let mut front = None;
         let mut back = None;
         while let Some(f) = it.next() {
-            split_idx += 1;
             if !pred(f) {
                 front = Some(f);
                 break;
+            } else {
+                split_idx += 1;
             }
         }
         while let Some(b) = it.next_back() {
@@ -27,7 +28,10 @@ pub fn partition<'a, T: 'a, I, F>(mut it: I, pred: F) -> usize
             }
         }
         match (front, back) {
-            (Some(f), Some(b)) => mem::swap(f, b),
+            (Some(f), Some(b)) => {
+                mem::swap(f, b);
+                split_idx += 1;
+            },
             _ => break,
         }
     }
