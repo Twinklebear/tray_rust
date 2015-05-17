@@ -27,7 +27,6 @@ Documentation can be found on the [project site](http://www.willusher.io/tray_ru
 
 TODO
 ---
-- Fix BVH construction bug
 - Area light support
 - More material models (eg. Torrance-Sparrow w/ various microfacet models, rough glass, etc.)
 - Textures
