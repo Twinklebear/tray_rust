@@ -8,7 +8,7 @@ name = "tray_rust"
 doc = false
 
 [dependencies]
-enum-set = "0.0.4"
+enum-set = "0.0.5"
 rand = "0.3.8"
 threadpool = "0.1.4"
 rustc-serialize = "0.3.14"
