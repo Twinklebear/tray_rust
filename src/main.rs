@@ -55,10 +55,24 @@ struct Args {
 //   It breaks the awkward handling of mixing point and area lights with each other which
 //   is a plus.
 
+/// A struct containing results of an image sample where a ray was fired through
+/// continuous pixel coordinates [x, y] and color `color` was computed
+struct ImageSample {
+    x: f32,
+    y: f32,
+    color: film::Colorf,
+}
+
+impl ImageSample {
+    pub fn new(x: f32, y: f32, color: film::Colorf) -> ImageSample {
+        ImageSample { x: x, y: y, color: color }
+    }
+}
+
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
 /// values recieved to the render target
-fn thread_work(tx: Sender<Vec<(f32, f32, film::Colorf)>>, queue: Arc<sampler::BlockQueue>,
+fn thread_work(tx: Sender<Vec<ImageSample>>, queue: Arc<sampler::BlockQueue>,
                scene: Arc<scene::Scene>) {
     let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 4);
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
@@ -78,7 +92,7 @@ fn thread_work(tx: Sender<Vec<(f32, f32, film::Colorf)>>, queue: Arc<sampler::Bl
                 let mut ray = scene.camera.generate_ray(s);
                 if let Some(hit) = scene.intersect(&mut ray) {
                     let c = scene.integrator.illumination(&*scene, &ray, &hit, &mut sampler, &mut rng).clamp();
-                    samples.push((s.0, s.1, c));
+                    samples.push(ImageSample::new(s.0, s.1, c));
                 }
             }
             if let Err(e) = tx.send(samples) {
@@ -93,7 +107,7 @@ fn thread_work(tx: Sender<Vec<(f32, f32, film::Colorf)>>, queue: Arc<sampler::Bl
 /// of the channel where the threads will write their samples so that the receiver
 /// can write these samples to the render target
 fn spawn_workers(pool: &ThreadPool, n: usize, scene: Arc<scene::Scene>)
-                 -> Receiver<Vec<(f32, f32, film::Colorf)>> {
+                 -> Receiver<Vec<ImageSample>> {
     let (tx, rx) = mpsc::channel();
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
     for _ in 0..n {
@@ -114,7 +128,7 @@ fn render_parallel(rt: &mut film::RenderTarget, n: usize){
     let rx = spawn_workers(&pool, n, scene);
     for mut v in rx.iter() {
         for s in v.drain(..) {
-            rt.write(s.0, s.1, &s.2);
+            rt.write(s.x, s.y, &s.color);
         }
     }
 }
