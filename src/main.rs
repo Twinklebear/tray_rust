@@ -1,3 +1,6 @@
+#![feature(duration)]
+#![feature(duration_span)]
+
 extern crate image;
 extern crate rand;
 extern crate docopt;
@@ -10,6 +13,7 @@ use std::vec::Vec;
 use std::sync::{Arc};
 use std::sync::mpsc::{self, Sender, Receiver};
 use std::path::Path;
+use std::time::Duration;
 
 use threadpool::ThreadPool;
 use rand::StdRng;
@@ -40,12 +44,20 @@ struct Args {
     flag_n: Option<usize>,
 }
 
+// TODO: Area lights notes:
+// - They should be intersectable so they're like wierd instances.
+// - What if point lights were also instances that just always returned None
+//   for intersection tests?
+// - Then each thread would build a list of &Instance that refer to the emissive
+//   instances in the scene and we'd pass this around for the various lighting calculations.
+//   It's a bit ugly but maybe cleaner than what was done previously in tray
+
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
 /// values recieved to the render target
 fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>,
                scene: Arc<scene::Scene>) {
-    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 64);
+    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 4);
     let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut rng = match StdRng::new() {
@@ -113,11 +125,8 @@ fn main() {
         None => num_cpus::get(),
     };
     println!("Rendering using {} threads", n);
-    render_parallel(&mut rt, n);
-    // TODO: Migrate to the new duration API that landed
-    // See: https://github.com/rust-lang/rust/pull/24920
-    //let d = std::time::duration::Duration::span(|| render_parallel(&mut rt, n));
-    //println!("Rendering took {}ms", d.num_milliseconds());
+    let d = Duration::span(|| render_parallel(&mut rt, n));
+    println!("Rendering took {}", d);
     let img = rt.get_render();
     let out_file = match args.flag_o {
         Some(f) => f,
