@@ -54,6 +54,12 @@ struct Args {
 //   It breaks the awkward handling of mixing point and area lights with each other which
 //   is a plus. I guess we can also put point lights in the BVH and their bounds would
 //   just be the point they're located at.
+// - If we make them their own instance type we could do something like have the light
+//   be the "geometry" for this LightInstance type which would implment the Instance trait
+//   then there'd be like light::Sphere which would use the sphere's intersection code
+//   and geometry::Sphere but would then have the surface sampling implementations.
+//   So we get some re-use of geometry types as well. This would then make
+//   our Instance calls go through virtual calls (eg. they become more like geometry)
 
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
