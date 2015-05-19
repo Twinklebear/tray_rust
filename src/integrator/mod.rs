@@ -26,9 +26,6 @@ pub mod path;
 /// the scene.
 pub trait Integrator {
     /// Compute the illumination at the intersection in the scene
-    /// TODO: Later we'll need to pass `&mut Sampler` through here as well
-    /// for integrators that need randomness along with a memory pool once
-    /// we implement that as well.
     fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection, sampler: &mut Sampler,
                     rng: &mut StdRng) -> Colorf;
     /// Compute the color of specularly reflecting light off the intersection
@@ -91,7 +88,8 @@ pub trait Integrator {
                         bsdf_sample: &Sample) -> Colorf {
         // TODO: We know we only have one light in the scene currently
         // later we'll use the first sample in `light_sample` to choose one
-        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, &**scene.light, BxDFType::non_specular())
+        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, &**scene.light,
+                             BxDFType::non_specular())
     }
     /// Estimate the direct light contribution to the surface being shaded by the light
     /// using multiple importance sampling
