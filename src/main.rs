@@ -52,7 +52,8 @@ struct Args {
 //   instances in the scene and we'd pass this around for the various lighting calculations.
 //   It's a bit ugly but maybe cleaner than what was done previously in tray
 //   It breaks the awkward handling of mixing point and area lights with each other which
-//   is a plus.
+//   is a plus. I guess we can also put point lights in the BVH and their bounds would
+//   just be the point they're located at.
 
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
