@@ -1,12 +1,7 @@
 use std::f32;
 use std::ops::Mul;
 
-use linalg;
-use linalg::Matrix4;
-use linalg::Vector;
-use linalg::Point;
-use linalg::Normal;
-use linalg::Ray;
+use linalg::{self, Matrix4, Vector, Point, Normal, Ray};
 use geometry::BBox;
 
 /// Transform describes an affine transformation in 3D space

@@ -6,11 +6,10 @@ use std::path::Path;
 
 use linalg::{Transform, Point, Vector, Ray};
 use film::{Camera, Colorf};
-use geometry::{Sphere, Plane, Instance, BoundableGeom, Intersection, Mesh};
+use geometry::{Sphere, Plane, Instance, BoundableGeom, Intersection, Mesh, BVH};
 use material::{Matte, SpecularMetal, Glass, Material, Merl};
 use integrator::{self, Integrator};
 use light::{self, Light};
-use geometry::BVH;
 
 /// The scene containing the objects and camera configuration we'd like to render,
 /// shared immutably among the ray tracing threads

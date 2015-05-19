@@ -1,8 +1,7 @@
 use std::f32;
 use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 
-use linalg;
-use linalg::Vector;
+use linalg::{self, Vector};
 
 /// Normal is a standard 3 component normal but transforms as a normal
 /// normal when transformations are applied

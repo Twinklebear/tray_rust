@@ -6,8 +6,7 @@ use enum_set::EnumSet;
 
 use linalg::Vector;
 use film::Colorf;
-use bxdf;
-use bxdf::{BxDF, BxDFType};
+use bxdf::{self, BxDF, BxDFType};
 
 /// Oren-Nayar BRDF that implements the Oren-Nayar reflectance model
 #[derive(Clone, Copy, Debug)]

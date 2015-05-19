@@ -3,8 +3,7 @@
 use std::f32;
 
 use geometry::{Geometry, DifferentialGeometry, Boundable, BBox};
-use linalg;
-use linalg::{Normal, Vector, Ray, Point};
+use linalg::{self, Normal, Vector, Ray, Point};
 
 /// A sphere with user-specified radius
 #[derive(Clone, Copy)]

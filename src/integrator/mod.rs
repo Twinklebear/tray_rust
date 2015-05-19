@@ -7,8 +7,7 @@ use enum_set::EnumSet;
 use rand::StdRng;
 
 use scene::Scene;
-use linalg;
-use linalg::{Ray, Vector};
+use linalg::{self, Ray, Vector};
 use geometry::Intersection;
 use film::Colorf;
 use bxdf::{BSDF, BxDFType};

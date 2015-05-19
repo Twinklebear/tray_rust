@@ -8,8 +8,7 @@ use std::path::Path;
 use std::collections::HashMap;
 
 use geometry::{Geometry, DifferentialGeometry, Boundable, BBox, BVH};
-use linalg;
-use linalg::{Normal, Vector, Ray, Point};
+use linalg::{self, Normal, Vector, Ray, Point};
 
 /// A mesh composed of triangles, specified by directly passing the position,
 /// normal and index buffers for the triangles making up the mesh

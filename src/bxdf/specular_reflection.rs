@@ -5,8 +5,7 @@ use enum_set::EnumSet;
 
 use linalg::Vector;
 use film::Colorf;
-use bxdf;
-use bxdf::{BxDF, BxDFType};
+use bxdf::{self, BxDF, BxDFType};
 use bxdf::fresnel::Fresnel;
 
 /// Specular reflection BRDF that implements a specularly reflective material model

@@ -1,8 +1,7 @@
 //! Defines the DifferentialGeometry type which is used to pass information
 //! about the hit piece of geometry back from the intersection to the shading
 
-use linalg;
-use linalg::{Point, Normal, Vector};
+use linalg::{self, Point, Normal, Vector};
 use geometry::Geometry;
 
 /// Stores information about a hit piece of geometry of some object in the scene

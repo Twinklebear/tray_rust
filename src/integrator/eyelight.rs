@@ -3,8 +3,7 @@
 use std::num::Float;
 
 use scene::Scene;
-use linalg;
-use linalg::Ray;
+use linalg::{self, Ray};
 use geometry::Intersection;
 use film::Colorf;
 use integrator::Integrator;

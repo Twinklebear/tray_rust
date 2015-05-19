@@ -6,8 +6,7 @@ use std::mem;
 use std::f32;
 use enum_set::{EnumSet, CLike};
 
-use linalg;
-use linalg::Vector;
+use linalg::{self, Vector};
 use film::Colorf;
 use mc;
 

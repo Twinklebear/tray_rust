@@ -5,8 +5,7 @@
 use std::f32;
 use std::ops::{Index, IndexMut};
 
-use linalg;
-use linalg::{Point, Vector, Ray, Axis};
+use linalg::{self, Point, Vector, Ray, Axis};
 
 /// A box between the min and max points
 #[derive(Clone, Copy, Debug)]

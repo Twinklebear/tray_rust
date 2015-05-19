@@ -5,8 +5,7 @@ use std::vec::Vec;
 use std::cmp;
 use enum_set::EnumSet;
 
-use linalg;
-use linalg::{Normal, Vector, Point};
+use linalg::{self, Normal, Vector, Point};
 use film::Colorf;
 use geometry::DifferentialGeometry;
 use bxdf::{BxDF, BxDFType};
