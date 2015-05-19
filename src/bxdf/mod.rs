@@ -24,6 +24,7 @@ pub mod fresnel;
 pub mod specular_reflection;
 pub mod specular_transmission;
 pub mod merl;
+pub mod microfacet;
 
 /// Various types of BxDFs that can be selected to specify which
 /// types of surface functions should be evaluated
