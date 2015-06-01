@@ -1,5 +1,6 @@
 #![feature(duration)]
 #![feature(duration_span)]
+#![feature(collections_drain)]
 
 extern crate image;
 extern crate rand;
@@ -64,13 +65,26 @@ struct Args {
 //   store a list of Box<Light> (these would need to be in Vec<Arc<Box<T>>> as well right?
 //   Or can we do unboxed Arc traits now?
 
+/// A struct containing results of an image sample where a ray was fired through
+/// continuous pixel coordinates [x, y] and color `color` was computed
+struct ImageSample {
+    x: f32,
+    y: f32,
+    color: film::Colorf,
+}
+
+impl ImageSample {
+    pub fn new(x: f32, y: f32, color: film::Colorf) -> ImageSample {
+        ImageSample { x: x, y: y, color: color }
+    }
+}
+
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
 /// values recieved to the render target
-fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQueue>,
+fn thread_work(tx: Sender<Vec<ImageSample>>, queue: Arc<sampler::BlockQueue>,
                scene: Arc<scene::Scene>) {
     let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 4);
-    let mut samples = Vec::with_capacity(sampler.max_spp());
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut rng = match StdRng::new() {
         Ok(r) => r,
@@ -83,20 +97,18 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
         while sampler.has_samples() {
             // Get samples for a pixel and render them
             sampler.get_samples(&mut sample_pos, &mut rng);
+            let mut samples = Vec::with_capacity(sampler.max_spp());
             for s in sample_pos.iter() {
                 let mut ray = scene.camera.generate_ray(s);
                 if let Some(hit) = scene.intersect(&mut ray) {
                     let c = scene.integrator.illumination(&*scene, &ray, &hit, &mut sampler, &mut rng).clamp();
-                    samples.push((s.0, s.1, c));
+                    samples.push(ImageSample::new(s.0, s.1, c));
                 }
             }
-            for s in samples.iter() {
-                if let Err(e) = tx.send(*s) {
-                    println!("Worker thread exiting with send error {:?}", e);
-                    return;
-                }
+            if let Err(e) = tx.send(samples) {
+                println!("Worker thread exiting with send error {:?}", e);
+                return;
             }
-            samples.clear();
         }
     }
 }
@@ -104,7 +116,8 @@ fn thread_work(tx: Sender<(f32, f32, film::Colorf)>, queue: Arc<sampler::BlockQu
 /// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
 /// of the channel where the threads will write their samples so that the receiver
 /// can write these samples to the render target
-fn spawn_workers(pool: &ThreadPool, n: usize, scene: Arc<scene::Scene>) -> Receiver<(f32, f32, film::Colorf)> {
+fn spawn_workers(pool: &ThreadPool, n: usize, scene: Arc<scene::Scene>)
+                 -> Receiver<Vec<ImageSample>> {
     let (tx, rx) = mpsc::channel();
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
     for _ in 0..n {
@@ -123,8 +136,10 @@ fn render_parallel(rt: &mut film::RenderTarget, n: usize){
     let scene = Arc::new(scene::Scene::new(WIDTH, HEIGHT));
     let pool = ThreadPool::new(n);
     let rx = spawn_workers(&pool, n, scene);
-    for m in rx.iter() {
-        rt.write(m.0, m.1, &m.2);
+    for mut v in rx.iter() {
+        for s in v.drain(..) {
+            rt.write(s.x, s.y, &s.color);
+        }
     }
 }
 
