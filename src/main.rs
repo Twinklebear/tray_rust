@@ -60,6 +60,9 @@ struct Args {
 //   and geometry::Sphere but would then have the surface sampling implementations.
 //   So we get some re-use of geometry types as well. This would then make
 //   our Instance calls go through virtual calls (eg. they become more like geometry)
+// - We'd then have to store box'd instances and maybe pre-compute the list of lights and
+//   store a list of Box<Light> (these would need to be in Vec<Arc<Box<T>>> as well right?
+//   Or can we do unboxed Arc traits now?
 
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
