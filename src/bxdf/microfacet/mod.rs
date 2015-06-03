@@ -26,7 +26,7 @@ pub trait MicrofacetDistribution {
 /// Compute the geometric attenuation term for the distribution for
 /// the pair of outgoing and incident light vectors for microfacets
 /// with normal `w_h`
-fn geometric_attenuation(w_o: &Vector, w_i: &Vector, w_h: &Vector) -> f32 {
+pub fn geometric_attenuation(w_o: &Vector, w_i: &Vector, w_h: &Vector) -> f32 {
     let n_dot_h = f32::abs(bxdf::cos_theta(w_h));
     let n_dot_o = f32::abs(bxdf::cos_theta(w_o));
     let n_dot_i = f32::abs(bxdf::cos_theta(w_i));

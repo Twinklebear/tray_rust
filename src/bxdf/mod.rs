@@ -16,6 +16,7 @@ pub use self::oren_nayar::OrenNayar;
 pub use self::specular_reflection::SpecularReflection;
 pub use self::specular_transmission::SpecularTransmission;
 pub use self::merl::Merl;
+pub use self::torrance_sparrow::TorranceSparrow;
 
 pub mod bsdf;
 pub mod lambertian;
@@ -25,6 +26,7 @@ pub mod specular_reflection;
 pub mod specular_transmission;
 pub mod merl;
 pub mod microfacet;
+pub mod torrance_sparrow;
 
 /// Various types of BxDFs that can be selected to specify which
 /// types of surface functions should be evaluated
