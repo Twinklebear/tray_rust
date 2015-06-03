@@ -7,7 +7,7 @@ use std::path::Path;
 use linalg::{Transform, Point, Vector, Ray};
 use film::{Camera, Colorf};
 use geometry::{Sphere, Plane, Instance, BoundableGeom, Intersection, Mesh, BVH};
-use material::{Matte, SpecularMetal, Glass, Material, Merl, Plastic};
+use material::{Matte, SpecularMetal, Glass, Material, Merl, Metal};
 use integrator::{self, Integrator};
 use light::{self, Light};
 
@@ -34,8 +34,8 @@ impl Scene {
                                 as Box<Material + Send + Sync>);
         let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0))
                                  as Box<Material + Send + Sync>);
-        let plastic = Arc::new(Box::new(Plastic::new(&Colorf::broadcast(0.2),
-                                        &Colorf::broadcast(0.7), 0.6))
+        let metal = Arc::new(Box::new(Metal::new(&Colorf::new(0.155265, 0.116723, 0.138381),
+                                        &Colorf::new(4.82835, 3.12225, 2.14696), 0.2))
                               as Box<Material + Send + Sync>);
 
         /*
@@ -84,7 +84,7 @@ impl Scene {
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 0.0))
                           * Transform::scale(&Vector::broadcast(32.0)), "bottom_wall"),
             // The reflective sphere
-            Instance::new(sphere.clone(), plastic, Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
+            Instance::new(sphere.clone(), metal, Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0)), "metal_sphere"),
             // The glass sphere
             /*
