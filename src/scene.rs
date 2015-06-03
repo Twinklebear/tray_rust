@@ -7,7 +7,7 @@ use std::path::Path;
 use linalg::{Transform, Point, Vector, Ray};
 use film::{Camera, Colorf};
 use geometry::{Sphere, Plane, Instance, BoundableGeom, Intersection, Mesh, BVH};
-use material::{Matte, SpecularMetal, Glass, Material, Merl};
+use material::{Matte, SpecularMetal, Glass, Material, Merl, Plastic};
 use integrator::{self, Integrator};
 use light::{self, Light};
 
@@ -34,6 +34,9 @@ impl Scene {
                                 as Box<Material + Send + Sync>);
         let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0))
                                  as Box<Material + Send + Sync>);
+        let plastic = Arc::new(Box::new(Plastic::new(&Colorf::broadcast(0.2),
+                                        &Colorf::broadcast(0.7), 0.6))
+                              as Box<Material + Send + Sync>);
 
         /*
         let mut models = Mesh::load_obj(Path::new("./rust-logo.obj"));
@@ -81,15 +84,15 @@ impl Scene {
             Instance::new(plane.clone(), white_wall.clone(), Transform::translate(&Vector::new(0.0, 0.0, 0.0))
                           * Transform::scale(&Vector::broadcast(32.0)), "bottom_wall"),
             // The reflective sphere
-            Instance::new(sphere.clone(),
-            Arc::new(Box::new(SpecularMetal::new(&Colorf::new(0.155, 0.116, 0.138), &Colorf::new(4.828, 3.122, 2.146)))
-                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
+            Instance::new(sphere.clone(), plastic, Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0)), "metal_sphere"),
             // The glass sphere
+            /*
             Instance::new(sphere.clone(),
             Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
                      * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere")
+            */
         ];
         let light_color = Colorf::broadcast(200.0) * Colorf::new(0.780131, 0.780409, 0.775833);
         Scene {
