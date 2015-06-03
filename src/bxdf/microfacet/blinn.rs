@@ -35,22 +35,24 @@ impl MicrofacetDistribution for Blinn {
         }
         // The sampled incident direction is the outgoing direction reflected about the half-vector
         let w_i = -*w_o + 2.0 * linalg::dot(w_o, &w_h) * w_h;
-        if linalg::dot(w_o, &w_h) <= 0.0 {
+        let d = linalg::dot(w_o, &w_h);
+        if d <= 0.0 {
             (w_i, 0.0)
         } else {
             let pdf_val = ((self.exponent + 1.0) * f32::powf(cos_theta, self.exponent))
-                        / (f32::consts::PI_2 * 4.0 * linalg::dot(w_o, &w_h));
+                        / (f32::consts::PI_2 * 4.0 * d);
             (w_i, pdf_val)
         }
     }
     fn pdf(&self, w_o: &Vector, w_i: &Vector) -> f32 {
         let w_h = (*w_o + *w_i).normalized();
         let cos_theta = f32::abs(bxdf::cos_theta(&w_h));
-        if linalg::dot(w_o, &w_h) <= 0.0 {
+        let d = linalg::dot(w_o, &w_h);
+        if d <= 0.0 {
             0.0
         } else {
             ((self.exponent + 1.0) * f32::powf(cos_theta, self.exponent))
-                / (f32::consts::PI_2 * 4.0 * linalg::dot(w_o, &w_h))
+                / (f32::consts::PI_2 * 4.0 * d)
         }
     }
 }
