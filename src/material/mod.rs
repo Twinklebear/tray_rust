@@ -10,12 +10,14 @@ pub use self::specular_metal::SpecularMetal;
 pub use self::glass::Glass;
 pub use self::merl::Merl;
 pub use self::plastic::Plastic;
+pub use self::metal::Metal;
 
 pub mod matte;
 pub mod specular_metal;
 pub mod glass;
 pub mod merl;
 pub mod plastic;
+pub mod metal;
 
 /// Trait implemented by materials. Provides method to get the BSDF describing
 /// the material properties at the intersection
