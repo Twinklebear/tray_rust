@@ -35,7 +35,7 @@ impl Scene {
         let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0))
                                  as Box<Material + Send + Sync>);
         let metal = Arc::new(Box::new(Metal::new(&Colorf::new(0.155265, 0.116723, 0.138381),
-                                        &Colorf::new(4.82835, 3.12225, 2.14696), 0.2))
+                                        &Colorf::new(4.82835, 3.12225, 2.14696), 0.1))
                               as Box<Material + Send + Sync>);
 
         /*
@@ -87,12 +87,10 @@ impl Scene {
             Instance::new(sphere.clone(), metal, Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
                     * Transform::scale(&Vector::broadcast(5.0)), "metal_sphere"),
             // The glass sphere
-            /*
             Instance::new(sphere.clone(),
             Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
                      as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
                      * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere")
-            */
         ];
         let light_color = Colorf::broadcast(200.0) * Colorf::new(0.780131, 0.780409, 0.775833);
         Scene {

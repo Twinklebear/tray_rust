@@ -28,7 +28,7 @@ Documentation can be found on the [project site](http://www.willusher.io/tray_ru
 TODO
 ---
 - Area light support
-- More material models (eg. Torrance-Sparrow w/ various microfacet models, rough glass, etc.)
+- More material models (eg. more microfacet models, rough glass, etc.)
 - Textures
 - Support for using an OBJ's associated MTL files
 - Bump mapping
