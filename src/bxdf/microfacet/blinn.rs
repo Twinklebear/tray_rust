@@ -21,7 +21,7 @@ impl Blinn {
 
 impl MicrofacetDistribution for Blinn {
     fn eval(&self, w_h: &Vector) -> f32 {
-        (self.exponent + 2.0) * f32::consts::FRAC_2_PI
+        (self.exponent + 2.0) * 1.0 / f32::consts::PI_2
             * f32::powf(f32::abs(bxdf::cos_theta(w_h)), self.exponent)
     }
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Vector, f32) {
