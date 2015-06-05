@@ -64,7 +64,6 @@ struct Args {
 // - We'd then have to store box'd instances and maybe pre-compute the list of lights and
 //   store a list of Box<Light> (these would need to be in Vec<Arc<Box<T>>> as well right?
 //   Or can we do unboxed Arc traits now?
-// TODO: Find other mis-uses of FRAC_2_PI, it means 2.0 / pi NOT 1.0 / (2.0 * pi)
 // TODO: Support for PBRT's SPD metal data files
 
 /// A struct containing results of an image sample where a ray was fired through
