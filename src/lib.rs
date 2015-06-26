@@ -1,7 +1,7 @@
 #![allow(dead_code)]
-#![feature(std_misc)]
-#![feature(core)]
-#![feature(collections)]
+#![feature(float_extras)]
+#![feature(float_consts)]
+#![feature(vec_resize)]
 
 extern crate enum_set as enum_set;
 extern crate rand;
