@@ -22,8 +22,8 @@ pub fn cos_hemisphere_pdf(cos_theta: f32) -> f32 { cos_theta * f32::consts::FRAC
 /// See: [Shirley and Chiu, A Low Distortion Map Between Disk and Square](https://mediatech.aalto.fi/~jaakko/T111-5310/K2013/JGT-97.pdf)
 pub fn concentric_sample_disk(u: &(f32, f32)) -> (f32, f32) {
     let mut s = (2.0 * u.0 - 1.0, 2.0 * u.1 - 1.0);
-    let mut radius = 0.0;
-    let mut theta = 0.0;
+    let mut radius;
+    let mut theta;
     if s.0 == 0.0 && s.1 == 0.0 {
         return s;
     }
