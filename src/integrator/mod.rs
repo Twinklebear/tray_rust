@@ -87,7 +87,7 @@ pub trait Integrator {
                         bsdf_sample: &Sample) -> Colorf {
         // TODO: We know we only have one light in the scene currently
         // later we'll use the first sample in `light_sample` to choose one
-        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, &**scene.light,
+        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, &*scene.light,
                              BxDFType::non_specular())
     }
     /// Estimate the direct light contribution to the surface being shaded by the light

@@ -16,27 +16,23 @@ use light::{self, Light};
 pub struct Scene {
     pub camera: Camera,
     pub bvh: BVH<Instance>,
-    pub integrator: Arc<Box<Integrator + Send + Sync>>,
+    pub integrator: Arc<Integrator + Send + Sync>,
     /// TODO: Only one light for now
-    pub light: Arc<Box<Light + Send + Sync>>,
+    pub light: Arc<Light + Send + Sync>,
 }
 
 impl Scene {
     /// Create our (currently) hard-coded scene, passing in the render target
     /// dimensions so we can set the projection matrix for the camera
     pub fn new(w: usize, h: usize) -> Scene {
-        let sphere = Arc::new(Box::new(Sphere::new(1.0)) as Box<BoundableGeom + Send + Sync>);
-        let plane = Arc::new(Box::new(Plane) as Box<BoundableGeom + Send + Sync>);
+        let sphere = Arc::new(Sphere::new(1.0));
+        let plane = Arc::new(Plane);
 
-        let white_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 1.0))
-                                  as Box<Material + Send + Sync>);
-        let red_wall = Arc::new(Box::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0))
-                                as Box<Material + Send + Sync>);
-        let blue_wall = Arc::new(Box::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0))
-                                 as Box<Material + Send + Sync>);
-        let metal = Arc::new(Box::new(Metal::new(&Colorf::new(0.155265, 0.116723, 0.138381),
-                                        &Colorf::new(4.82835, 3.12225, 2.14696), 0.1))
-                              as Box<Material + Send + Sync>);
+        let white_wall = Arc::new(Matte::new(&Colorf::new(1.0, 1.0, 1.0), 1.0));
+        let red_wall = Arc::new(Matte::new(&Colorf::new(1.0, 0.2, 0.2), 1.0));
+        let blue_wall = Arc::new(Matte::new(&Colorf::new(0.2, 0.2, 1.0), 1.0));
+        let metal = Arc::new(Metal::new(&Colorf::new(0.155265, 0.116723, 0.138381),
+                                        &Colorf::new(4.82835, 3.12225, 2.14696), 0.1));
 
         /*
         let mut models = Mesh::load_obj(Path::new("./rust-logo.obj"));
@@ -88,8 +84,8 @@ impl Scene {
                     * Transform::scale(&Vector::broadcast(5.0)), "metal_sphere"),
             // The glass sphere
             Instance::new(sphere.clone(),
-            Arc::new(Box::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52))
-                     as Box<Material + Send + Sync>), Transform::translate(&Vector::new(6.0, -2.0, 5.0))
+            Arc::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52)),
+                     Transform::translate(&Vector::new(6.0, -2.0, 5.0))
                      * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere")
         ];
         let light_color = Colorf::broadcast(200.0) * Colorf::new(0.780131, 0.780409, 0.775833);
@@ -97,9 +93,8 @@ impl Scene {
             camera: Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
                 &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h)),
             bvh: BVH::new(4, instances),
-            integrator: Arc::new(Box::new(integrator::Path::new(4, 8)) as Box<Integrator + Send + Sync>),
-            light: Arc::new(Box::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &light_color))
-                            as Box<Light + Send + Sync>),
+            integrator: Arc::new(integrator::Path::new(4, 8)),
+            light: Arc::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &light_color)),
         }
     }
     /// Test the ray for intersections against the objects in the scene.

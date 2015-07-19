@@ -13,9 +13,9 @@ use linalg;
 pub struct Instance {
     /// The geometry that's being instanced. TODO: We must Box for now but this
     /// restriction will be lifted later
-    geom: Arc<Box<BoundableGeom + Send + Sync>>,
+    geom: Arc<BoundableGeom + Send + Sync>,
     /// The material being used by this instance.
-    pub material: Arc<Box<Material + Send + Sync>>,
+    pub material: Arc<Material + Send + Sync>,
     /// The transform to world space
     transform: linalg::Transform,
     /// Tag to identify the instance
@@ -24,7 +24,7 @@ pub struct Instance {
 
 impl Instance {
     /// Create a new instance of some geometry in the scene
-    pub fn new(geom: Arc<Box<BoundableGeom + Send + Sync>>, material: Arc<Box<Material + Send + Sync>>,
+    pub fn new(geom: Arc<BoundableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
                transform: linalg::Transform, tag: &str)
                -> Instance {
         Instance { geom: geom, material: material, transform: transform, tag: tag.to_string() }
