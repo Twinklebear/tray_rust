@@ -59,7 +59,7 @@ impl Integrator for Path {
             if bounce == 0 || specular_bounce {
             }
             */
-            let bsdf = current_hit.instance.material.bsdf(&current_hit);
+            let bsdf = current_hit.material.bsdf(&current_hit);
             let w_o = -ray.d;
             let light_sample = Sample::new(&l_samples[bounce], l_samples_comp[bounce]);
             let bsdf_sample = Sample::new(&bsdf_samples[bounce], bsdf_samples_comp[bounce]);
