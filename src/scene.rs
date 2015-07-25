@@ -17,8 +17,10 @@ pub struct Scene {
     pub camera: Camera,
     pub bvh: BVH<Instance>,
     pub integrator: Arc<Integrator + Send + Sync>,
-    /// TODO: Only one light for now
-    pub light: Arc<Light + Send + Sync>,
+    // TODO: The lights will merge with the instances of geometry
+    // then each thread will go through the list and put together a
+    // Vec<&Emitter> to get direct access to each light
+    pub light: Arc<Instance>,
 }
 
 impl Scene {
@@ -103,7 +105,7 @@ impl Scene {
                 &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h)),
             bvh: BVH::new(4, instances),
             integrator: Arc::new(integrator::Path::new(4, 8)),
-            light: Arc::new(light::Point::new(&Point::new(0.0, 0.0, 22.0), &light_color)),
+            light: Arc::new(Instance::point_light(Point::new(0.0, 0.0, 22.0), light_color, "light")),
         }
     }
     /// Test the ray for intersections against the objects in the scene.

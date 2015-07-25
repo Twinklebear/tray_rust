@@ -5,7 +5,7 @@ use rand::StdRng;
 
 use scene::Scene;
 use linalg::{self, Ray};
-use geometry::Intersection;
+use geometry::{Intersection, Instance};
 use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
@@ -31,9 +31,13 @@ impl Integrator for Whitted {
         let bsdf = hit.material.bsdf(hit);
         let w_o = -ray.d;
         let mut sample_2d = [(0.0, 0.0)];
+        let light = match *scene.light {
+            Instance::Emitter(ref e) => e,
+            _ => panic!("The light isn't a light!?"),
+        };
         sampler.get_samples_2d(&mut sample_2d[..], rng);
         // TODO: When we add support for multiple lights, iterate over all of them
-        let (li, w_i, pdf, occlusion) = scene.light.sample_incident(&hit.dg.p, &sample_2d[0]);
+        let (li, w_i, pdf, occlusion) = light.sample_incident(&hit.dg.p, &sample_2d[0]);
         let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
         let mut illum = Colorf::broadcast(0.0);
         if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {

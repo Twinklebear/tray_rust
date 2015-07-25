@@ -83,11 +83,11 @@ pub trait Integrator {
     /// - `bsdf` surface properties of the surface being illuminated
     /// - `light_sample` 3 random samples for the light
     /// - `bsdf_sample` 3 random samples for the bsdf
-    fn sample_one_light(&self, scene: &Scene, w_o: &Vector, bsdf: &BSDF, light_sample: &Sample,
-                        bsdf_sample: &Sample) -> Colorf {
+    fn sample_one_light(&self, scene: &Scene, light: &Light, w_o: &Vector, bsdf: &BSDF,
+                        light_sample: &Sample, bsdf_sample: &Sample) -> Colorf {
         // TODO: We know we only have one light in the scene currently
         // later we'll use the first sample in `light_sample` to choose one
-        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, &*scene.light,
+        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, light,
                              BxDFType::non_specular())
     }
     /// Estimate the direct light contribution to the surface being shaded by the light

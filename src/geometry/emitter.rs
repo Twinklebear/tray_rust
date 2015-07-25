@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use geometry::{Boundable, BBox, BoundableGeom, DifferentialGeometry};
 use material::Material;
-use linalg::{Transform, Point, Ray};
+use linalg::{Transform, Point, Ray, Vector};
 use film::Colorf;
 use light::{Light, OcclusionTester};
 
@@ -46,7 +46,7 @@ impl Emitter {
     pub fn point(pos: Point, emission: Colorf, tag: &str) -> Emitter {
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
-                  transform: Transform::translate(&(Point::broadcast(0.0) - pos)),
+                  transform: Transform::translate(&(pos - Point::broadcast(0.0))),
                   tag: tag.to_string() }
     }
     /// Test the ray for intersection against this insance of geometry.
@@ -80,6 +80,30 @@ impl Boundable for Emitter {
             &EmitterType::Area(ref g, _) => {
                 self.transform * g.bounds()
             },
+        }
+    }
+}
+
+impl Light for Emitter {
+    fn sample_incident(&self, p: &Point, samples: &(f32, f32))
+        -> (Colorf, Vector, f32, OcclusionTester)
+    {
+        match &self.emitter {
+            &EmitterType::Point => {
+                let pos = self.transform * Point::broadcast(0.0);
+                let w_i = (pos - *p).normalized();
+                (self.emission / pos.distance_sqr(p), w_i, 1.0, OcclusionTester::test_points(p, &pos))
+            }
+            _ => {
+                (Colorf::black(), Vector::broadcast(0.0), 1.0,
+                OcclusionTester::test_points(&Point::broadcast(0.0), &Point::broadcast(0.0)))
+            },
+        }
+    }
+    fn delta_light(&self) -> bool {
+        match &self.emitter { 
+            &EmitterType::Point => true,
+            _ => false,
         }
     }
 }

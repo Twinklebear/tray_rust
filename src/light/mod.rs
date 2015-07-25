@@ -8,10 +8,6 @@ use linalg;
 use film::Colorf;
 use scene::Scene;
 
-pub use self::point::Point;
-
-pub mod point;
-
 /// The OcclusionTester provides a simple interface for setting up and executing
 /// occlusion queries in the scene
 #[derive(Clone, Copy, Debug)]
