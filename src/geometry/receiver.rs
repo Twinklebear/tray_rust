@@ -1,7 +1,7 @@
 //! A receiver is an instance of geometry that does not emit any light
 
 use std::sync::Arc;
-use geometry::{Intersection, Boundable, BBox, BoundableGeom, DifferentialGeometry};
+use geometry::{Boundable, BBox, BoundableGeom, DifferentialGeometry};
 use material::Material;
 use linalg;
 
