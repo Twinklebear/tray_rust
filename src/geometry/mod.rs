@@ -12,6 +12,8 @@ pub use self::plane::Plane;
 pub use self::bbox::BBox;
 pub use self::bvh::BVH;
 pub use self::mesh::Mesh;
+pub use self::receiver::Receiver;
+pub use self::emitter::Emitter;
 
 pub mod differential_geometry;
 pub mod intersection;
@@ -21,6 +23,8 @@ pub mod plane;
 pub mod bbox;
 pub mod bvh;
 pub mod mesh;
+pub mod receiver;
+pub mod emitter;
 
 /// Trait implemented by geometric primitives
 pub trait Geometry {
