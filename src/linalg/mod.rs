@@ -46,9 +46,15 @@ pub fn clamp<T: PartialOrd>(x: T, min: T, max: T) -> T {
     if x < min { min } else if x > max { max } else { x }
 }
 /// Compute the direction specified by `theta` and `phi` in the spherical coordinate system
-pub fn spherical_dir(sin_theta: f32, cos_theta: f32, phi: f32) -> vector::Vector {
+pub fn spherical_dir(sin_theta: f32, cos_theta: f32, phi: f32) -> Vector {
     Vector::new(sin_theta * f32::cos(phi), sin_theta * f32::sin(phi),
                 cos_theta)
+}
+/// Compute the direction specified by `theta` and `phi` in the coordinate system
+/// formed by `x`, `y` and `z`
+pub fn spherical_dir_coords(sin_theta: f32, cos_theta: f32, phi: f32, x: &Vector, y: &Vector, z: &Vector)
+                    -> Vector {
+    sin_theta * f32::cos(phi) * *x + sin_theta * f32::sin(phi) * *y + cos_theta * *z
 }
 /// Compute the value of theta for the vector in the spherical coordinate system
 pub fn spherical_theta(v: &vector::Vector) -> f32 {

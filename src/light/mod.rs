@@ -4,7 +4,7 @@
 
 use std::f32;
 
-use linalg;
+use linalg::{Point, Vector, Ray};
 use film::Colorf;
 use scene::Scene;
 
@@ -13,18 +13,18 @@ use scene::Scene;
 #[derive(Clone, Copy, Debug)]
 pub struct OcclusionTester {
     /// The ray (or ray segment) that the occlusion test is performed on
-    pub ray: linalg::Ray,
+    pub ray: Ray,
 }
 
 impl OcclusionTester {
     /// Create an occlusion tester to perform the test between two points
-    pub fn test_points(a: &linalg::Point, b: &linalg::Point) -> OcclusionTester {
-        OcclusionTester { ray: linalg::Ray::segment(a, &(*b - *a), 0.001, 0.999) }
+    pub fn test_points(a: &Point, b: &Point) -> OcclusionTester {
+        OcclusionTester { ray: Ray::segment(a, &(*b - *a), 0.001, 0.999) }
     }
     /// Create an occlusion tester to perform the test along the ray starting at `p`
     /// and in direction `d`
-    pub fn test_ray(p: &linalg::Point, d: &linalg::Vector) -> OcclusionTester {
-        OcclusionTester { ray: linalg::Ray::segment(p, d, 0.001, f32::INFINITY) }
+    pub fn test_ray(p: &Point, d: &Vector) -> OcclusionTester {
+        OcclusionTester { ray: Ray::segment(p, d, 0.001, f32::INFINITY) }
     }
     /// Perform the occlusion test in the scene
     pub fn occluded(&self, scene: &Scene) -> bool {
@@ -43,11 +43,12 @@ impl OcclusionTester {
 pub trait Light {
     /// Sample the illumination from the light arriving at the point `p`
     /// Returns the color, incident light direction, pdf and occlusion tester object
-    /// `samples` will be used to randomly sample the light and should contain 3 f32s
-    /// TODO: how to require that it's at least this size?
-    fn sample_incident(&self, p: &linalg::Point, samples: &(f32, f32))
-        -> (Colorf, linalg::Vector, f32, OcclusionTester);
+    /// `samples` will be used to randomly sample the light.
+    fn sample_incident(&self, p: &Point, samples: &(f32, f32))
+        -> (Colorf, Vector, f32, OcclusionTester);
     /// Determine if the light is described by a delta distribution
     fn delta_light(&self) -> bool;
+    /// Compute the PDF for sampling the point with incident direction `w_i`
+    fn pdf(&self, p: &Point, w_i: &Vector) -> f32;
 }
 

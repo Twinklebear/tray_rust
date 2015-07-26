@@ -106,5 +106,11 @@ impl Light for Emitter {
             _ => false,
         }
     }
+    fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
+        match &self.emitter {
+            &EmitterType::Point => 0.0,
+            _ => 1.0, // TODO
+        }
+    }
 }
 

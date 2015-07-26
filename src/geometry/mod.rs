@@ -2,7 +2,7 @@
 //! the various geometry in the ray tracer and provides some standard
 //! geometry for rendering
 
-use linalg;
+use linalg::{Point, Vector, Ray, Normal};
 
 pub use self::differential_geometry::DifferentialGeometry;
 pub use self::intersection::Intersection;
@@ -33,7 +33,7 @@ pub trait Geometry {
     /// object space otherwise the test will be incorrect.
     /// Returns the differential geometry containing the hit information if the
     /// ray hit the object and set's the ray's `max_t` member accordingly
-    fn intersect(&self, ray: &mut linalg::Ray) -> Option<DifferentialGeometry>;
+    fn intersect(&self, ray: &mut Ray) -> Option<DifferentialGeometry>;
 }
 
 /// Trait implemented by scene objects that can report an AABB describing their bounds
@@ -42,6 +42,26 @@ pub trait Boundable {
     fn bounds(&self) -> BBox;
 }
 
+/// Trait implemented by geometry that can sample a point on its surface
+pub trait Sampleable {
+    /// Uniformly sample a position and normal on the surface using the samples passed
+    fn sample_uniform(&self, samples: &(f32, f32)) -> (Point, Normal);
+    /// Sample the object using the probability density of the solid angle
+    /// from `p` to the sampled point on the surface.
+    /// Returns the sampled point and the surface normal at that point
+    fn sample(&self, p: &Point, samples: &(f32, f32)) -> (Point, Normal);
+    /// Return the surface area of the shape
+    fn surface_area(&self) -> f32;
+    /// Compute the PDF that the ray from `p` with direction `w_i` intersects
+    /// the shape
+    fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
+        1.0 / self.surface_area()
+    }
+}
+
 pub trait BoundableGeom: Geometry + Boundable {}
 impl<T: ?Sized> BoundableGeom for T where T: Geometry + Boundable {}
+
+pub trait SampleableGeom: Geometry + Boundable + Sampleable {}
+impl<T: ?Sized> SampleableGeom for T where T: Geometry + Boundable + Sampleable {}
 

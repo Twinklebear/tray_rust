@@ -2,8 +2,9 @@
 
 use std::f32;
 
-use geometry::{Geometry, DifferentialGeometry, Boundable, BBox};
+use geometry::{Geometry, DifferentialGeometry, Boundable, BBox, Sampleable};
 use linalg::{self, Normal, Vector, Ray, Point};
+use mc;
 
 /// A sphere with user-specified radius
 #[derive(Clone, Copy)]
@@ -65,6 +66,61 @@ impl Boundable for Sphere {
     fn bounds(&self) -> BBox {
         BBox::span(Point::new(-self.radius, -self.radius, -self.radius),
                    Point::new(self.radius, self.radius, self.radius))
+    }
+}
+
+impl Sampleable for Sphere {
+    fn sample_uniform(&self, samples: &(f32, f32)) -> (Point, Normal) {
+        let p = Point::broadcast(0.0) + self.radius * mc::uniform_sample_sphere(samples);
+        (p, Normal::new(p.x, p.y, p.z).normalized())
+    }
+    /// Sample the object using the probability density of the solid angle
+    /// from `p` to the sampled point on the surface.
+    /// Returns the sampled point and the surface normal at that point
+    fn sample(&self, p: &Point, samples: &(f32, f32)) -> (Point, Normal) {
+        // If the point is inside the sphere just sample uniformly
+        let dist_sqr = p.distance_sqr(&Point::broadcast(0.0));
+        // The PDF is uniform if we're insidfe the sphere
+        if (dist_sqr - self.radius * self.radius < 0.0001) {
+            self.sample_uniform(samples)
+        }
+        else {
+            let w_z = (Point::broadcast(0.0) - *p).normalized();
+            let (w_x, w_y) = linalg::coordinate_system(&w_z);
+            // Compute theta and phi for samples in the cone of the sphere seen from `p`
+            let cos_theta_max = f32::sqrt(f32::max(0.0, 1.0 - self.radius * self.radius / dist_sqr));
+            let cos_theta = linalg::lerp(samples.0, &cos_theta_max, &1.0);
+            let sin_theta = f32::sqrt(1.0 - cos_theta * cos_theta);
+            let phi = samples.1 * f32::consts::PI_2;
+            // Compute angle `alpha` from center of sphere to the sampled point on the surface
+            let dist = f32::sqrt(dist_sqr);
+            let dist_surf = dist * cos_theta
+                - f32::sqrt(f32::max(0.0, self.radius * self.radius - dist * dist * sin_theta * sin_theta));
+            let cos_alpha = (dist * dist + self.radius * self.radius - dist_surf * dist_surf)
+                / (2.0 * dist * self.radius);
+            let sin_alpha = f32::sqrt(f32::max(0.0, 1.0 - cos_alpha * cos_alpha));
+            let normal = linalg::spherical_dir_coords(sin_alpha, cos_alpha, phi, &-w_x, &-w_y, &-w_z);
+            let point = self.radius * Point::new(normal.x, normal.y, normal.z);
+            // Return the point re-projected onto the surface and the normalized normal
+            (point * self.radius / point.distance(&Point::broadcast(0.0)),
+                Normal::new(normal.x, normal.y, normal.z).normalized())
+        }
+    }
+    /// Compute the sphere's surface area
+    fn surface_area(&self) -> f32 {
+        2.0 * f32::consts::PI_2 * self.radius
+    }
+    /// Compute the PDF that the ray from `p` with direction `w_i` intersects
+    /// the shape
+    fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
+        let dist_sqr = p.distance_sqr(&Point::broadcast(0.0));
+        // The PDF is uniform if we're insidfe the sphere
+        if (dist_sqr - self.radius * self.radius < 0.0001) {
+            Sampleable::pdf(self, p, w_i)
+        } else {
+            let cos_theta_max = f32::sqrt(f32::max(0.0, 1.0 - self.radius * self.radius / dist_sqr));
+            mc::uniform_cone_pdf(cos_theta_max)
+        }
     }
 }
 
