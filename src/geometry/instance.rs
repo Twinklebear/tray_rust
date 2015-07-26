@@ -4,7 +4,8 @@
 
 use std::sync::Arc;
 
-use geometry::{Intersection, Boundable, BBox, BoundableGeom, Receiver, Emitter};
+use geometry::{Intersection, Boundable, BBox, BoundableGeom, Receiver, Emitter,
+               SampleableGeom};
 use material::Material;
 use linalg::{Transform, Point, Ray};
 use film::Colorf;
@@ -22,13 +23,10 @@ impl Instance {
         Instance::Receiver(Receiver::new(geom, material, transform, tag))
     }
     /// Create an instance of the geometry in the scene that will emit and receive light
-    /// TODO: area lights
-    /*
-    pub fn area_light(geom: Arc<BoundableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-               transform: linalg::Transform, tag: &str) -> Instance {
-        Instance::Emitter(Emitter::area(geom, material, transform, tag))
+    pub fn area_light(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
+               emission: Colorf, transform: Transform, tag: &str) -> Instance {
+        Instance::Emitter(Emitter::area(geom, material, emission, transform, tag))
     }
-    */
     pub fn point_light(pos: Point, emission: Colorf, tag: &str) ->  Instance {
         Instance::Emitter(Emitter::point(pos, emission, tag))
     }

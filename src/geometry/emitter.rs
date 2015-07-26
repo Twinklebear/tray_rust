@@ -1,7 +1,7 @@
 //! An emitter is an instance of geometry that both receives and emits light
 
 use std::sync::Arc;
-use geometry::{Boundable, BBox, BoundableGeom, DifferentialGeometry};
+use geometry::{Boundable, BBox, SampleableGeom, DifferentialGeometry};
 use material::Material;
 use linalg::{Transform, Point, Ray, Vector};
 use film::Colorf;
@@ -14,12 +14,10 @@ enum EmitterType {
     Point,
     /// The area light holds the geometry that is emitting the light
     /// and the material for the geometry
-    Area(Arc<BoundableGeom + Send + Sync>, Arc<Material + Send + Sync>),
+    Area(Arc<SampleableGeom + Send + Sync>, Arc<Material + Send + Sync>),
 }
 
 /// An instance of geometry in the scene that receives and emits light
-/// TODO: This is currently just a placeholder, emissive geometry isn't
-/// currently implemented. This is why it's identical to `Receiver` :P
 pub struct Emitter {
     emitter: EmitterType,
     /// The light intensity emitted
@@ -37,12 +35,13 @@ impl Emitter {
     /// TODO: We need sample methods for geometry to do this
     /// We also need MIS in the path tracer's direct light sampling so we get
     /// good quality
-    /*
-    pub fn area(geom: Arc<BoundableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-               transform: linalg::Transform, tag: &str) -> Emitter {
-        Emitter { geom: geom, material: material, transform: transform, tag: tag.to_string() }
+    pub fn area(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
+                emission: Colorf, transform: Transform, tag: &str) -> Emitter {
+        Emitter { emitter: EmitterType::Area(geom, material),
+                  emission: emission,
+                  transform: transform,
+                  tag: tag.to_string() }
     }
-    */
     pub fn point(pos: Point, emission: Colorf, tag: &str) -> Emitter {
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
