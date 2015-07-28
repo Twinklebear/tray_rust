@@ -43,6 +43,13 @@ impl Instance {
             None => None,
         }
     }
+    /// Get the tag for this instance
+    pub fn tag(&self) -> &str {
+        match self {
+            &Instance::Emitter(ref e) => &e.tag[..],
+            &Instance::Receiver(ref r) => &r.tag[..],
+        }
+    }
 }
 
 impl Boundable for Instance {
