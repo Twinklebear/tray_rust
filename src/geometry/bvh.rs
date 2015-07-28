@@ -2,6 +2,7 @@
 
 use std::f32;
 use std::iter::repeat;
+use std::slice;
 
 use partition::partition;
 use geometry::{BBox, Boundable};
@@ -240,6 +241,15 @@ impl<T: Boundable> BVH<T> {
 impl<T: Boundable> Boundable for BVH<T> {
     fn bounds(&self) -> BBox {
         self.tree[0].bounds
+    }
+}
+
+impl<'a, T: Boundable> IntoIterator for &'a BVH<T> {
+    type Item = &'a T;
+    type IntoIter = slice::Iter<'a, T>;
+
+    fn into_iter(self) -> slice::Iter<'a, T> {
+        self.geometry.iter()
     }
 }
 
