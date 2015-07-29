@@ -1,6 +1,4 @@
-#![feature(duration)]
-#![feature(duration_span)]
-#![feature(drain)]
+#![feature(duration, duration_span, drain)]
 
 extern crate image;
 extern crate rand;
