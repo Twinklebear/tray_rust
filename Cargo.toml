@@ -10,13 +10,16 @@ doc = false
 [dependencies]
 enum-set = "0.0.5"
 rand = "0.3.8"
-threadpool = "0.1.4"
 rustc-serialize = "0.3.15"
 docopt = "0.6.67"
 image = "0.3.11"
 num_cpus = "0.2.6"
 tobj = "0.0.9"
 byteorder = "0.3.11"
+
+[dependencies.threadpool]
+version = "0.1.4"
+features = ["scoped-pool"]
 
 [profile.release]
 # How to send extra compiler flag for -march=native equivalent in Rust

@@ -14,7 +14,7 @@ use std::sync::mpsc::{self, Sender, Receiver};
 use std::path::Path;
 use std::time::Duration;
 
-use threadpool::ThreadPool;
+use threadpool::ScopedPool;
 use rand::StdRng;
 use docopt::Docopt;
 
@@ -40,7 +40,7 @@ Options:
 #[derive(RustcDecodable, Debug)]
 struct Args {
     flag_o: Option<String>,
-    flag_n: Option<usize>,
+    flag_n: Option<u32>,
 }
 
 /// A struct containing results of an image sample where a ray was fired through
@@ -94,7 +94,7 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, queue: Arc<sampler::BlockQueue>,
 /// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
 /// of the channel where the threads will write their samples so that the receiver
 /// can write these samples to the render target
-fn spawn_workers(pool: &ThreadPool, n: usize, scene: Arc<scene::Scene>)
+fn spawn_workers(pool: &ScopedPool, n: u32, scene: Arc<scene::Scene>)
                  -> Receiver<Vec<ImageSample>> {
     let (tx, rx) = mpsc::channel();
     let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
@@ -110,9 +110,9 @@ fn spawn_workers(pool: &ThreadPool, n: usize, scene: Arc<scene::Scene>)
 }
 
 /// Render the scene in parallel to the render target
-fn render_parallel(rt: &mut film::RenderTarget, n: usize){
+fn render_parallel(rt: &mut film::RenderTarget, n: u32){
     let scene = Arc::new(scene::Scene::new(WIDTH, HEIGHT));
-    let pool = ThreadPool::new(n);
+    let pool = ScopedPool::new(n);
     let rx = spawn_workers(&pool, n, scene);
     for mut v in rx.iter() {
         for s in v.drain(..) {
@@ -127,7 +127,7 @@ fn main() {
     let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
     let n = match args.flag_n {
         Some(n) => n,
-        None => num_cpus::get(),
+        None => num_cpus::get() as u32,
     };
     println!("Rendering using {} threads", n);
     let d = Duration::span(|| render_parallel(&mut rt, n));
