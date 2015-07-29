@@ -16,7 +16,7 @@ use light::{self, Light};
 pub struct Scene {
     pub camera: Camera,
     pub bvh: BVH<Instance>,
-    pub integrator: Arc<Integrator + Send + Sync>,
+    pub integrator: Box<Integrator + Send + Sync>,
     // TODO: The lights will merge with the instances of geometry
     // then each thread will go through the list and put together a
     // Vec<&Emitter> to get direct access to each light
@@ -104,7 +104,7 @@ impl Scene {
             camera: Camera::new(Transform::look_at(&Point::new(0.0, -60.0, 12.0),
                 &Point::new(0.0, 0.0, 12.0), &Vector::new(0.0, 0.0, 1.0)), 30.0, (w, h)),
             bvh: BVH::new(4, instances),
-            integrator: Arc::new(integrator::Path::new(4, 8)),
+            integrator: Box::new(integrator::Path::new(4, 8)),
             light: Arc::new(Instance::point_light(Point::new(0.0, 0.0, 22.0), light_color, "light")),
         }
     }

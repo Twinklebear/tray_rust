@@ -9,7 +9,6 @@ extern crate num_cpus;
 extern crate tray_rust;
 
 use std::vec::Vec;
-use std::sync::{Arc};
 use std::sync::mpsc::{self, Sender, Receiver};
 use std::path::Path;
 use std::time::Duration;
@@ -19,7 +18,7 @@ use rand::StdRng;
 use docopt::Docopt;
 
 use tray_rust::film;
-use tray_rust::geometry::Geometry;
+use tray_rust::geometry::{Geometry, Instance, Emitter};
 use tray_rust::sampler::{self, Sampler};
 use tray_rust::scene;
 use tray_rust::integrator::Integrator;
@@ -60,8 +59,8 @@ impl ImageSample {
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
 /// values recieved to the render target
-fn thread_work(tx: Sender<Vec<ImageSample>>, queue: Arc<sampler::BlockQueue>,
-               scene: Arc<scene::Scene>) {
+fn thread_work(tx: Sender<Vec<ImageSample>>, queue: &sampler::BlockQueue,
+               scene: &scene::Scene, light_list: &Vec<&Emitter>) {
     let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 16);
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut rng = match StdRng::new() {
@@ -79,7 +78,7 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, queue: Arc<sampler::BlockQueue>,
             for s in sample_pos.iter() {
                 let mut ray = scene.camera.generate_ray(s);
                 if let Some(hit) = scene.intersect(&mut ray) {
-                    let c = scene.integrator.illumination(&*scene, &ray, &hit, &mut sampler, &mut rng).clamp();
+                    let c = scene.integrator.illumination(scene, &ray, &hit, &mut sampler, &mut rng).clamp();
                     samples.push(ImageSample::new(s.0, s.1, c));
                 }
             }
@@ -94,16 +93,14 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, queue: Arc<sampler::BlockQueue>,
 /// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
 /// of the channel where the threads will write their samples so that the receiver
 /// can write these samples to the render target
-fn spawn_workers(pool: &ScopedPool, n: u32, scene: Arc<scene::Scene>)
+fn spawn_workers<'a>(pool: &ScopedPool<'a>, n: u32, scene: &'a scene::Scene,
+                     queue: &'a sampler::BlockQueue, light_list: &'a Vec<&Emitter>)
                  -> Receiver<Vec<ImageSample>> {
     let (tx, rx) = mpsc::channel();
-    let block_queue = Arc::new(sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8)));
     for _ in 0..n {
-        let q = block_queue.clone();
         let t = tx.clone();
-        let s = scene.clone();
         pool.execute(move || {
-            thread_work(t, q, s);
+            thread_work(t, queue, scene, light_list);
         });
     }
     rx
@@ -111,12 +108,23 @@ fn spawn_workers(pool: &ScopedPool, n: u32, scene: Arc<scene::Scene>)
 
 /// Render the scene in parallel to the render target
 fn render_parallel(rt: &mut film::RenderTarget, n: u32){
-    let scene = Arc::new(scene::Scene::new(WIDTH, HEIGHT));
-    let pool = ScopedPool::new(n);
-    let rx = spawn_workers(&pool, n, scene);
-    for mut v in rx.iter() {
-        for s in v.drain(..) {
-            rt.write(s.x, s.y, &s.color);
+    let scene = scene::Scene::new(WIDTH, HEIGHT);
+    let block_queue = sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8));
+    // TODO: Actually put lights in the BVH and pass the list through to the
+    // integrator's illumination method
+    let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
+        match x {
+            &Instance::Emitter(ref e) => Some(e),
+            _ => None,
+        }
+    }).collect();
+    {
+        let pool = ScopedPool::new(n);
+        let rx = spawn_workers(&pool, n, &scene, &block_queue, &light_list);
+        for mut v in rx.iter() {
+            for s in v.drain(..) {
+                rt.write(s.x, s.y, &s.color);
+            }
         }
     }
 }
