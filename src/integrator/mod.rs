@@ -3,12 +3,13 @@
 //! integration methods, eg. path tracing, photon mapping etc.
 
 use std::f32;
+use std::cmp;
 use enum_set::EnumSet;
 use rand::StdRng;
 
 use scene::Scene;
 use linalg::{self, Ray, Vector};
-use geometry::Intersection;
+use geometry::{Intersection, Emitter};
 use film::Colorf;
 use bxdf::{BSDF, BxDFType};
 use light::Light;
@@ -25,11 +26,11 @@ pub mod path;
 /// the scene.
 pub trait Integrator {
     /// Compute the illumination at the intersection in the scene
-    fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection, sampler: &mut Sampler,
-                    rng: &mut StdRng) -> Colorf;
+    fn illumination(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,
+                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf;
     /// Compute the color of specularly reflecting light off the intersection
-    fn specular_reflection(&self, scene: &Scene, ray: &Ray, bsdf: &BSDF, sampler: &mut Sampler,
-                           rng: &mut StdRng) -> Colorf {
+    fn specular_reflection(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,
+                           bsdf: &BSDF, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
         let w_o = -ray.d;
         let mut spec_refl = EnumSet::new();
         spec_refl.insert(BxDFType::Specular);
@@ -45,15 +46,15 @@ pub trait Integrator {
             let mut refl_ray = ray.child(&bsdf.p, &w_i);
             refl_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut refl_ray) {
-                let li = self.illumination(scene, &refl_ray, &hit, sampler, rng);
+                let li = self.illumination(scene, light_list, &refl_ray, &hit, sampler, rng);
                 refl = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
             }
         }
         refl
     }
     /// Compute the color of specularly transmitted light through the intersection
-    fn specular_transmission(&self, scene: &Scene, ray: &Ray, bsdf: &BSDF, sampler: &mut Sampler,
-                             rng: &mut StdRng) -> Colorf {
+    fn specular_transmission(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,
+                             bsdf: &BSDF, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
         let w_o = -ray.d;
         let mut spec_trans = EnumSet::new();
         spec_trans.insert(BxDFType::Specular);
@@ -69,7 +70,7 @@ pub trait Integrator {
             let mut trans_ray = ray.child(&bsdf.p, &w_i);
             trans_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut trans_ray) {
-                let li = self.illumination(scene, &trans_ray, &hit, sampler, rng);
+                let li = self.illumination(scene, light_list, &trans_ray, &hit, sampler, rng);
                 transmit = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
             }
         }
@@ -83,11 +84,10 @@ pub trait Integrator {
     /// - `bsdf` surface properties of the surface being illuminated
     /// - `light_sample` 3 random samples for the light
     /// - `bsdf_sample` 3 random samples for the bsdf
-    fn sample_one_light(&self, scene: &Scene, light: &Light, w_o: &Vector, bsdf: &BSDF,
+    fn sample_one_light(&self, scene: &Scene, light_list: &Vec<&Emitter>, w_o: &Vector, bsdf: &BSDF,
                         light_sample: &Sample, bsdf_sample: &Sample) -> Colorf {
-        // TODO: We know we only have one light in the scene currently
-        // later we'll use the first sample in `light_sample` to choose one
-        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, light,
+        let l = cmp::min((light_sample.one_d * light_list.len() as f32) as usize, light_list.len() - 1);
+        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, light_list[l],
                              BxDFType::non_specular())
     }
     /// Estimate the direct light contribution to the surface being shaded by the light

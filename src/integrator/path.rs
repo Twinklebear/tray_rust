@@ -2,11 +2,11 @@
 //! explicit light sampling
 
 use std::f32;
-use rand::{Rng, StdRng};
+use rand::StdRng;
 
 use scene::Scene;
 use linalg::{self, Ray};
-use geometry::{Intersection, Instance};
+use geometry::{Intersection, Emitter};
 use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
@@ -28,8 +28,8 @@ impl Path {
 }
 
 impl Integrator for Path {
-    fn illumination(&self, scene: &Scene, r: &Ray, hit: &Intersection, sampler: &mut Sampler,
-                    rng: &mut StdRng) -> Colorf {
+    fn illumination(&self, scene: &Scene, light_list: &Vec<&Emitter>, r: &Ray,
+                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
         // TODO: We really need the memory pool now
         let num_samples = self.max_depth as usize + 1;
         let mut l_samples = vec![(0.0, 0.0); num_samples];
@@ -44,11 +44,6 @@ impl Integrator for Path {
         sampler.get_samples_1d(&mut l_samples_comp[..], rng);
         sampler.get_samples_1d(&mut bsdf_samples_comp[..], rng);
         sampler.get_samples_1d(&mut path_samples_comp[..], rng);
-
-        let light = match *scene.light {
-            Instance::Emitter(ref e) => e,
-            _ => panic!("The light isn't a light!?"),
-        };
 
         let mut illum = Colorf::black();
         let mut path_throughput = Colorf::broadcast(1.0);
@@ -68,7 +63,7 @@ impl Integrator for Path {
             let w_o = -ray.d;
             let light_sample = Sample::new(&l_samples[bounce], l_samples_comp[bounce]);
             let bsdf_sample = Sample::new(&bsdf_samples[bounce], bsdf_samples_comp[bounce]);
-            let li = self.sample_one_light(scene, light, &w_o, &bsdf, &light_sample, &bsdf_sample);
+            let li = self.sample_one_light(scene, light_list, &w_o, &bsdf, &light_sample, &bsdf_sample);
             illum = illum + path_throughput * li;
 
             // Determine the next direction to take the path by sampling the BSDF

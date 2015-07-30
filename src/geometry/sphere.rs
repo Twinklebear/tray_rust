@@ -81,7 +81,7 @@ impl Sampleable for Sphere {
         // If the point is inside the sphere just sample uniformly
         let dist_sqr = p.distance_sqr(&Point::broadcast(0.0));
         // The PDF is uniform if we're insidfe the sphere
-        if (dist_sqr - self.radius * self.radius < 0.0001) {
+        if dist_sqr - self.radius * self.radius < 0.0001 {
             self.sample_uniform(samples)
         }
         else {
@@ -115,7 +115,7 @@ impl Sampleable for Sphere {
     fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
         let dist_sqr = p.distance_sqr(&Point::broadcast(0.0));
         // The PDF is uniform if we're insidfe the sphere
-        if (dist_sqr - self.radius * self.radius < 0.0001) {
+        if dist_sqr - self.radius * self.radius < 0.0001 {
             Sampleable::pdf(self, p, w_i)
         } else {
             let cos_theta_max = f32::sqrt(f32::max(0.0, 1.0 - self.radius * self.radius / dist_sqr));

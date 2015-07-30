@@ -78,7 +78,8 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, queue: &sampler::BlockQueue,
             for s in sample_pos.iter() {
                 let mut ray = scene.camera.generate_ray(s);
                 if let Some(hit) = scene.intersect(&mut ray) {
-                    let c = scene.integrator.illumination(scene, &ray, &hit, &mut sampler, &mut rng).clamp();
+                    let c = scene.integrator.illumination(scene, light_list, &ray,
+                                                          &hit, &mut sampler, &mut rng).clamp();
                     samples.push(ImageSample::new(s.0, s.1, c));
                 }
             }
@@ -118,6 +119,7 @@ fn render_parallel(rt: &mut film::RenderTarget, n: u32){
             _ => None,
         }
     }).collect();
+    assert!(!light_list.is_empty(), "At least one light is required");
     {
         let pool = ScopedPool::new(n);
         let rx = spawn_workers(&pool, n, &scene, &block_queue, &light_list);

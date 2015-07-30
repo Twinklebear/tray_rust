@@ -75,7 +75,7 @@ impl Emitter {
 impl Boundable for Emitter {
     fn bounds(&self) -> BBox {
         match &self.emitter {
-            &EmitterType::Point => BBox::new(),
+            &EmitterType::Point => BBox::singular(self.transform * Point::broadcast(0.0)),
             &EmitterType::Area(ref g, _) => {
                 self.transform * g.bounds()
             },

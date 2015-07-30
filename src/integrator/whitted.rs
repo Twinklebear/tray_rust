@@ -5,7 +5,7 @@ use rand::StdRng;
 
 use scene::Scene;
 use linalg::{self, Ray};
-use geometry::{Intersection, Instance};
+use geometry::{Intersection, Emitter};
 use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
@@ -26,26 +26,23 @@ impl Whitted {
 }
 
 impl Integrator for Whitted {
-    fn illumination(&self, scene: &Scene, ray: &Ray, hit: &Intersection, sampler: &mut Sampler,
-                    rng: &mut StdRng) -> Colorf {
+    fn illumination(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,
+                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
         let bsdf = hit.material.bsdf(hit);
         let w_o = -ray.d;
         let mut sample_2d = [(0.0, 0.0)];
-        let light = match *scene.light {
-            Instance::Emitter(ref e) => e,
-            _ => panic!("The light isn't a light!?"),
-        };
         sampler.get_samples_2d(&mut sample_2d[..], rng);
-        // TODO: When we add support for multiple lights, iterate over all of them
-        let (li, w_i, pdf, occlusion) = light.sample_incident(&hit.dg.p, &sample_2d[0]);
-        let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
         let mut illum = Colorf::broadcast(0.0);
-        if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {
-            illum = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
+        for light in light_list {
+            let (li, w_i, pdf, occlusion) = light.sample_incident(&hit.dg.p, &sample_2d[0]);
+            let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
+            if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {
+                illum = illum + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
+            }
         }
         if ray.depth < self.max_depth {
-            illum = illum + self.specular_reflection(scene, ray, &bsdf, sampler, rng);
-            illum = illum + self.specular_transmission(scene, ray, &bsdf, sampler, rng);
+            illum = illum + self.specular_reflection(scene, light_list, ray, &bsdf, sampler, rng);
+            illum = illum + self.specular_transmission(scene, light_list, ray, &bsdf, sampler, rng);
         }
         illum
     }
