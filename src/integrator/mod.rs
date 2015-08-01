@@ -8,8 +8,8 @@ use enum_set::EnumSet;
 use rand::StdRng;
 
 use scene::Scene;
-use linalg::{self, Ray, Vector};
-use geometry::{Intersection, Emitter};
+use linalg::{self, Ray, Vector, Point};
+use geometry::{Intersection, Emitter, Instance};
 use film::Colorf;
 use bxdf::{BSDF, BxDFType};
 use light::Light;
@@ -84,10 +84,10 @@ pub trait Integrator {
     /// - `bsdf` surface properties of the surface being illuminated
     /// - `light_sample` 3 random samples for the light
     /// - `bsdf_sample` 3 random samples for the bsdf
-    fn sample_one_light(&self, scene: &Scene, light_list: &Vec<&Emitter>, w_o: &Vector, bsdf: &BSDF,
-                        light_sample: &Sample, bsdf_sample: &Sample) -> Colorf {
+    fn sample_one_light(&self, scene: &Scene, light_list: &Vec<&Emitter>, w_o: &Vector, p: &Point,
+                        bsdf: &BSDF, light_sample: &Sample, bsdf_sample: &Sample) -> Colorf {
         let l = cmp::min((light_sample.one_d * light_list.len() as f32) as usize, light_list.len() - 1);
-        self.estimate_direct(scene, w_o, bsdf, light_sample, bsdf_sample, light_list[l],
+        self.estimate_direct(scene, w_o, p, bsdf, light_sample, bsdf_sample, light_list[l],
                              BxDFType::non_specular())
     }
     /// Estimate the direct light contribution to the surface being shaded by the light
@@ -100,7 +100,7 @@ pub trait Integrator {
     /// - `bsdf_sample` 3 random samples for the bsdf
     /// - `light` light to sample contribution from
     /// - `flags` flags for which BxDF types to sample
-    fn estimate_direct(&self, scene: &Scene, w_o: &Vector, bsdf: &BSDF, light_sample: &Sample,
+    fn estimate_direct(&self, scene: &Scene, w_o: &Vector, p: &Point, bsdf: &BSDF, light_sample: &Sample,
                        bsdf_sample: &Sample, light: &Light, flags: EnumSet<BxDFType>) -> Colorf {
         let mut direct_light = Colorf::black();
         // Sample the light first
@@ -118,11 +118,36 @@ pub trait Integrator {
             }
         }
         // Now sample the BSDF
-        // TODO: We skip for now since I've only implemented point lights
-        /*
         if !light.delta_light() {
+            let (f, w_i, pdf_bsdf, sampled_type) = bsdf.sample(w_o, flags, bsdf_sample);
+            if pdf_bsdf > 0.0 && !f.is_black() {
+                // Handle delta distributions the same way we did for the light
+                let mut w = 1.0;
+                if !sampled_type.contains(&BxDFType::Specular) {
+                    let pdf_light = light.pdf(p, &w_i);
+                    if pdf_light == 0.0 {
+                        return direct_light;
+                    }
+                    w = mc::power_heuristic(1.0, pdf_bsdf, 1.0, pdf_light);
+                }
+                // Find out if the ray along w_i actually hits the light source
+                let mut ray = Ray::segment(p, &w_i, 0.001, f32::INFINITY);
+                let mut li = Colorf::black();
+                match scene.intersect(&mut ray) {
+                    Some(h) => {
+                        if let &Instance::Emitter(ref e) = h.instance {
+                            if e as *const Light == light as *const Light {
+                                li = e.radiance(&-w_i, &h.dg.p, &h.dg.n)
+                            } 
+                        }
+                    },
+                    None => {}
+                }
+                if !li.is_black() {
+                    direct_light = direct_light + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) * w / pdf_bsdf;
+                }
+            }
         }
-        */
         direct_light
     }
 }
