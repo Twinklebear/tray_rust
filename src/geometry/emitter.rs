@@ -24,6 +24,8 @@ pub struct Emitter {
     pub emission: Colorf,
     /// The transform to world space
     transform: Transform,
+    /// The transform to object space
+    inv_transform: Transform,
     /// Tag to identify the instance
     pub tag: String,
 }
@@ -40,12 +42,15 @@ impl Emitter {
         Emitter { emitter: EmitterType::Area(geom, material),
                   emission: emission,
                   transform: transform,
+                  inv_transform: transform.inverse(),
                   tag: tag.to_string() }
     }
     pub fn point(pos: Point, emission: Colorf, tag: &str) -> Emitter {
+        let transform = Transform::translate(&(pos - Point::broadcast(0.0)));
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
-                  transform: Transform::translate(&(pos - Point::broadcast(0.0))),
+                  transform: transform,
+                  inv_transform: transform.inverse(),
                   tag: tag.to_string() }
     }
     /// Test the ray for intersection against this insance of geometry.
@@ -98,9 +103,14 @@ impl Light for Emitter {
                 let w_i = (pos - *p).normalized();
                 (self.emission / pos.distance_sqr(p), w_i, 1.0, OcclusionTester::test_points(p, &pos))
             }
-            _ => {
-                (Colorf::black(), Vector::broadcast(0.0), 1.0,
-                OcclusionTester::test_points(&Point::broadcast(0.0), &Point::broadcast(0.0)))
+            &EmitterType::Area(ref g, _) => {
+                let p_l = self.inv_transform * *p;
+                let (p_sampled, normal) = g.sample(&p_l, samples);
+                let w_il = (p_sampled - p_l).normalized();
+                let pdf = g.pdf(&p_l, &w_il);
+                let radiance = self.radiance(&-w_il, &p_sampled, &normal);
+                let p_w = self.transform * p_sampled;
+                (radiance, self.transform * w_il, pdf, OcclusionTester::test_points(&p, &p_w))
             },
         }
     }
@@ -113,7 +123,11 @@ impl Light for Emitter {
     fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
         match &self.emitter {
             &EmitterType::Point => 0.0,
-            _ => 1.0, // TODO
+            &EmitterType::Area(ref g, _ ) => {
+                let p_l = self.inv_transform * *p;
+                let w = (self.inv_transform * *w_i).normalized();
+                g.pdf(&p_l, &w)
+            }
         }
     }
 }
