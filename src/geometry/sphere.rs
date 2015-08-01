@@ -116,7 +116,7 @@ impl Sampleable for Sphere {
         let dist_sqr = p.distance_sqr(&Point::broadcast(0.0));
         // The PDF is uniform if we're insidfe the sphere
         if dist_sqr - self.radius * self.radius < 0.0001 {
-            Sampleable::pdf(self, p, w_i)
+            1.0 / self.surface_area()
         } else {
             let cos_theta_max = f32::sqrt(f32::max(0.0, 1.0 - self.radius * self.radius / dist_sqr));
             mc::uniform_cone_pdf(cos_theta_max)
