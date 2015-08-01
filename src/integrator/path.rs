@@ -6,7 +6,7 @@ use rand::StdRng;
 
 use scene::Scene;
 use linalg::{self, Ray};
-use geometry::{Intersection, Emitter};
+use geometry::{Intersection, Emitter, Instance};
 use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
@@ -48,17 +48,19 @@ impl Integrator for Path {
         let mut illum = Colorf::black();
         let mut path_throughput = Colorf::broadcast(1.0);
         // Track if the previous bounce was a specular one
-        //let mut specular_bounce = false;
+        let mut specular_bounce = false;
         let mut current_hit = *hit;
         let mut ray = *r;
         let mut bounce = 0;
         loop {
-            // TODO: Sample emissive objects on first bounce and specular bounces
-            // when emissive objects are added
-            /*
             if bounce == 0 || specular_bounce {
+                if let &Instance::Emitter(ref e) = current_hit.instance {
+                    // TODO: Something is wrong here, it should only take -ray.d
+                    // regardless of if it's the primary ray or a secondary one
+                    let w = if bounce == 0 { ray.d } else { -ray.d };
+                    illum = illum + path_throughput * e.radiance(&w, &hit.dg.p, &hit.dg.n);
+                }
             }
-            */
             let bsdf = current_hit.material.bsdf(&current_hit);
             let w_o = -ray.d;
             let light_sample = Sample::new(&l_samples[bounce], l_samples_comp[bounce]);
@@ -72,7 +74,7 @@ impl Integrator for Path {
             if f.is_black() || pdf == 0.0 {
                 break;
             }
-            //specular_bounce = sampled_type.contains(&BxDFType::Specular);
+            specular_bounce = sampled_type.contains(&BxDFType::Specular);
             path_throughput = path_throughput * f * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
 
             // Check if we're beyond the min depth at which point we start trying to

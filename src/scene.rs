@@ -35,38 +35,40 @@ impl Scene {
         let instances = vec![
             // The back wall
             Instance::receiver(plane.clone(), white_wall.clone(),
-                            Transform::translate(&Vector::new(0.0, 20.0, 12.0))
-                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0),
-                          "back_wall"),
+                Transform::translate(&Vector::new(0.0, 20.0, 12.0))
+                * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(90.0),
+                "back_wall"),
             // The left wall
             Instance::receiver(plane.clone(), red_wall.clone(),
-                            Transform::translate(&Vector::new(-15.0, 0.0, 12.0))
-                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(90.0),
-                          "left_wall"),
+                Transform::translate(&Vector::new(-15.0, 0.0, 12.0))
+                * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(90.0),
+                "left_wall"),
             // The right wall
             Instance::receiver(plane.clone(), blue_wall.clone(),
-                            Transform::translate(&Vector::new(15.0, 0.0, 12.0))
-                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(-90.0),
-                          "right_wall"),
+                Transform::translate(&Vector::new(15.0, 0.0, 12.0))
+                * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_y(-90.0),
+                "right_wall"),
             // The top wall
             Instance::receiver(plane.clone(), white_wall.clone(),
-                            Transform::translate(&Vector::new(0.0, 0.0, 24.0))
-                          * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(180.0),
-                          "top_wall"),
+                Transform::translate(&Vector::new(0.0, 0.0, 24.0))
+                * Transform::scale(&Vector::broadcast(32.0)) * Transform::rotate_x(180.0),
+                "top_wall"),
             // The bottom wall
             Instance::receiver(plane.clone(), white_wall.clone(),
-                            Transform::translate(&Vector::new(0.0, 0.0, 0.0))
-                          * Transform::scale(&Vector::broadcast(32.0)), "bottom_wall"),
+                Transform::translate(&Vector::new(0.0, 0.0, 0.0))
+                * Transform::scale(&Vector::broadcast(32.0)), "bottom_wall"),
             // The reflective sphere
             Instance::receiver(sphere.clone(), metal, Transform::translate(&Vector::new(-6.0, 8.0, 5.0))
-                    * Transform::scale(&Vector::broadcast(5.0)), "metal_sphere"),
+                * Transform::scale(&Vector::broadcast(5.0)), "metal_sphere"),
             // The glass sphere
             Instance::receiver(sphere.clone(),
-                    Arc::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52)),
-                   Transform::translate(&Vector::new(6.0, -2.0, 5.0))
-                     * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere"),
+                Arc::new(Glass::new(&Colorf::broadcast(1.0), &Colorf::broadcast(1.0), 1.52)),
+                Transform::translate(&Vector::new(6.0, -2.0, 5.0))
+                * Transform::scale(&Vector::broadcast(5.0)), "glass_sphere"),
             // The light
-            Instance::point_light(Point::new(0.0, 0.0, 22.0), light_color, "light"),
+            Instance::area_light(sphere.clone(), white_wall.clone(), light_color,
+                Transform::translate(&Vector::new(0.0, 0.0, 22.0)), "light"),
+            //Instance::point_light(Point::new(0.0, 0.0, 22.0), light_color, "light"),
             Instance::point_light(Point::new(10.0, 0.0, 12.0), light_color / 2.0, "light2"),
         ];
         Scene {

@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use geometry::{Boundable, BBox, SampleableGeom, DifferentialGeometry};
 use material::Material;
-use linalg::{Transform, Point, Ray, Vector};
+use linalg::{self, Transform, Point, Ray, Vector, Normal};
 use film::Colorf;
 use light::{Light, OcclusionTester};
 
@@ -69,6 +69,11 @@ impl Emitter {
                 Some((dg, &**mat))
             },
         }
+    }
+    /// Return the radiance emitted by the light in the direction `w`
+    /// from point `p` on the light's surface with normal `n`
+    pub fn radiance(&self, w: &Vector, p: &Point, n: &Normal) -> Colorf {
+        if linalg::dot(w, n) > 0.0 { self.emission } else { Colorf::black() }
     }
 }
 
