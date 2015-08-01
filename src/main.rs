@@ -23,8 +23,8 @@ use tray_rust::sampler::{self, Sampler};
 use tray_rust::scene;
 use tray_rust::integrator::Integrator;
 
-static WIDTH: usize = 800;
-static HEIGHT: usize = 600;
+static WIDTH: usize = 1920;
+static HEIGHT: usize = 1080;
 static USAGE: &'static str = "
 Usage: tray_rust [options]
 
@@ -109,7 +109,7 @@ fn spawn_workers<'a>(pool: &ScopedPool<'a>, n: u32, scene: &'a scene::Scene,
 
 /// Render the scene in parallel to the render target
 fn render_parallel(rt: &mut film::RenderTarget, n: u32){
-    let scene = scene::Scene::new(WIDTH, HEIGHT);
+    let scene = scene::Scene::rust_logo_with_friends(WIDTH, HEIGHT);
     let block_queue = sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8));
     // TODO: Actually put lights in the BVH and pass the list through to the
     // integrator's illumination method
