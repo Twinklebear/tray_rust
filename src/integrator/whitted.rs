@@ -37,7 +37,7 @@ impl Integrator for Whitted {
             if let &Instance::Emitter(ref e) = hit.instance {
                 let w = -ray.d;
                 illum = illum + e.radiance(&w, &hit.dg.p, &hit.dg.ng);
-            } 
+            }
         }
 
         for light in light_list {
