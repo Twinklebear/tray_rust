@@ -55,10 +55,8 @@ impl Integrator for Path {
         loop {
             if bounce == 0 || specular_bounce {
                 if let &Instance::Emitter(ref e) = current_hit.instance {
-                    // TODO: Something is wrong here, it should only take -ray.d
-                    // regardless of if it's the primary ray or a secondary one
-                    let w = if bounce == 0 { ray.d } else { -ray.d };
-                    illum = illum + path_throughput * e.radiance(&w, &hit.dg.p, &hit.dg.n);
+                    let w = -ray.d;
+                    illum = illum + path_throughput * e.radiance(&w, &hit.dg.p, &hit.dg.ng);
                 }
             }
             let bsdf = current_hit.material.bsdf(&current_hit);

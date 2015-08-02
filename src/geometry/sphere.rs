@@ -1,4 +1,4 @@
-//! Defines a Sphere type which implements the Geometry trait
+//! Defines a Sphere type which implements the Geometry, Boundable and Sampleable traits
 
 use std::f32;
 
@@ -6,7 +6,7 @@ use geometry::{Geometry, DifferentialGeometry, Boundable, BBox, Sampleable};
 use linalg::{self, Normal, Vector, Ray, Point};
 use mc;
 
-/// A sphere with user-specified radius
+/// A sphere with user-specified radius located at the origin.
 #[derive(Clone, Copy)]
 pub struct Sphere {
     radius: f32,
@@ -54,7 +54,7 @@ impl Geometry for Sphere {
         let inv_z = 1.0 / f32::sqrt(p.x * p.x + p.y * p.y);
         let cos_phi = p.x * inv_z;
         let sin_phi = p.y * inv_z;
-        let dp_du = Vector::new(-p.y, p.x, 0.0) * f32::consts::PI_2;
+        let dp_du = Vector::new(-f32::consts::PI_2 * p.y, f32::consts::PI_2 * p.x, 0.0);
         let dp_dv = Vector::new(p.z * cos_phi, p.z * sin_phi,
                                 -self.radius * f32::sin(theta)) * f32::consts::PI;
 
