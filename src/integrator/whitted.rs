@@ -5,7 +5,7 @@ use rand::StdRng;
 
 use scene::Scene;
 use linalg::{self, Ray};
-use geometry::{Intersection, Emitter};
+use geometry::{Intersection, Emitter, Instance};
 use film::Colorf;
 use integrator::Integrator;
 use bxdf::BxDFType;
@@ -33,6 +33,11 @@ impl Integrator for Whitted {
         let mut sample_2d = [(0.0, 0.0)];
         sampler.get_samples_2d(&mut sample_2d[..], rng);
         let mut illum = Colorf::broadcast(0.0);
+        if let &Instance::Emitter(ref e) = hit.instance {
+            let w = -ray.d;
+            illum = illum + e.radiance(&w, &hit.dg.p, &hit.dg.ng);
+        }
+
         for light in light_list {
             let (li, w_i, pdf, occlusion) = light.sample_incident(&hit.dg.p, &sample_2d[0]);
             let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
