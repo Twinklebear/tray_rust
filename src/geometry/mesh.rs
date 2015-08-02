@@ -31,7 +31,7 @@ impl Mesh {
     /// Load all the meshes defined in an OBJ file and return them in a hashmap that maps the
     /// model's name in the file to its loaded mesh
     /// TODO: Currently materials are ignored
-    pub fn load_obj(file_name: &Path) -> HashMap<String, Mesh> {
+    pub fn load_obj(file_name: &Path) -> HashMap<String, Arc<Mesh>> {
         match tobj::load_obj(file_name) {
             Ok((models, _)) => {
                 let mut meshes = HashMap::new();
@@ -50,7 +50,7 @@ impl Mesh {
                                            .collect());
                     let texcoords = Arc::new(mesh.texcoords.chunks(2).map(|i| Point::new(i[0], i[1], 0.0))
                                              .collect());
-                    meshes.insert(m.name, Mesh::new(positions, normals, texcoords, mesh.indices));
+                    meshes.insert(m.name, Arc::new(Mesh::new(positions, normals, texcoords, mesh.indices)));
                 }
                 meshes
             },
