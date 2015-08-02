@@ -33,9 +33,11 @@ impl Integrator for Whitted {
         let mut sample_2d = [(0.0, 0.0)];
         sampler.get_samples_2d(&mut sample_2d[..], rng);
         let mut illum = Colorf::broadcast(0.0);
-        if let &Instance::Emitter(ref e) = hit.instance {
-            let w = -ray.d;
-            illum = illum + e.radiance(&w, &hit.dg.p, &hit.dg.ng);
+        if ray.depth == 0 {
+            if let &Instance::Emitter(ref e) = hit.instance {
+                let w = -ray.d;
+                illum = illum + e.radiance(&w, &hit.dg.p, &hit.dg.ng);
+            } 
         }
 
         for light in light_list {
