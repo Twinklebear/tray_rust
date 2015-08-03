@@ -19,15 +19,15 @@ pub enum Instance {
 impl Instance {
     /// Create an instance of the geometry in the scene that will only receive light.
     pub fn receiver(geom: Arc<BoundableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-               transform: Transform, tag: &str) -> Instance {
+               transform: Transform, tag: String) -> Instance {
         Instance::Receiver(Receiver::new(geom, material, transform, tag))
     }
     /// Create an instance of the geometry in the scene that will emit and receive light
     pub fn area_light(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-               emission: Colorf, transform: Transform, tag: &str) -> Instance {
+               emission: Colorf, transform: Transform, tag: String) -> Instance {
         Instance::Emitter(Emitter::area(geom, material, emission, transform, tag))
     }
-    pub fn point_light(pos: Point, emission: Colorf, tag: &str) ->  Instance {
+    pub fn point_light(pos: Point, emission: Colorf, tag: String) ->  Instance {
         Instance::Emitter(Emitter::point(pos, emission, tag))
     }
     /// Test the ray for intersection against this insance of geometry.

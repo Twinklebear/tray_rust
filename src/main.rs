@@ -3,7 +3,7 @@
 extern crate image;
 extern crate rand;
 extern crate docopt;
-extern crate rustc_serialize as rustc_serialize;
+extern crate rustc_serialize;
 extern crate threadpool;
 extern crate num_cpus;
 extern crate tray_rust;
@@ -23,10 +23,8 @@ use tray_rust::sampler::{self, Sampler};
 use tray_rust::scene;
 use tray_rust::integrator::Integrator;
 
-static WIDTH: usize = 800;
-static HEIGHT: usize = 600;
 static USAGE: &'static str = "
-Usage: tray_rust [options]
+Usage: tray_rust <scenefile> [options]
 
 Options:
   -o <file>     Specify the output file to save the image. Supported formats are
@@ -38,6 +36,7 @@ Options:
 
 #[derive(RustcDecodable, Debug)]
 struct Args {
+    arg_scenefile: String,
     flag_o: Option<String>,
     flag_n: Option<u32>,
 }
@@ -59,9 +58,9 @@ impl ImageSample {
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
 /// values recieved to the render target
-fn thread_work(tx: Sender<Vec<ImageSample>>, queue: &sampler::BlockQueue,
+fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQueue,
                scene: &scene::Scene, light_list: &Vec<&Emitter>) {
-    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), 16);
+    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), spp);
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut rng = match StdRng::new() {
         Ok(r) => r,
@@ -94,23 +93,23 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, queue: &sampler::BlockQueue,
 /// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
 /// of the channel where the threads will write their samples so that the receiver
 /// can write these samples to the render target
-fn spawn_workers<'a>(pool: &ScopedPool<'a>, n: u32, scene: &'a scene::Scene,
+fn spawn_workers<'a>(pool: &ScopedPool<'a>, n: u32, spp: usize, scene: &'a scene::Scene,
                      queue: &'a sampler::BlockQueue, light_list: &'a Vec<&Emitter>)
                  -> Receiver<Vec<ImageSample>> {
     let (tx, rx) = mpsc::channel();
     for _ in 0..n {
         let t = tx.clone();
         pool.execute(move || {
-            thread_work(t, queue, scene, light_list);
+            thread_work(t, spp, queue, scene, light_list);
         });
     }
     rx
 }
 
 /// Render the scene in parallel to the render target
-fn render_parallel(rt: &mut film::RenderTarget, n: u32){
-    let scene = scene::Scene::small_pt(WIDTH, HEIGHT);
-    let block_queue = sampler::BlockQueue::new((WIDTH as u32, HEIGHT as u32), (8, 8));
+fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, spp: usize){
+    let dim = rt.dimensions();
+    let block_queue = sampler::BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8));
     // TODO: Actually put lights in the BVH and pass the list through to the
     // integrator's illumination method
     let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
@@ -122,7 +121,8 @@ fn render_parallel(rt: &mut film::RenderTarget, n: u32){
     assert!(!light_list.is_empty(), "At least one light is required");
     {
         let pool = ScopedPool::new(n);
-        let rx = spawn_workers(&pool, n, &scene, &block_queue, &light_list);
+        println!("Rendering using {} threads", n);
+        let rx = spawn_workers(&pool, n, spp, &scene, &block_queue, &light_list);
         for mut v in rx.iter() {
             for s in v.drain(..) {
                 rt.write(s.x, s.y, &s.color);
@@ -134,20 +134,21 @@ fn render_parallel(rt: &mut film::RenderTarget, n: u32){
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
-    let mut rt = film::RenderTarget::new(WIDTH, HEIGHT);
+    let (scene, spp, (width, height)) = scene::Scene::load_file(&args.arg_scenefile[..]);
+    //let scene = scene::Scene::small_pt(WIDTH, HEIGHT);
+    let mut rt = film::RenderTarget::new(width, height);
     let n = match args.flag_n {
         Some(n) => n,
         None => num_cpus::get() as u32,
     };
-    println!("Rendering using {} threads", n);
-    let d = Duration::span(|| render_parallel(&mut rt, n));
+    let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
     println!("Rendering took {}", d);
     let img = rt.get_render();
     let out_file = match args.flag_o {
         Some(f) => f,
         None => "out.png".to_string(),
     };
-    match image::save_buffer(&Path::new(&out_file), &img[..], WIDTH as u32, HEIGHT as u32, image::RGB(8)) {
+    match image::save_buffer(&Path::new(&out_file), &img[..], width as u32, height as u32, image::RGB(8)) {
         Ok(_) => {},
         Err(e) => println!("Error saving image, {}", e),
     };

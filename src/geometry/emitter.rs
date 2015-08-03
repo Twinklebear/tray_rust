@@ -38,14 +38,14 @@ impl Emitter {
     /// We also need MIS in the path tracer's direct light sampling so we get
     /// good quality
     pub fn area(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-                emission: Colorf, transform: Transform, tag: &str) -> Emitter {
+                emission: Colorf, transform: Transform, tag: String) -> Emitter {
         Emitter { emitter: EmitterType::Area(geom, material),
                   emission: emission,
                   transform: transform,
                   inv_transform: transform.inverse(),
                   tag: tag.to_string() }
     }
-    pub fn point(pos: Point, emission: Colorf, tag: &str) -> Emitter {
+    pub fn point(pos: Point, emission: Colorf, tag: String) -> Emitter {
         let transform = Transform::translate(&(pos - Point::broadcast(0.0)));
         Emitter { emitter: EmitterType::Point,
                   emission: emission,

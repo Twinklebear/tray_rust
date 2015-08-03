@@ -1,0 +1,214 @@
+{
+	"camera": {
+		"width": 800,
+		"height": 600,
+		"samples": 16,
+		"position": [0.0, -60.0, 12.0],
+		"target": [0.0, 0.0, 12.0],
+		"up": [0.0, 0.0, 1.0],
+		"fov": 30.0
+	},
+	"integrator": {
+		"type": "pathtracer",
+		"min_depth": 4,
+		"max_depth": 8
+	},
+	"materials": [
+		{
+			"type": "matte",
+			"name": "white_wall",
+			"diffuse": [1.0, 1.0, 1.0],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "red_wall",
+			"diffuse": [1.0, 0.2, 0.2],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "blue_wall",
+			"diffuse": [0.2, 0.2, 1.0],
+			"roughness": 1.0
+		},
+		{
+			"type": "metal",
+			"name": "metal",
+			"refractive_index": [0.155265, 0.116723, 0.138381],
+			"absorption_coefficient": [4.82835, 3.12225, 2.14696],
+			"roughness": 0.1
+		},
+		{
+			"type": "glass",
+			"name": "glass",
+			"reflect": [1.0, 1.0, 1.0],
+			"transmit": [1.0, 1.0, 1.0],
+			"eta": 1.52
+		}
+	],
+	"objects": [
+		{
+			"name": "back_wall",
+			"type": "receiver",
+			"material": "white_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 90.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 20.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "left_wall",
+			"type": "receiver",
+			"material": "red_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 90.0
+				},
+				{
+					"type": "translate",
+					"translation": [-15.0, 0.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "right_wall",
+			"type": "receiver",
+			"material": "blue_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -90.0
+				},
+				{
+					"type": "translate",
+					"translation": [15.0, 0.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "top_wall",
+			"type": "receiver",
+			"material": "white_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 180.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 24.0]
+				}
+			]
+		},
+		{
+			"name": "bottom_wall",
+			"type": "receiver",
+			"material": "white_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 0.0]
+				}
+			]
+		},
+		{
+			"name": "metal_sphere",
+			"type": "receiver",
+			"material": "metal",
+			"geometry": {
+				"type": "sphere",
+				"radius": 1.0
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 5.0
+				},
+				{
+					"type": "translate",
+					"translation": [-6.0, 8.0, 5.0]
+				}
+			]
+		},
+		{
+			"name": "glass_sphere",
+			"type": "receiver",
+			"material": "glass",
+			"geometry": {
+				"type": "sphere",
+				"radius": 1.0
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 5.0
+				},
+				{
+					"type": "translate",
+					"translation": [6.0, -2.0, 5.0]
+				}
+			]
+		},
+		{
+			"name": "light",
+			"type": "emitter",
+			"material": "white_wall",
+			"emitter": "area",
+			"emission": [0.780131, 0.780409, 0.775833, 100.0],
+			"geometry": {
+				"type": "sphere",
+				"radius": 1.0
+			},
+			"transform": [
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 22.0]
+				}
+			]
+		}
+	]
+}
+

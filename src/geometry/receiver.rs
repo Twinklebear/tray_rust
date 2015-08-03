@@ -20,8 +20,8 @@ pub struct Receiver {
 impl Receiver {
     /// Create a new instance of some geometry in the scene
     pub fn new(geom: Arc<BoundableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-               transform: linalg::Transform, tag: &str) -> Receiver {
-        Receiver { geom: geom, material: material, transform: transform, tag: tag.to_string() }
+               transform: linalg::Transform, tag: String) -> Receiver {
+        Receiver { geom: geom, material: material, transform: transform, tag: tag }
     }
     /// Test the ray for intersection against this insance of geometry.
     /// returns Some(Intersection) if an intersection was found and None if not.

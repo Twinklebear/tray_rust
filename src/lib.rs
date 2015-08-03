@@ -4,6 +4,7 @@
 extern crate enum_set as enum_set;
 extern crate rand;
 extern crate byteorder;
+extern crate serde;
 
 pub mod linalg;
 pub mod film;
