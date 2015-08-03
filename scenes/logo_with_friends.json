@@ -160,15 +160,20 @@
 			"type": "emitter",
 			"material": "white_wall",
 			"emitter": "area",
-			"emission": [0.780131, 0.780409, 0.775833, 150.0],
+			"emission": [0.780131, 0.780409, 0.775833, 1.0],
 			"geometry": {
-				"type": "sphere",
-				"radius": 1.0
+				"type": "disk",
+				"radius": 1.0,
+				"inner_radius": 0.0
 			},
 			"transform": [
 				{
+					"type": "rotate_x",
+					"rotation": 180
+				},
+				{
 					"type": "translate",
-					"translation": [0.0, -5.0, 23.0]
+					"translation": [0.0, 0.0, 23.5]
 				}
 			]
 		},

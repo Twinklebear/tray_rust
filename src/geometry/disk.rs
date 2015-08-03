@@ -3,7 +3,7 @@
 use std::f32;
 
 use geometry::{Geometry, DifferentialGeometry, Boundable, BBox, Sampleable};
-use linalg::{Normal, Vector, Ray, Point};
+use linalg::{self, Normal, Vector, Ray, Point};
 use mc;
 
 /// A disk with some inner and outer radius allowing it to
@@ -64,7 +64,8 @@ impl Boundable for Disk {
 impl Sampleable for Disk {
     fn sample_uniform(&self, samples: &(f32, f32)) -> (Point, Normal) {
         let disk_pos = mc::concentric_sample_disk(samples);
-        let p = Point::new(disk_pos.0 * self.radius, disk_pos.1 * self.radius, 0.0);
+        let p = Point::new(linalg::clamp(disk_pos.0 * self.radius, self.inner_radius, self.radius),
+                           linalg::clamp(disk_pos.1 * self.radius, self.inner_radius, self.radius), 0.0);
         let n = Normal::new(0.0, 0.0, 1.0);
         (p, n)
     }
@@ -72,9 +73,9 @@ impl Sampleable for Disk {
         self.sample_uniform(samples)
     }
     fn surface_area(&self) -> f32 {
-        0.5 * f32::consts::PI * (self.radius * self.radius - self.inner_radius * self.inner_radius)
+        f32::consts::PI * (self.radius * self.radius - self.inner_radius * self.inner_radius)
     }
-    fn pdf(&self, _: &Point, _: &Vector) -> f32 {
+    fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
         1.0 / self.surface_area()
     }
 }
