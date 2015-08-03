@@ -135,19 +135,21 @@ fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
     let (scene, spp, (width, height)) = scene::Scene::load_file(&args.arg_scenefile[..]);
-    //let scene = scene::Scene::small_pt(WIDTH, HEIGHT);
     let mut rt = film::RenderTarget::new(width, height);
     let n = match args.flag_n {
         Some(n) => n,
         None => num_cpus::get() as u32,
     };
+
     let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
     println!("Rendering took {}", d);
+
     let img = rt.get_render();
     let out_file = match args.flag_o {
         Some(f) => f,
         None => "out.png".to_string(),
     };
+
     match image::save_buffer(&Path::new(&out_file), &img[..], width as u32, height as u32, image::RGB(8)) {
         Ok(_) => {},
         Err(e) => println!("Error saving image, {}", e),
