@@ -21,9 +21,9 @@ pub fn cos_hemisphere_pdf(cos_theta: f32) -> f32 { cos_theta * f32::consts::FRAC
 /// `samples` should be two random samples in range [0, 1)
 /// See: [Shirley and Chiu, A Low Distortion Map Between Disk and Square](https://mediatech.aalto.fi/~jaakko/T111-5310/K2013/JGT-97.pdf)
 pub fn concentric_sample_disk(u: &(f32, f32)) -> (f32, f32) {
-    let mut s = (2.0 * u.0 - 1.0, 2.0 * u.1 - 1.0);
+    let s = (2.0 * u.0 - 1.0, 2.0 * u.1 - 1.0);
     let radius;
-    let mut theta;
+    let theta;
     if s.0 == 0.0 && s.1 == 0.0 {
         return s;
     }
@@ -31,30 +31,28 @@ pub fn concentric_sample_disk(u: &(f32, f32)) -> (f32, f32) {
         if s.0 > s.1 {
             radius = s.0;
             if s.1 > 0.0 {
-                theta = s.1 / radius;
+                theta = s.1 / s.0;
             } else {
-                theta = 8.0 + s.1 / radius;
+                theta = 8.0 + s.1 / s.0;
             }
         }
         else {
             radius = s.1;
-            theta = 2.0 - s.0 / radius;
+            theta = 2.0 - s.0 / s.1;
         }
     }
     else {
         if s.0 <= s.1 {
             radius = -s.0;
-            theta = 4.0 - s.1 / radius;
+            theta = 4.0 + s.1 / s.0;
         }
         else {
             radius = -s.1;
-            theta = 6.0 + s.0 / radius;
+            theta = 6.0 - s.0 / s.1;
         }
     }
-    theta *= f32::consts::FRAC_PI_4;
-    s.0 = radius * f32::cos(theta);
-    s.1 = radius * f32::sin(theta);
-    s
+    let theta = theta * f32::consts::FRAC_PI_4;
+    (radius * f32::cos(theta), radius * f32::sin(theta))
 }
 /// Power heuristic for multiple importance sampling for two functions being sampled, f & g
 /// where beta is hard-coded to be two following PBR & Veach

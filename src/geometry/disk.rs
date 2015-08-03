@@ -65,8 +65,7 @@ impl Boundable for Disk {
 impl Sampleable for Disk {
     fn sample_uniform(&self, samples: &(f32, f32)) -> (Point, Normal) {
         let disk_pos = mc::concentric_sample_disk(samples);
-        let p = Point::new(linalg::clamp(disk_pos.0 * self.radius, self.inner_radius, self.radius),
-                           linalg::clamp(disk_pos.1 * self.radius, self.inner_radius, self.radius), 0.0);
+        let p = Point::new(disk_pos.0 * self.radius, disk_pos.1 * self.radius, 0.0);
         let n = Normal::new(0.0, 0.0, 1.0);
         (p, n)
     }
@@ -81,17 +80,11 @@ impl Sampleable for Disk {
         match self.intersect(&mut ray) {
             Some(d) => {
                 let w = -*w_i;
-                //println!("normal = {:?}, w = {:?}, dot = {}", d.n, w, linalg::dot(&d.n, &w));
-                //println!("distance = {}", p.distance_sqr(&ray.at(ray.max_t)));
                 let pdf = p.distance_sqr(&ray.at(ray.max_t))
                     / (f32::abs(linalg::dot(&d.n, &w)) * self.surface_area());
-                //println!("pdf = {}", pdf);
                 if f32::is_finite(pdf) { pdf } else { 0.0 }
             },
-            None => {
-                //println!("no hit");
-                0.0
-            }
+            None => 0.0
         }
     }
 }
