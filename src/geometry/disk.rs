@@ -48,6 +48,7 @@ impl Geometry for Disk {
         if phi > f32::consts::PI_2 {
             return None;
         }
+        ray.max_t = t;
         let hit_radius = f32::sqrt(dist_sqr);
         let dp_du = Vector::new(-f32::consts::PI_2 * p.y, f32::consts::PI_2 * p.x, 0.0);
         let dp_dv = ((self.inner_radius - self.radius) / hit_radius) * Vector::new(p.x, p.y, 0.0);
@@ -57,7 +58,7 @@ impl Geometry for Disk {
 
 impl Boundable for Disk {
     fn bounds(&self) -> BBox {
-        BBox::span(Point::new(-self.radius, -self.radius, 0.0), Point::new(self.radius, self.radius, 0.0))
+        BBox::span(Point::new(-self.radius, -self.radius, -0.1), Point::new(self.radius, self.radius, 0.1))
     }
 }
 
@@ -76,7 +77,22 @@ impl Sampleable for Disk {
         f32::consts::PI * (self.radius * self.radius - self.inner_radius * self.inner_radius)
     }
     fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
-        1.0 / self.surface_area()
+        let mut ray = Ray::segment(&p, &w_i, 0.001, f32::INFINITY);
+        match self.intersect(&mut ray) {
+            Some(d) => {
+                let w = -*w_i;
+                //println!("normal = {:?}, w = {:?}, dot = {}", d.n, w, linalg::dot(&d.n, &w));
+                //println!("distance = {}", p.distance_sqr(&ray.at(ray.max_t)));
+                let pdf = p.distance_sqr(&ray.at(ray.max_t))
+                    / (f32::abs(linalg::dot(&d.n, &w)) * self.surface_area());
+                //println!("pdf = {}", pdf);
+                if f32::is_finite(pdf) { pdf } else { 0.0 }
+            },
+            None => {
+                //println!("no hit");
+                0.0
+            }
+        }
     }
 }
 

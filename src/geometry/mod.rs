@@ -56,9 +56,7 @@ pub trait Sampleable {
     fn surface_area(&self) -> f32;
     /// Compute the PDF that the ray from `p` with direction `w_i` intersects
     /// the shape
-    fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
-        1.0 / self.surface_area()
-    }
+    fn pdf(&self, p: &Point, w_i: &Vector) -> f32;
 }
 
 pub trait BoundableGeom: Geometry + Boundable {}
