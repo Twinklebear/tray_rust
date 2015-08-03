@@ -1,0 +1,222 @@
+{
+	"camera": {
+		"width": 800,
+		"height": 600,
+		"samples": 16,
+		"fov": 30,
+		"position": [0.0, -60.0, 12.0],
+		"target": [0.0, 0.0, 12.0],
+		"up": [0.0, 0.0, 1.0]
+	},
+	"integrator": {
+		"type": "pathtracer",
+		"min_depth": 4,
+		"max_depth": 8
+	},
+	"materials": [
+		{
+			"type": "matte",
+			"name": "white_wall",
+			"diffuse": [0.740063, 0.742313, 0.733934],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "red_wall",
+			"diffuse": [0.366046, 0.0371827, 0.0416385],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "green_wall",
+			"diffuse": [0.162928, 0.408903, 0.0833759],
+			"roughness": 1.0
+		},
+		{
+			"type": "plastic",
+			"name": "white_plastic",
+			"diffuse": [0.8, 0.8, 0.8],
+			"gloss": [0.6, 0.6, 0.6],
+			"roughness": 0.5
+		}
+	],
+	"objects": [
+		{
+			"name": "back_wall",
+			"type": "receiver",
+			"material": "white_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 90.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 20.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "left_wall",
+			"type": "receiver",
+			"material": "red_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 90.0
+				},
+				{
+					"type": "translate",
+					"translation": [-15.0, 0.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "right_wall",
+			"type": "receiver",
+			"material": "green_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -90.0
+				},
+				{
+					"type": "translate",
+					"translation": [15.0, 0.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "top_wall",
+			"type": "receiver",
+			"material": "white_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 180.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 24.0]
+				}
+			]
+		},
+		{
+			"name": "bottom_wall",
+			"type": "receiver",
+			"material": "white_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 0.0]
+				}
+			]
+		},
+		{
+			"name": "light",
+			"type": "emitter",
+			"material": "white_wall",
+			"emitter": "area",
+			"emission": [1, 0.772549, 0.560784, 40],
+			"geometry": {
+				"type": "disk",
+				"radius": 3.5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 180
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 23.8]
+				}
+			]
+		},
+		{
+			"name": "tall_cube",
+			"type": "receiver",
+			"material": "white_plastic",
+			"geometry": {
+				"type": "mesh",
+				"file": "../cube.obj",
+				"model": "Cube"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": [4, 4, 10]
+				},
+				{
+					"type": "rotate_z",
+					"rotation": 20
+				},
+				{
+					"type": "translate",
+					"translation": [-6, 6, 5]
+				}
+			]
+		},
+		{
+			"name": "short_cube",
+			"type": "receiver",
+			"material": "white_plastic",
+			"geometry": {
+				"type": "mesh",
+				"file": "../cube.obj",
+				"model": "Cube"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": [4, 4, 5]
+				},
+				{
+					"type": "rotate_z",
+					"rotation": -15
+				},
+				{
+					"type": "translate",
+					"translation": [4, -3, 2.5]
+				}
+			]
+		}
+	]
+}
+
