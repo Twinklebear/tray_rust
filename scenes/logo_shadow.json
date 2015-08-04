@@ -1,0 +1,271 @@
+{
+	"camera": {
+		"width": 1920,
+		"height": 1080,
+		"samples": 4,
+		"position": [0.0, 8.0, 25.0],
+		"target": [0.0, 3.0, 0.0],
+		"up": [0.0, 1.0, 0.0],
+		"fov": 50.0
+	},
+	"integrator": {
+		"type": "pathtracer",
+		"min_depth": 4,
+		"max_depth": 8
+	},
+	"materials": [
+		{
+			"type": "matte",
+			"name": "white_matte",
+			"diffuse": [0.740063, 0.742313, 0.733934],
+			"roughness": 1.0
+		},
+		{
+			"type": "plastic",
+			"name": "white_plastic",
+			"diffuse": [0.740063, 0.742313, 0.733934],
+			"gloss": [0.740063, 0.742313, 0.733934, 0.5],
+			"roughness": 0.1
+		},
+		{
+			"name": "oxidized_steel",
+			"type": "merl",
+			"file": "../black-oxidized-steel.binary"
+		}
+	],
+	"objects": [
+		{
+			"name": "floor",
+			"type": "receiver",
+			"material": "white_plastic",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 40.0
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				}
+			]
+		},
+		{
+			"name": "back_wall",
+			"type": "receiver",
+			"material": "white_matte",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 40.0
+				},
+				{
+					"type": "translate",
+					"translation": [0, 0, -20]
+				}
+			]
+		},
+		{
+			"name": "teapot",
+			"type": "receiver",
+			"material": "white_matte",
+			"geometry": {
+				"type": "mesh",
+				"file": "../teapot.obj",
+				"model": "teapot"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 0.3
+				},
+				{
+					"type": "rotate_x",
+					"rotation": -90
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -40
+				},
+				{
+					"type": "translate",
+					"translation": [10, 0, 0]
+				}
+			]
+		},
+		{
+			"name": "bunny",
+			"type": "receiver",
+			"material": "white_matte",
+			"geometry": {
+				"type": "mesh",
+				"file": "../bunny.obj",
+				"model": "bunny"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 2.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 45.0
+				},
+				{
+					"type": "translate",
+					"translation": [-10, 0.6, 0]
+				}
+			]
+		},
+		{
+			"name": "lucy",
+			"type": "receiver",
+			"material": "white_matte",
+			"geometry": {
+				"type": "mesh",
+				"file": "../lucy.obj",
+				"model": "lucy"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 7.7
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				},
+				{
+					"type": "translate",
+					"translation": [0, 7.2, -9]
+				}
+			]
+		},
+		{
+			"name": "rust_logo",
+			"type": "receiver",
+			"material": "oxidized_steel",
+			"geometry": {
+				"type": "mesh",
+				"file": "../rust_logo.obj",
+				"model": "rust_logo"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": [8.0, 3.0, 8.0]
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -90
+				},
+				{
+					"type": "translate",
+					"translation": [0, 16.5, 0]
+				}
+			]
+		},
+		{
+			"name": "overhead_light",
+			"type": "emitter",
+			"material": "white_matte",
+			"emitter": "area",
+			"emission": [0.780131, 0.780409, 0.775833, 150.0],
+			"geometry": {
+				"type": "disk",
+				"radius": 2.5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				},
+				{
+					"type": "translate",
+					"translation": [0, 30.0, 0.0]
+				}
+			]
+		},
+		{
+			"name": "fill_light_left",
+			"type": "emitter",
+			"material": "white_matte",
+			"emitter": "area",
+			"emission": [0.780131, 0.780409, 0.775833, 40.0],
+			"geometry": {
+				"type": "disk",
+				"radius": 1.5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 160
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -35
+				},
+				{
+					"type": "translate",
+					"translation": [-8, 10, 20.0]
+				}
+			]
+		},
+		{
+			"name": "fill_light_right",
+			"type": "emitter",
+			"material": "white_matte",
+			"emitter": "area",
+			"emission": [0.780131, 0.780409, 0.775833, 40.0],
+			"geometry": {
+				"type": "disk",
+				"radius": 1.5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 160
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 35
+				},
+				{
+					"type": "translate",
+					"translation": [8, 10, 20.0]
+				}
+			]
+		},
+		{
+			"name": "lucy_accent_light",
+			"type": "emitter",
+			"material": "white_matte",
+			"emitter": "area",
+			"emission": [0.780131, 0.780409, 0.775833, 70.0],
+			"geometry": {
+				"type": "disk",
+				"radius": 0.5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 120
+				},
+				{
+					"type": "translate",
+					"translation": [0, 15, -2.5]
+				}
+			]
+		}
+	]
+}
+
