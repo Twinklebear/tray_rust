@@ -39,6 +39,9 @@ impl Emitter {
     /// good quality
     pub fn area(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
                 emission: Colorf, transform: Transform, tag: String) -> Emitter {
+        if transform.has_scale() {
+            println!("Warning: scaling detected in area light transform, this may give incorrect results");
+        }
         Emitter { emitter: EmitterType::Area(geom, material),
                   emission: emission,
                   transform: transform,

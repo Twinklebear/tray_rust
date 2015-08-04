@@ -137,6 +137,13 @@ impl Transform {
     pub fn inverse(&self) -> Transform {
         Transform { mat: self.inv, inv: self.mat }
     }
+    /// Returns true if the transform has applies a scaling
+    pub fn has_scale(&self) -> bool {
+        let a = (*self * Vector::new(1.0, 0.0, 0.0)).length_sqr();
+        let b = (*self * Vector::new(0.0, 1.0, 0.0)).length_sqr();
+        let c = (*self * Vector::new(0.0, 0.0, 1.0)).length_sqr();
+        a < 0.999 || a > 1.001 || b < 0.999 || b > 1.001 || c < 0.999 || c > 1.001
+    }
     /// Multiply the point by the inverse transformation
     /// TODO: These inverse mults are a bit hacky since Rust doesn't currently
     /// have function overloading, clean up when it's added
