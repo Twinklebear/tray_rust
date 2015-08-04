@@ -111,39 +111,50 @@ fn load_integrator(elem: &Value) -> Box<Integrator + Send + Sync> {
     }
 }
 
+/// Generate a material loading error string
+fn mat_error(mat_name: &String, msg: &str) -> String {
+    format!("Error loading material '{}': {}", mat_name, msg)
+}
+
 /// Load the array of materials used in the scene, panics if a material is specified
 /// incorrectly. The path to the directory containing the scene file is required to find
 /// referenced material data relative to the scene file.
 fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + Send + Sync>> {
     let mut materials = HashMap::new();
     let mat_vec = elem.as_array().expect("The materials must be an array of materials used");
-    for m in mat_vec {
-        let ty = m.find("type").expect("A type is required for a material")
-            .as_string().expect("Material type must be a string");
-        let name = m.find("name").expect("A name is required for a material")
-            .as_string().expect("Material name must be a string").to_string();
+    for (i, m) in mat_vec.iter().enumerate() {
+        let name = m.find("name").expect(&format!("Error loading material #{}: A name is required", i)[..])
+            .as_string().expect(&format!("Error loading material #{}: name must be a string", i)[..])
+            .to_string();
+        let ty = m.find("type").expect(&mat_error(&name, "a type is required")[..])
+            .as_string().expect(&mat_error(&name, "type must be a string")[..]);
         // Make sure names are unique to avoid people accidently overwriting materials
         if materials.contains_key(&name) {
-            panic!("Material name '{}' conflicts with an existing entry!", name);
+            panic!("Error loading material '{}': name conflicts with an existing entry", name);
         }
         if ty == "glass" {
-            let reflect = load_color(m.find("reflect").expect("A reflect color is required for glass"))
-                .expect("Invalid color specified for reflect of glass");
-            let transmit = load_color(m.find("transmit").expect("A transmit color is required for glass"))
-                .expect("Invalid color specified for transmit of glass");
-            let eta = m.find("eta").expect("A refractive index 'eta' is required for glass").as_f64()
-                .expect("Glass's eta must be a float") as f32;
+            let reflect = load_color(m.find("reflect")
+                                     .expect(&mat_error(&name, "A reflect color is required for glass")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for reflect of glass")[..]);
+            let transmit = load_color(m.find("transmit")
+                                      .expect(&mat_error(&name, "A transmit color is required for glass")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for transmit of glass")[..]);
+            let eta = m.find("eta")
+                .expect(&mat_error(&name, "A refractive index 'eta' is required for glass")[..]).as_f64()
+                .expect(&mat_error(&name, "glass eta must be a float")[..]) as f32;
             materials.insert(name, Arc::new(Glass::new(&reflect, &transmit, eta)) as Arc<Material + Send + Sync>);
         } else if ty == "matte" {
-            let diffuse = load_color(m.find("diffuse").expect("A diffuse color is required for matte"))
-                .expect("Invalid color specified for diffuse of matte");
-            let roughness = m.find("roughness").expect("A roughness is required for matte").as_f64()
-                .expect("roughness must be a float") as f32;
+            let diffuse = load_color(m.find("diffuse")
+                                     .expect(&mat_error(&name, "A diffuse color is required for matte")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
+            let roughness = m.find("roughness")
+                .expect(&mat_error(&name, "A roughness is required for matte")[..]).as_f64()
+                .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
             materials.insert(name, Arc::new(Matte::new(&diffuse, roughness)) as Arc<Material + Send + Sync>);
         } else if ty == "merl" {
             let file_path = Path::new(m.find("file")
-                                      .expect("A filename containing the MERL material data is required")
-                                      .as_string().expect("The MERL file must be a string"));
+                      .expect(&mat_error(&name, "A filename containing the MERL material data is required")[..])
+                      .as_string().expect(&mat_error(&name, "The MERL file must be a string")[..]));
             if file_path.is_relative() {
                 materials.insert(name, Arc::new(Merl::load_file(path.join(file_path).as_path()))
                                  as Arc<Material + Send + Sync>);
@@ -152,31 +163,37 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
             }
         } else if ty == "metal" {
             let refr_index = load_color(m.find("refractive_index")
-                                        .expect("A refractive_index color is required for metal"))
-                .expect("Invalid color specified for refractive_index of metal");
+                            .expect(&mat_error(&name, "A refractive_index color is required for metal")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for refractive_index of metal")[..]);
             let absorption_coef = load_color(m.find("absorption_coefficient")
-                                             .expect("An absorption_coefficient color is required for metal"))
-                .expect("Invalid color specified for absorption_coefficient of metal");
-            let roughness = m.find("roughness").expect("A roughness is required for metal").as_f64()
-                .expect("Metal's roughness must be a float") as f32;
+                         .expect(&mat_error(&name, "An absorption_coefficient color is required for metal")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for absorption_coefficient of metal")[..]);
+            let roughness = m.find("roughness")
+                .expect(&mat_error(&name, "A roughness is required for metal")[..]).as_f64()
+                .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
             materials.insert(name, Arc::new(Metal::new(&refr_index, &absorption_coef, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "plastic" {
-            let diffuse = load_color(m.find("diffuse").expect("A diffuse color is required for plastic"))
-                .expect("Invalid color specified for diffuse of plastic");
-            let gloss = load_color(m.find("gloss").expect("A gloss color is required for plastic"))
-                .expect("Invalid color specified for gloss of plastic");
-            let roughness = m.find("roughness").expect("A roughness is required for plastic").as_f64()
-                .expect("Plastic's roughness must be a float") as f32;
+            let diffuse = load_color(m.find("diffuse")
+                             .expect(&mat_error(&name, "A diffuse color is required for plastic")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for diffuse of plastic")[..]);
+            let gloss = load_color(m.find("gloss")
+                             .expect(&mat_error(&name, "A gloss color is required for plastic")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for gloss of plastic")[..]);
+            let roughness = m.find("roughness")
+                .expect(&mat_error(&name, "A roughness is required for plastic")[..]).as_f64()
+                .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
             materials.insert(name, Arc::new(Plastic::new(&diffuse, &gloss, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "specular_metal" {
             let refr_index = load_color(m.find("refractive_index")
-                                        .expect("A refractive_index color is required for specular_metal"))
-                .expect("Invalid color specified for refractive_index of specular_metal");
+                    .expect(&mat_error(&name, "A refractive_index color is required for specular metal")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for refractive_index of specular metal")[..]);
             let absorption_coef = load_color(m.find("absorption_coefficient")
-                                         .expect("An absorption_coefficient color is required for specular_metal"))
-                .expect("Invalid color specified for absorption_coefficient of specular_metal");
+                     .expect(&mat_error(&name,
+                                        "An absorption_coefficient color is required for specular metal")[..]))
+                .expect(&mat_error(&name,
+                                   "Invalid color specified for absorption_coefficient of specular metal")[..]);
             materials.insert(name, Arc::new(SpecularMetal::new(&refr_index, &absorption_coef))
                              as Arc<Material + Send + Sync>);
         } else {
