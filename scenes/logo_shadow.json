@@ -2,7 +2,7 @@
 	"camera": {
 		"width": 1920,
 		"height": 1080,
-		"samples": 4,
+		"samples": 16,
 		"position": [0.0, 8.0, 25.0],
 		"target": [0.0, 3.0, 0.0],
 		"up": [0.0, 1.0, 0.0],
@@ -90,11 +90,11 @@
 				},
 				{
 					"type": "rotate_y",
-					"rotation": -40
+					"rotation": -50
 				},
 				{
 					"type": "translate",
-					"translation": [10, -0.05, 0]
+					"translation": [10, -0.05, -2]
 				}
 			]
 		},
@@ -114,11 +114,11 @@
 				},
 				{
 					"type": "rotate_y",
-					"rotation": 45.0
+					"rotation": 60.0
 				},
 				{
 					"type": "translate",
-					"translation": [-10, 0.6, 0]
+					"translation": [-10, 0.6, -2]
 				}
 			]
 		},
@@ -245,11 +245,11 @@
 			]
 		},
 		{
-			"name": "lucy_accent_light",
+			"name": "lucy_accent_left",
 			"type": "emitter",
 			"material": "white_matte",
 			"emitter": "area",
-			"emission": [0.780131, 0.780409, 0.775833, 90.0],
+			"emission": [0.780131, 0.780409, 0.775833, 60.0],
 			"geometry": {
 				"type": "disk",
 				"radius": 0.5,
@@ -258,11 +258,41 @@
 			"transform": [
 				{
 					"type": "rotate_x",
-					"rotation": 120
+					"rotation": 140
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -15
 				},
 				{
 					"type": "translate",
-					"translation": [0, 15, -2.5]
+					"translation": [-3, 15.5, -4.0]
+				}
+			]
+		},
+		{
+			"name": "lucy_accent_right",
+			"type": "emitter",
+			"material": "white_matte",
+			"emitter": "area",
+			"emission": [0.780131, 0.780409, 0.775833, 60.0],
+			"geometry": {
+				"type": "disk",
+				"radius": 0.5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 140
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 15
+				},
+				{
+					"type": "translate",
+					"translation": [3, 15.5, -4.0]
 				}
 			]
 		}
