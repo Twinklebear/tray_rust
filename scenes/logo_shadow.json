@@ -24,8 +24,8 @@
 			"type": "plastic",
 			"name": "white_plastic",
 			"diffuse": [0.740063, 0.742313, 0.733934],
-			"gloss": [0.740063, 0.742313, 0.733934, 0.5],
-			"roughness": 0.1
+			"gloss": [0.740063, 0.742313, 0.733934, 0.8],
+			"roughness": 0.005
 		},
 		{
 			"name": "oxidized_steel",
@@ -94,7 +94,7 @@
 				},
 				{
 					"type": "translate",
-					"translation": [10, 0, 0]
+					"translation": [10, -0.05, 0]
 				}
 			]
 		},
@@ -175,7 +175,7 @@
 			"type": "emitter",
 			"material": "white_matte",
 			"emitter": "area",
-			"emission": [0.780131, 0.780409, 0.775833, 150.0],
+			"emission": [0.780131, 0.780409, 0.775833, 250.0],
 			"geometry": {
 				"type": "disk",
 				"radius": 2.5,
@@ -197,7 +197,7 @@
 			"type": "emitter",
 			"material": "white_matte",
 			"emitter": "area",
-			"emission": [0.780131, 0.780409, 0.775833, 40.0],
+			"emission": [0.780131, 0.780409, 0.775833, 60.0],
 			"geometry": {
 				"type": "disk",
 				"radius": 1.5,
@@ -223,7 +223,7 @@
 			"type": "emitter",
 			"material": "white_matte",
 			"emitter": "area",
-			"emission": [0.780131, 0.780409, 0.775833, 40.0],
+			"emission": [0.780131, 0.780409, 0.775833, 60.0],
 			"geometry": {
 				"type": "disk",
 				"radius": 1.5,
@@ -249,7 +249,7 @@
 			"type": "emitter",
 			"material": "white_matte",
 			"emitter": "area",
-			"emission": [0.780131, 0.780409, 0.775833, 70.0],
+			"emission": [0.780131, 0.780409, 0.775833, 90.0],
 			"geometry": {
 				"type": "disk",
 				"radius": 0.5,
