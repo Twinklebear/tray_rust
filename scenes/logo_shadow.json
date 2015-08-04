@@ -21,6 +21,12 @@
 			"roughness": 1.0
 		},
 		{
+			"type": "matte",
+			"name": "warm_yellow_matte",
+			"diffuse": [0.933333, 0.788235, 0.0],
+			"roughness": 1.0
+		},
+		{
 			"type": "plastic",
 			"name": "white_plastic",
 			"diffuse": [0.740063, 0.742313, 0.733934],
@@ -55,7 +61,7 @@
 		{
 			"name": "back_wall",
 			"type": "receiver",
-			"material": "white_matte",
+			"material": "warm_yellow_matte",
 			"geometry": {
 				"type": "plane"
 			},
