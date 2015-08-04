@@ -30,8 +30,6 @@ pub struct Emitter {
     pub tag: String,
 }
 
-// TODO: It may look like we repeat a lot of code here but that won't be the case after I
-// actually implement the emitter and unify point lights within this design.
 impl Emitter {
     /// Create a new area light using the geometry passed to emit light
     /// TODO: We need sample methods for geometry to do this
