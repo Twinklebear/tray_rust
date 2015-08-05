@@ -28,7 +28,6 @@ Documentation can be found on the [project site](http://www.willusher.io/tray_ru
 Building Your Own Scenes
 ---
 Start at the documentation for the [scene module](http://www.willusher.io/tray_rust/tray_rust/scene/index.html).
-.
 
 TODO
 ---
