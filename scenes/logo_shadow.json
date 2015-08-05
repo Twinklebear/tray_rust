@@ -2,7 +2,7 @@
 	"camera": {
 		"width": 1920,
 		"height": 1080,
-		"samples": 256,
+		"samples": 128,
 		"position": [0.0, 8.0, 25.0],
 		"target": [0.0, 3.0, 0.0],
 		"up": [0.0, 1.0, 0.0],
@@ -60,8 +60,8 @@
 		{
 			"type": "matte",
 			"name": "red_matte",
-			"diffuse": [0.698039, 0.168627, 0.196078],
-			"roughness": 0.7
+			"diffuse": [0.8, 0.0, 0.0],
+			"roughness": 0.5
 		}
 	],
 	"objects": [
