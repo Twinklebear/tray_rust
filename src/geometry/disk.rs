@@ -9,6 +9,19 @@ use mc;
 /// A disk with some inner and outer radius allowing it to
 /// have a hole in the middle. The disk is oriented with the center
 /// at the origin and the normal pointing along +Z.
+///
+/// # Scene Usage Example
+/// The disk requires two parameters, to specify the radius of the disk and the
+/// radius of the hole cut out of the middle of it. Set the inner radius to 0 to
+/// get a solid disk.
+///
+/// ```json
+/// "geometry": {
+///     "type": "disk",
+///     "radius": 4.0,
+///     "inner_radius": 1.0
+/// }
+/// ```
 #[derive(Clone, Copy)]
 pub struct Disk {
     radius: f32,

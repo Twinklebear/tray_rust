@@ -11,6 +11,39 @@ use linalg::{Transform, Point, Ray};
 use film::Colorf;
 
 /// Defines an instance of some geometry with its own transform and material
+///
+/// # Scene Usage Example
+/// An instance is an instantion of geometry in your scene. The instance needs to know
+/// its type (emitter/receiver), its name along with the geometry to use, material to apply
+/// and transformation to place the object in the scene. The instances are specified in the
+/// objects list in the scene file.
+///
+/// The transform for the object is specified in the order in which the transformations should
+/// be applied. For information on emitters see the emitter documentation.
+///
+/// ```json
+/// "objects": [
+///     {
+///         "name": "back_wall",
+///         "type": "receiver",
+///         "material": "white_wall",
+///         "geometry": {
+///             "type": "plane"
+///         },
+///         "transform": [
+///             {
+///                 "type": "scaling",
+///                 "scaling": 15.0
+///             },
+///             {
+///                 "type": "translate",
+///                 "translation": [0.0, 1.0, 20.]
+///             }
+///         ]
+///     },
+///     ...
+/// ]
+/// ```
 pub enum Instance {
     Emitter(Emitter),
     Receiver(Receiver),

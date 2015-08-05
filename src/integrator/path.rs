@@ -14,6 +14,18 @@ use sampler::{Sampler, Sample};
 
 /// The path integrator implementing Path tracing with explicit light sampling
 /// See [Kajiya, The Rendering Equation](http://dl.acm.org/citation.cfm?id=15902)
+///
+/// # Scene Usage Example
+/// The pathtracer integrator needs a maximum ray depth to terminate rays at and
+/// a minimum ray depth to start applying Russian Roulette to terminate rays early.
+///
+/// ```json
+/// "integrator": {
+///     "type": "pathtracer",
+///     "min_depth": 3,
+///     "max_depth": 8
+/// }
+/// ```
 #[derive(Clone, Copy, Debug)]
 pub struct Path {
     min_depth: usize,

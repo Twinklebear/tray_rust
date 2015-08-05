@@ -1,6 +1,10 @@
 #![allow(dead_code)]
 #![feature(float_extras, float_consts, vec_resize)]
 
+//! # tray_rust
+//! For information on specifying scenes in JSON files see the
+//! scene module and/or examples under `scenes/`
+
 extern crate enum_set as enum_set;
 extern crate rand;
 extern crate byteorder;

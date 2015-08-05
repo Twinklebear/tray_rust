@@ -23,7 +23,8 @@ pub mod whitted;
 pub mod path;
 
 /// Trait implemented by the various integration methods that can be used to render
-/// the scene.
+/// the scene. For scene usage information see whitted and path to get information
+/// on how to specify them.
 pub trait Integrator {
     /// Compute the illumination at the intersection in the scene
     fn illumination(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,

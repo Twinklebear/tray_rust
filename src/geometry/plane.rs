@@ -6,6 +6,16 @@ use geometry::{Geometry, DifferentialGeometry, Boundable, BBox};
 use linalg::{Normal, Vector, Ray, Point};
 
 /// A plane centered at the origin spanning [-1, -1] to [1, 1] with a normal along [0, 0, 1]
+///
+/// # Scene Usage Example
+/// The plane takes no parameters, to configure its size and position specify the
+/// transformations to apply to the instance of geometry.
+///
+/// ```json
+/// "geomtry": {
+///     "type": "plane"
+/// }
+/// ```
 #[derive(Clone, Copy)]
 pub struct Plane;
 

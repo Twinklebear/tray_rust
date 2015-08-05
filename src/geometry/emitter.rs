@@ -17,7 +17,59 @@ enum EmitterType {
     Area(Arc<SampleableGeom + Send + Sync>, Arc<Material + Send + Sync>),
 }
 
-/// An instance of geometry in the scene that receives and emits light
+/// An instance of geometry in the scene that receives and emits light.
+///
+/// # Scene Usage Example
+/// An emitter is an object in the scene that emits light, it can be a point light
+/// or an area light. The emitter takes an extra 'emitter' parameter to specify
+/// whether the instance is an area or point emitter and an 'emission' parameter
+/// to set the color and strength of emitted light.
+///
+/// ## Point Light Example
+/// The point light has no geometry, material or transformation since it's not a
+/// physical object. Instead it simply takes a position to place the light at in the scene.
+///
+/// ```json
+/// "objects": [
+///     {
+///         "name": "my_light",
+///         "type": "emitter",
+///         "emitter": "point",
+///         "position": [0.0, 0.0, 22.0]
+///         "emission": [1, 1, 1, 100]
+///     },
+///     ...
+/// ]
+/// ```
+///
+/// ## Area Light Example
+/// The area light looks similar to a regular receiver except it has an additional emission
+/// parameter. Area lights are also restricted somewhat in which geometry they can use as
+/// it needs to be possible to sample the geometry. Area lights can only accept geometry
+/// that implements `geometry::Sampleable`.
+///
+/// ```json
+/// "objects": [
+///     {
+///         "name": "my_area_light",
+///         "type": "emitter",
+///         "emitter": "area",
+///         "emission": [1, 1, 1, 100],
+///         "material": "white_matte",
+///         "geometry": {
+///             "type": "sphere",
+///              "radius": 2.5
+///         },
+///         "transform": [
+///             {
+///                 "type": "translate",
+///                 "translation": [0, 0, 22]
+///             }
+///         ]
+///     },
+///     ...
+/// ]
+/// ```
 pub struct Emitter {
     emitter: EmitterType,
     /// The light intensity emitted
