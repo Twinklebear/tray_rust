@@ -2,7 +2,7 @@
 	"camera": {
 		"width": 1920,
 		"height": 1080,
-		"samples": 64,
+		"samples": 256,
 		"position": [0.0, 8.0, 25.0],
 		"target": [0.0, 3.0, 0.0],
 		"up": [0.0, 1.0, 0.0],
@@ -34,9 +34,34 @@
 			"roughness": 0.005
 		},
 		{
+			"type": "metal",
+			"name": "silver_metal",
+			"refractive_index": [0.155265, 0.116723, 0.138381],
+			"absorption_coefficient": [4.82835, 3.12225, 2.14696],
+			"roughness": 0.05
+		},
+		{
 			"name": "oxidized_steel",
 			"type": "merl",
 			"file": "../black-oxidized-steel.binary"
+		},
+		{
+			"name": "silver_paint",
+			"type": "merl",
+			"file": "../silver-paint.binary"
+		},
+		{
+			"type": "glass",
+			"name": "blue_glass",
+			"reflect": [0.0039215, 0.513725, 0.8, 0.5],
+			"transmit": [0.0039215, 0.513725, 0.8, 1.5],
+			"eta": 1.52
+		},
+		{
+			"type": "matte",
+			"name": "red_matte",
+			"diffuse": [0.698039, 0.168627, 0.196078],
+			"roughness": 0.7
 		}
 	],
 	"objects": [
@@ -123,7 +148,7 @@
 		{
 			"name": "teapot",
 			"type": "receiver",
-			"material": "white_matte",
+			"material": "red_matte",
 			"geometry": {
 				"type": "mesh",
 				"file": "../teapot.obj",
@@ -145,9 +170,37 @@
 			]
 		},
 		{
+			"name": "suzanne",
+			"type": "receiver",
+			"material": "blue_glass",
+			"geometry": {
+				"type": "mesh",
+				"file": "../suzanne.obj",
+				"model": "Suzanne"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 1.5
+				},
+				{
+					"type": "rotate_x",
+					"rotation": -38
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -35
+				},
+				{
+					"type": "translate",
+					"translation": [7, 0.8, 2]
+				}
+			]
+		},
+		{
 			"name": "bunny",
 			"type": "receiver",
-			"material": "white_matte",
+			"material": "silver_metal",
 			"geometry": {
 				"type": "mesh",
 				"file": "../bunny.obj",
@@ -171,7 +224,7 @@
 		{
 			"name": "lucy",
 			"type": "receiver",
-			"material": "white_matte",
+			"material": "silver_paint",
 			"geometry": {
 				"type": "mesh",
 				"file": "../lucy.obj",
