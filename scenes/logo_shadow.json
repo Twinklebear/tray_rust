@@ -2,7 +2,7 @@
 	"camera": {
 		"width": 1920,
 		"height": 1080,
-		"samples": 16,
+		"samples": 64,
 		"position": [0.0, 8.0, 25.0],
 		"target": [0.0, 3.0, 0.0],
 		"up": [0.0, 1.0, 0.0],
@@ -77,22 +77,62 @@
 			]
 		},
 		{
+			"name": "left_wall",
+			"type": "receiver",
+			"material": "white_matte",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 40.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 90
+				},
+				{
+					"type": "translate",
+					"translation": [-37, 0, 0]
+				}
+			]
+		},
+		{
+			"name": "right_wall",
+			"type": "receiver",
+			"material": "white_matte",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 40.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -90
+				},
+				{
+					"type": "translate",
+					"translation": [37, 0, 0]
+				}
+			]
+		},
+		{
 			"name": "teapot",
 			"type": "receiver",
 			"material": "white_matte",
 			"geometry": {
 				"type": "mesh",
 				"file": "../teapot.obj",
-				"model": "teapot"
+				"model": "Teapot"
 			},
 			"transform": [
 				{
 					"type": "scale",
-					"scaling": 0.3
-				},
-				{
-					"type": "rotate_x",
-					"rotation": -90
+					"scaling": 1.5
 				},
 				{
 					"type": "rotate_y",
