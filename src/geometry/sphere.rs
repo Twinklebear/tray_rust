@@ -1,4 +1,14 @@
-//! Defines a Sphere type which implements the Geometry, Boundable and Sampleable traits
+//! Defines a Sphere at the origin which implements the Geometry, Boundable and Sampleable traits
+//!
+//! # Scene Usage Example
+//! The sphere takes a single parameter to specify its radius.
+//!
+//! ```json
+//! "geometry": {
+//!     "type": "sphere",
+//!     "radius": 2.5
+//! }
+//! ```
 
 use std::f32;
 
@@ -7,16 +17,6 @@ use linalg::{self, Normal, Vector, Ray, Point};
 use mc;
 
 /// A sphere with user-specified radius located at the origin.
-///
-/// # Scene Usage Example
-/// The sphere takes a single parameter to specify its radius.
-///
-/// ```json
-/// "geometry": {
-///     "type": "sphere",
-///     "radius": 2.5
-/// }
-/// ```
 #[derive(Clone, Copy)]
 pub struct Sphere {
     radius: f32,

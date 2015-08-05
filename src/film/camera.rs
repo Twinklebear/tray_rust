@@ -1,25 +1,25 @@
 //! Provides a camera based on a single transformation that positions
 //! it in the scene
+//!
+//! # Scene Usage Example
+//! The camera must specify information about its position in the world, the image dimensions
+//! and the number of samples to take per pixel.
+//!
+//! ```json
+//! "camera": {
+//!     "width": 800,
+//!     "height": 600,
+//!     "samples" 512,
+//!     "position": [0, 8, 20],
+//!     "target": [0, 3, 0],
+//!     "up": [0, 1, 0],
+//!     "fov": 50.0
+//! }
+/// ```
 
 use linalg::{Transform, Vector, Point, Ray};
 
 /// Our camera for the ray tracer, has a transformation to position it in world space
-///
-/// # Scene Usage Example
-/// The camera must specify information about its position in the world, the image dimensions
-/// and the number of samples to take per pixel.
-///
-/// ```json
-/// "camera": {
-///     "width": 800,
-///     "height": 600,
-///     "samples" 512,
-///     "position": [0, 8, 20],
-///     "target": [0, 3, 0],
-///     "up": [0, 1, 0],
-///     "fov": 50.0
-/// }
-/// ```
 #[derive(Copy, Clone)]
 pub struct Camera {
     /// Transformation from camera to world space

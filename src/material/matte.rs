@@ -1,4 +1,23 @@
 //! Defines a matte material used to describe diffuse materials
+//!
+//! # Scene Usage Example
+//! The matte material requires a diffuse color and a roughness for the material. A roughness of 0
+//! will select a [Lambertian](https://en.wikipedia.org/wiki/Lambertian_reflectance) model
+//! while a roughness > 0 will select an
+//! [Oren-Nayar](https://en.wikipedia.org/wiki/Oren%E2%80%93Nayar_reflectance_model)
+//! reflectance model.
+//!
+//! ```json
+//! "materials": [
+//!     {
+//!         "name": "purple_matte",
+//!         "type": "matte",
+//!         "diffuse": [1, 0, 1],
+//!         "roughness" 0.5
+//!     },
+//!     ...
+//! ]
+//! ```
 
 use std::vec::Vec;
 

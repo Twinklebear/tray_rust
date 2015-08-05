@@ -1,4 +1,16 @@
 //! Defines the Whitted integrator which implements Whitted recursive ray tracing
+//! See [Whitted, An improved illumination model for shaded display](http://dl.acm.org/citation.cfm?id=358882)
+//!
+//! # Scene Usage Example
+//! The Whitted integrator just needs a maximum ray depth to terminate specular reflection
+//! and transmission rays.
+//!
+//! ```json
+//! "integrator": {
+//!     "type": "whitted",
+//!     "max_depth": 8
+//! }
+//! ```
 
 use std::f32;
 use rand::StdRng;
@@ -13,18 +25,6 @@ use light::Light;
 use sampler::Sampler;
 
 /// The Whitted integrator implementing the Whitted recursive ray tracing algorithm
-/// See [Whitted, An improved illumination model for shaded display](http://dl.acm.org/citation.cfm?id=358882)
-///
-/// # Scene Usage Example
-/// The Whitted integrator just needs a maximum ray depth to terminate specular reflection
-/// and transmission rays.
-///
-/// ```json
-/// "integrator": {
-///     "type": "whitted",
-///     "max_depth": 8
-/// }
-/// ```
 #[derive(Clone, Copy, Debug)]
 pub struct Whitted {
     /// The maximum recursion depth for rays

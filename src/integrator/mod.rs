@@ -1,6 +1,18 @@
 //! The integrator module defines the Integrator trait implemented by
 //! the various surface integrators used to render the scene with different
 //! integration methods, eg. path tracing, photon mapping etc.
+//!
+//! # Scene Usage Example
+//! The integrator will be specified within the root object of the scene. A type
+//! for the integrator along with any additional parameters is required within
+//! the integrator object.
+//!
+//! ```json
+//! "integrator": {
+//!     "type": "The_Integrator_Type",
+//!     ...
+//! }
+//! ```
 
 use std::f32;
 use std::cmp;

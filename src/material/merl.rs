@@ -2,6 +2,21 @@
 //! [MERL BRDF Database file](http://www.merl.com/brdf/). The material loads and parses
 //! the data then hands it off to its BRDF which will be used to actually compute the
 //! surface properties
+//!
+//! # Scene Usage Example
+//! The MERL material requires a filepath to a BRDF table downloaded from the
+//! [MERL BRDF Database](http://www.merl.com/brdf/).
+//!
+//! ```json
+//! "materials": [
+//!     {
+//!         "name": "oxidized_steel",
+//!         "type": "merl",
+//!         "file": "./black-oxidized-steel.binary"
+//!     },
+//!     ...
+//! ]
+//! ```
 
 use std::path::Path;
 use std::fs::File;

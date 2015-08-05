@@ -1,6 +1,27 @@
 //! The geometry module defines the Geometry trait implemented by
 //! the various geometry in the ray tracer and provides some standard
 //! geometry for rendering
+//!
+//! # Scene Usage Example
+//! All geometry will appear within an object specification and requires the type
+//! of geometry being specified along with any parameters for that geometry.
+//!
+//! An instance has a geometry along with additional information like a material
+//! and transformation to place it in the world, see the instance module for more.
+//!
+//! ```json
+//! "objects": [
+//!     {
+//!          "type": "The_Instance_Type",
+//!          ...
+//!          "geometry": {
+//!              "type": "The_Geometry_Type",
+//!              ...
+//!          }
+//!     },
+//!     ...
+//! ]
+//! ```
 
 use linalg::{Point, Vector, Ray, Normal};
 

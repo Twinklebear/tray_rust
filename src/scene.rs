@@ -15,7 +15,13 @@
 //! }
 //! ```
 //!
-//! TODO: Refer where to find info on specifying these.
+//! For more information on each object see the corresponding modules:
+//!
+//! - Camera: See film/camera
+//! - Integrator: See integrator
+//! - Materials: See materials
+//! - Objects: See geometry
+//!
 
 use std::io::prelude::*;
 use std::fs::File;

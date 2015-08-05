@@ -1,4 +1,21 @@
 //! Defines a specular metal material
+//!
+//! # Scene Usage Example
+//! The specular metal material requires a refractive index and absorption coefficient
+//! that describe the physical properties of the metal.
+//!
+//! ```json
+//! "materials": [
+//!     {
+//!         "name": "specular_silver",
+//!         "type": "specular_metal",
+//!         "refractive_index": [0.155265, 0.116723, 0.138381],
+//!         "absorption_coefficient": [4.82835, 3.12225, 2.14696]
+//!     },
+//!     ...
+//! ]
+//! ```
+
 
 use std::vec::Vec;
 
