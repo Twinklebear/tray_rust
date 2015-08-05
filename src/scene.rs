@@ -1,5 +1,27 @@
 //! Defines the scene struct which contains the various objects defining the scene.
 //! This includes the geometry, instances of the geometry, the camera and so on.
+//!
+//! # Scene JSON Files
+//! The scene file format has four required sections: a camera, an integrator,
+//! a list of materials and a list of objects and lights. The root object in the
+//! JSON file should contain one of each of these.
+//!
+//! ```json
+//! {
+//!     "camera": {...},
+//!     "integrator": {...},
+//!     "materials": [...],
+//!     "objects": [...]
+//! }
+//! ```
+//!
+//! For more information on each object see the corresponding modules:
+//!
+//! - Camera: See film/camera
+//! - Integrator: See integrator
+//! - Materials: See materials
+//! - Objects: See geometry
+//!
 
 use std::io::prelude::*;
 use std::fs::File;

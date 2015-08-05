@@ -1,6 +1,26 @@
 //! A material that models plastic of varying roughness using
 //! the Torrance Sparrow BRDF and a Blinn microfacet distribution
 //! TODO: Add Ashikman-Shirley (spelling?) anisotropic microfacet model
+//!
+//! # Scene Usage Example
+//! The plastic material requires a diffuse and glossy color. The diffuse color
+//! is used by a Lambertian model and the gloss color is used by a Torrance-Sparrow
+//! microfacet model with a Blinn microfacet distribution. The roughness will specify
+//! how reflective the gloss color is while the diffuse color provides a uniform base color
+//! for the object.
+//!
+//! ```json
+//! "materials": [
+//!     {
+//!         "name": "red_plastic",
+//!         "type": "plastic",
+//!         "diffuse": [0.8, 0, 0],
+//!         "gloss": [1, 1, 1],
+//!         "roughness": 0.05
+//!     },
+//!     ...
+//! ]
+//! ```
 
 use std::vec::Vec;
 

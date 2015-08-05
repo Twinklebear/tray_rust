@@ -1,6 +1,18 @@
 //! The integrator module defines the Integrator trait implemented by
 //! the various surface integrators used to render the scene with different
 //! integration methods, eg. path tracing, photon mapping etc.
+//!
+//! # Scene Usage Example
+//! The integrator will be specified within the root object of the scene. A type
+//! for the integrator along with any additional parameters is required within
+//! the integrator object.
+//!
+//! ```json
+//! "integrator": {
+//!     "type": "The_Integrator_Type",
+//!     ...
+//! }
+//! ```
 
 use std::f32;
 use std::cmp;
@@ -23,7 +35,8 @@ pub mod whitted;
 pub mod path;
 
 /// Trait implemented by the various integration methods that can be used to render
-/// the scene.
+/// the scene. For scene usage information see whitted and path to get information
+/// on how to specify them.
 pub trait Integrator {
     /// Compute the illumination at the intersection in the scene
     fn illumination(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,

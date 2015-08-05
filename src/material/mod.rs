@@ -1,6 +1,22 @@
 //! Defines the trait implemented by all materials and exports various
 //! supported material types. Materials are used to define how BxDFs are
 //! composed to create the desired appearance
+//!
+//! # Scene Usage Example
+//! The material will be specified within the materials list of the scene object. A type
+//! and name for the material along with any additional parameters is required to specify one.
+//! The name is used when specifying which material should be used by an object in the scene.
+//!
+//! ```json
+//! "materials": [
+//!     {
+//!         "name": "my_material",
+//!         "type": "The_Material_Type",
+//!          ...
+//!     }
+//!     ...
+//! ]
+//! ```
 
 use geometry::Intersection;
 use bxdf::BSDF;

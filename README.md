@@ -25,6 +25,11 @@ Documentation
 ---
 Documentation can be found on the [project site](http://www.willusher.io/tray_rust/tray_rust/).
 
+Building Your Own Scenes
+---
+Start at the documentation for the [scene module](http://www.willusher.io/tray_rust/tray_rust/scene/index.html).
+.
+
 TODO
 ---
 - More material models (eg. more microfacet models, rough glass, etc.)

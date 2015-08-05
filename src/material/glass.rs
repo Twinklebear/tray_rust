@@ -1,4 +1,22 @@
 //! Defines a specular glass material
+//!
+//! # Scene Usage Example
+//! The specular glass material describes a thing glass surface type of material,
+//! not a solid block of glass (there is no absorption of light). The glass requires
+//! a reflective and emissive color along with a refrective index, eta.
+//!
+//! ```json
+//! "materials": [
+//!     {
+//!         "name": "clear_glass",
+//!         "type": "glass",
+//!         "reflect": [1, 1, 1],
+//!         "transmit": [1, 1, 1],
+//!         "eta": 1.52
+//!     },
+//!     ...
+//! ]
+//! ```
 
 use std::vec::Vec;
 

@@ -1,5 +1,20 @@
 //! Defines a triangle mesh geometry. Intersection tests are accelerated internally
 //! by storing the triangles of the mesh in a BVH
+//!
+//! # Scene Usage Example
+//! The mesh is specified by the OBJ file to load and the name of the specific
+//! model within the file to use. The file and other loaded models are kept loaded
+//! so you can easily use the same or other models in the file as well. If no name is
+//! assigned to the model in the file it will be given the name "unnamed_model",
+//! however it's recommended to name your models.
+//!
+//! ```json
+//! "geometry": {
+//!     "type": "mesh",
+//!     "file": "./suzanne.obj",
+//!     "model": "Suzanne"
+//! }
+//! ```
 
 extern crate tobj;
 
