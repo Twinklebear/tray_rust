@@ -71,7 +71,7 @@ The following images compare sphere vs. disk area lights.
 
 [![Cornell Box](http://i.imgur.com/Nea7P64.png)](http://i.imgur.com/Nea7P64.png)
 
-1920x1080, 4096 samples/pixel. Rendering: 00:03:36.196.
+800x600, 4096 samples/pixel. Rendering: 00:03:36.196.
 
 [![Rust Logo with friends, point light](http://i.imgur.com/9QU6fOU.png)](http://i.imgur.com/9QU6fOU.png)
 

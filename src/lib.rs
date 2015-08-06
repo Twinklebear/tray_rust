@@ -82,7 +82,7 @@
 //!     style="display:block; max-width:100%; height:auto">
 //! </a>
 //! 
-//! 1920x1080, 4096 samples/pixel. Rendering: 00:03:36.196.
+//! 800x600, 4096 samples/pixel. Rendering: 00:03:36.196.
 //! 
 //! <a href="http://i.imgur.com/9QU6fOU.jpg">
 //! <img src="http://i.imgur.com/9QU6fOU.png" alt="Rust Logo with friends, point light"
