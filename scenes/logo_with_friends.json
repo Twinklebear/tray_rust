@@ -35,17 +35,17 @@
 		{
 			"name": "oxidized_steel",
 			"type": "merl",
-			"file": "../black-oxidized-steel.binary"
+			"file": "brdfs/black-oxidized-steel.binary"
 		},
 		{
 			"name": "gold_paint",
 			"type": "merl",
-			"file": "../gold-metallic-paint.binary"
+			"file": "brdfs/gold-metallic-paint.binary"
 		},
 		{
 			"name": "blue_acrylic",
 			"type": "merl",
-			"file": "../blue-acrylic.binary"
+			"file": "brdfs/blue-acrylic.binary"
 		}
 	],
 	"objects": [
@@ -183,7 +183,7 @@
 			"material": "oxidized_steel",
 			"geometry": {
 				"type": "mesh",
-				"file": "../rust_logo.obj",
+				"file": "models/rust_logo.obj",
 				"model": "rust_logo"
 			},
 			"transform": [
@@ -211,7 +211,7 @@
 			"material": "gold_paint",
 			"geometry": {
 				"type": "mesh",
-				"file": "../buddha.obj",
+				"file": "models/buddha.obj",
 				"model": "buddha"
 			},
 			"transform": [
@@ -239,7 +239,7 @@
 			"material": "blue_acrylic",
 			"geometry": {
 				"type": "mesh",
-				"file": "../dragon.obj",
+				"file": "models/dragon.obj",
 				"model": "dragon"
 			},
 			"transform": [

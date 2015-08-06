@@ -39,32 +39,71 @@
 //! 
 //! ## Sample Renders
 //!
-//! I used tray\_rust to render the Rust logo with some friends from the computer graphics community,
-//! the Buddha and Dragon from [The Stanford Scanning Repository](http://graphics.stanford.edu/data/3Dscanrep/).
+//! In the samples the the Buddha, Dragon, Bunny and Lucy statue are from
+//! [The Stanford Scanning Repository](http://graphics.stanford.edu/data/3Dscanrep/).
 //! The Rust logo model was made by
 //! [Nylithius on BlenderArtists](http://blenderartists.org/forum/showthread.php?362836-Rust-language-3D-logo).
-//! The Rust logo model is 28,844 triangles, the Buddha is 1,087,474 and the Dragon is 871,306. These timings
-//! are also before I've fixed my BVH build so they could probably be improved somewhat.
-//! Render times are formatted as hh:mm:ss and were measured using 32 threads on a machine with dual
-//! [Xeon E5-2680's @ 2.7GHz](http://ark.intel.com/products/64583/Intel-Xeon-Processor-E5-2680-20M-Cache-2_70-GHz-8_00-GTs-Intel-QPI).
-//! The materials on the Rust logo, Buddha and Dragon are from the
+//! The Utah teapot used is from [Morgan McGuire's page](http://graphics.cs.williams.edu/data/meshes.xml) and
+//! the monkey head is Blender's Suzanne. I've made minor tweaks to some of the models so for convenience
+//! you can find versions that can be easily loaded into the sample scenes [here](https://drive.google.com/folderview?id=0B-l_lLEMo1YeflUzUndCd01hOHhRNUhrQUowM3hVd2pCc3JrSXRiS3FQSzRYLWtGcGM0eGc&usp=sharing), though the
+//! cube model for the Cornell box scene is included.
+//! The materials on the Rust logo, Buddha, Dragon and Lucy are from the
 //! [MERL BRDF Database](http://www.merl.com/brdf/).
+//!
+//! Render times are formatted as hh:mm:ss and were measured using 144 threads on a machine with four
+//! [Xeon E7-8890 v3](http://ark.intel.com/products/84685/Intel-Xeon-Processor-E7-8890-v3-45M-Cache-2_50-GHz)
+//! CPUs. Some older images renders are shown as well without timing since they were run on a different machine.
 //! 
-//! <img src="http://i.imgur.com/9QU6fOU.png" alt="Rust Logo with Friends"
+//! <a href="http://i.imgur.com/sjvHAhD.jpg">
+//! <img src="http://i.imgur.com/sjvHAhD.png" alt="Model gallery"
 //!     style="display:block; max-width:100%; height:auto">
+//! </a>
 //! 
-//! 1920x1080, 2048 samples/pixel. Rendering took 01:13:52.13.
+//! 1920x1080, 4096 samples/pixel. Rendering: 00:13:51.274.
 //! 
-//! <img src="http://i.imgur.com/JouSgr5.png" alt="Rust Logo"
+//! The following images compare sphere vs. disk area lights.
+//! 
+//! <a href="http://i.imgur.com/N06g1hW.jpg">
+//! <img src="http://i.imgur.com/N06g1hW.png" alt="Rust Logo with friends, sphere"
 //!     style="display:block; max-width:100%; height:auto">
+//! </a>
 //! 
-//! 800x600, 1024 samples/pixel. Rendering took 00:09:00.208.
+//! 1920x1080, 4096 samples/pixel. Rendering: 00:46:11.822.
 //! 
-//! <img src="http://i.imgur.com/fUEv6Au.png" alt="Smallpt"
+//! <a href="http://i.imgur.com/aRnbeqV.jpg">
+//! <img src="http://i.imgur.com/aRnbeqV.png" alt="Rust Logo with friends, disk"
 //!     style="display:block; max-width:100%; height:auto">
+//! </a>
 //! 
-//! 800x600, 1024 samples/pixel. Rendering took: 00:03:15.86.
+//! 1920x1080, 4096 samples/pixel. Rendering: 00:33:58.461.
 //! 
+//! <a href="http://i.imgur.com/Nea7P64.jpg">
+//! <img src="http://i.imgur.com/Nea7P64.png" alt="Cornell Box"
+//!     style="display:block; max-width:100%; height:auto">
+//! </a>
+//! 
+//! 1920x1080, 4096 samples/pixel. Rendering: 00:03:36.196.
+//! 
+//! <a href="http://i.imgur.com/9QU6fOU.jpg">
+//! <img src="http://i.imgur.com/9QU6fOU.png" alt="Rust Logo with friends, point light"
+//!     style="display:block; max-width:100%; height:auto">
+//! </a>
+//! 
+//! 1920x1080, 2048 samples/pixel.
+//! 
+//! <a href="http://i.imgur.com/JouSgr5.jpg">
+//! <img src="http://i.imgur.com/JouSgr5.png" alt="Rust Logo, point light"
+//!     style="display:block; max-width:100%; height:auto">
+//! </a>
+//! 
+//! 800x600, 1024 samples/pixel.
+//! 
+//! <a href="http://i.imgur.com/fUEv6Au.jpg">
+//! <img src="http://i.imgur.com/fUEv6Au.png" alt="Smallpt with point light"
+//!     style="display:block; max-width:100%; height:auto">
+//! </a>
+//! 
+//! 800x600, 1024 samples/pixel.
 
 extern crate enum_set as enum_set;
 extern crate rand;

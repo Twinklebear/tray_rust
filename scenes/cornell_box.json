@@ -175,7 +175,7 @@
 			"material": "white_plastic",
 			"geometry": {
 				"type": "mesh",
-				"file": "../cube.obj",
+				"file": "models/cube.obj",
 				"model": "Cube"
 			},
 			"transform": [
@@ -199,7 +199,7 @@
 			"material": "white_plastic",
 			"geometry": {
 				"type": "mesh",
-				"file": "../cube.obj",
+				"file": "models/cube.obj",
 				"model": "Cube"
 			},
 			"transform": [

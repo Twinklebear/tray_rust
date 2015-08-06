@@ -43,12 +43,12 @@
 		{
 			"name": "oxidized_steel",
 			"type": "merl",
-			"file": "../black-oxidized-steel.binary"
+			"file": "brdfs/black-oxidized-steel.binary"
 		},
 		{
 			"name": "silver_paint",
 			"type": "merl",
-			"file": "../silver-paint.binary"
+			"file": "brdfs/silver-paint.binary"
 		},
 		{
 			"type": "glass",
@@ -151,7 +151,7 @@
 			"material": "red_matte",
 			"geometry": {
 				"type": "mesh",
-				"file": "../teapot.obj",
+				"file": "models/teapot.obj",
 				"model": "Teapot"
 			},
 			"transform": [
@@ -175,7 +175,7 @@
 			"material": "blue_glass",
 			"geometry": {
 				"type": "mesh",
-				"file": "../suzanne.obj",
+				"file": "models/suzanne.obj",
 				"model": "Suzanne"
 			},
 			"transform": [
@@ -203,7 +203,7 @@
 			"material": "silver_metal",
 			"geometry": {
 				"type": "mesh",
-				"file": "../bunny.obj",
+				"file": "models/bunny.obj",
 				"model": "bunny"
 			},
 			"transform": [
@@ -227,7 +227,7 @@
 			"material": "silver_paint",
 			"geometry": {
 				"type": "mesh",
-				"file": "../lucy.obj",
+				"file": "models/lucy.obj",
 				"model": "lucy"
 			},
 			"transform": [
@@ -251,7 +251,7 @@
 			"material": "oxidized_steel",
 			"geometry": {
 				"type": "mesh",
-				"file": "../rust_logo.obj",
+				"file": "models/rust_logo.obj",
 				"model": "rust_logo"
 			},
 			"transform": [

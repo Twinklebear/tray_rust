@@ -40,25 +40,48 @@ TODO
 
 Sample Renders
 ---
-I used tray\_rust to render the Rust logo with some friends from the computer graphics community,
-the Buddha and Dragon from [The Stanford Scanning Repository](http://graphics.stanford.edu/data/3Dscanrep/).
+In the samples the the Buddha, Dragon, Bunny and Lucy statue are from
+[The Stanford Scanning Repository](http://graphics.stanford.edu/data/3Dscanrep/).
 The Rust logo model was made by
 [Nylithius on BlenderArtists](http://blenderartists.org/forum/showthread.php?362836-Rust-language-3D-logo).
-The Rust logo model is 28,844 triangles, the Buddha is 1,087,474 and the Dragon is 871,306. These timings
-are also before I've fixed my BVH build so they could probably be improved somewhat.
-Render times are formatted as hh:mm:ss and were measured using 32 threads on a machine with dual
-[Xeon E5-2680's @ 2.7GHz](http://ark.intel.com/products/64583/Intel-Xeon-Processor-E5-2680-20M-Cache-2_70-GHz-8_00-GTs-Intel-QPI).
-The materials on the Rust logo, Buddha and Dragon are from the [MERL BRDF Database](http://www.merl.com/brdf/).
+The Utah teapot used is from [Morgan McGuire's page](http://graphics.cs.williams.edu/data/meshes.xml) and
+the monkey head is Blender's Suzanne. I've made minor tweaks to some of the models so for convenience
+you can find versions that can be easily loaded into the sample scenes [here](https://drive.google.com/folderview?id=0B-l_lLEMo1YeflUzUndCd01hOHhRNUhrQUowM3hVd2pCc3JrSXRiS3FQSzRYLWtGcGM0eGc&usp=sharing), though the
+cube model for the Cornell box scene is included.
+The materials on the Rust logo, Buddha, Dragon and Lucy are from the
+[MERL BRDF Database](http://www.merl.com/brdf/).
 
-[![Rust Logo with friends](http://i.imgur.com/9QU6fOU.png)](http://i.imgur.com/9QU6fOU.png)
+Render times are formatted as hh:mm:ss and were measured using 144 threads on a machine with four
+[Xeon E7-8890 v3](http://ark.intel.com/products/84685/Intel-Xeon-Processor-E7-8890-v3-45M-Cache-2_50-GHz)
+CPUs. Some older images renders are shown as well without timing since they were run on a different machine.
 
-1920x1080, 2048 samples/pixel. Rendering took 01:13:52.13.
+[![Model gallery](http://i.imgur.com/sjvHAhD.jpg)](http://i.imgur.com/sjvHAhD.jpg)
 
-[![Rust Logo](http://i.imgur.com/JouSgr5.png)](http://i.imgur.com/JouSgr5.png)
+1920x1080, 4096 samples/pixel. Rendering: 00:13:51.274.
 
-800x600, 1024 samples/pixel. Rendering took 00:09:00.208.
+The following images compare sphere vs. disk area lights.
 
-[![Smallpt](http://i.imgur.com/fUEv6Au.png)](http://i.imgur.com/fUEv6Au.png)
+[![Rust Logo with friends, sphere](http://i.imgur.com/N06g1hW.jpg)](http://i.imgur.com/N06g1hW.jpg)
 
-800x600, 1024 samples/pixel. Rendering took: 00:03:15.86.
+1920x1080, 4096 samples/pixel. Rendering: 00:46:11.822.
+
+[![Rust Logo with friends, disk](http://i.imgur.com/aRnbeqV.jpg)](http://i.imgur.com/aRnbeqV.jpg)
+
+1920x1080, 4096 samples/pixel. Rendering: 00:33:58.461.
+
+[![Cornell Box](http://i.imgur.com/Nea7P64.png)](http://i.imgur.com/Nea7P64.png)
+
+1920x1080, 4096 samples/pixel. Rendering: 00:03:36.196.
+
+[![Rust Logo with friends, point light](http://i.imgur.com/9QU6fOU.png)](http://i.imgur.com/9QU6fOU.png)
+
+1920x1080, 2048 samples/pixel.
+
+[![Rust Logo, point light](http://i.imgur.com/JouSgr5.png)](http://i.imgur.com/JouSgr5.png)
+
+800x600, 1024 samples/pixel.
+
+[![Smallpt, point light](http://i.imgur.com/fUEv6Au.png)](http://i.imgur.com/fUEv6Au.png)
+
+800x600, 1024 samples/pixel.
 
