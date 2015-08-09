@@ -11,12 +11,12 @@ doc = false
 enum-set = "0.0.5"
 rand = "0.3.8"
 rustc-serialize = "0.3.15"
-docopt = "0.6.67"
+docopt = "0.6.70"
 image = "0.3.11"
 num_cpus = "0.2.6"
 tobj = "0.0.9"
 byteorder = "0.3.11"
-serde = "0.4.3"
+serde_json = "0.5.0"
 
 [dependencies.threadpool]
 version = "0.1.4"

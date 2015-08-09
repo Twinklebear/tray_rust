@@ -29,7 +29,7 @@ use std::sync::Arc;
 use std::path::Path;
 use std::collections::HashMap;
 
-use serde::json::{self, Value};
+use serde_json::{self, Value};
 
 use linalg::{Transform, Point, Vector, Ray};
 use film::{Camera, Colorf};
@@ -57,7 +57,7 @@ impl Scene {
             _ => {}
         }
         // Why not use expect here?
-        let data: Value = match json::from_str(&content[..]) {
+        let data: Value = match serde_json::from_str(&content[..]) {
             Ok(d) => d,
             Err(e) => panic!("JSON parsing error: {}", e),
         };
