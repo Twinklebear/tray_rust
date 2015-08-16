@@ -160,26 +160,6 @@
 			]
 		},
 		{
-			"name": "cone",
-			"type": "receiver",
-			"material": "white_wall",
-			"geometry": {
-				"type": "cone",
-				"radius": 2,
-				"height": 4
-			},
-			"transform": [
-				{
-					"type": "rotate_x",
-					"rotation": -145
-				},
-				{
-					"type": "translate",
-					"translation": [3, -4, 12]
-				}
-			]
-		},
-		{
 			"name": "light",
 			"type": "emitter",
 			"material": "white_wall",
