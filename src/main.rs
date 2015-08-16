@@ -144,7 +144,8 @@ fn main() {
     };
 
     let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
-    println!("Rendering took {:?}", d);
+    let time = d.as_secs() as f64 + (d.subsec_nanos() as f64) / 1_000_000_000.0;
+    println!("Rendering took {}s", time);
 
     let img = rt.get_render();
     let out_file = match args.flag_o {
