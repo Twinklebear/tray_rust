@@ -99,6 +99,12 @@ fn spawn_workers<'a>(n: u32, spp: usize, scene: &'a scene::Scene,
     let mut guards = Vec::new();
     for _ in 0..n {
         let t = tx.clone();
+        // TODO: This is bad! However since the broken/deprecated thread::scoped API was
+        // removed along with threadpool's ScopedPool we don't really have many options
+        // for keeping the (albeit buggy) scoped thread behavior. I'd rather not re-write
+        // the code back to how it was using ThreadPool only to re-write again when
+        // thread::scoped returns in some form so this semi-nasty alternative is all
+        // that's left to do.
         unsafe {
             guards.push(thread_scoped::scoped(move || {
                 thread_work(t, spp, queue, scene, light_list);
