@@ -27,13 +27,38 @@
 //!             },
 //!             {
 //!                 "type": "translate",
-//!                 "translation": [0.0, 1.0, 20.]
+//!                 "translation": [0.0, 1.0, 20]
 //!             }
 //!         ]
 //!     },
 //!     ...
 //! ]
 //! ```
+//!
+//! # Object Group Example
+//! You can also specify groups of objects to have the same transformation applied to all of them.
+//! This is done with a 'group' type object followed by a list of objects in the group. For a full
+//! example see `scenes/cornell_box.json`.
+//!
+//! ```json
+//! "objects": [
+//!     {
+//!         "name": "my_group",
+//!         "type": "group",
+//!         "transform": [
+//!             {
+//!                 "type": "translate",
+//!                 "translation": [0.0, 1.0, 20]
+//!             }
+//!         ],
+//!         "objects": [
+//!             ...
+//!         ]
+//!     },
+//!     ...
+//! ]
+//! ```
+//!
 
 use std::sync::Arc;
 
