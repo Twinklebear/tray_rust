@@ -58,7 +58,7 @@ impl Mesh {
                         println!("Skipping {}", m.name);
                         continue;
                     }
-                    println!("Number of triangles {}", mesh.indices.len() / 3);
+                    println!("{} has {} triangles", m.name, mesh.indices.len() / 3);
                     let positions = Arc::new(mesh.positions.chunks(3).map(|i| Point::new(i[0], i[1], i[2]))
                                              .collect());
                     let normals = Arc::new(mesh.normals.chunks(3).map(|i| Normal::new(i[0], i[1], i[2]))
