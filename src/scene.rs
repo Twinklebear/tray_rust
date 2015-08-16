@@ -275,7 +275,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             instances.push(Instance::receiver(geom, mat, transform, name));
         } else if ty == "group" {
             let group_objects = o.find("objects").expect("A group must specify an array of objects in the group");
-            let mut group_instances = load_objects(path, materials, group_objects);
+            let group_instances = load_objects(path, materials, group_objects);
             for mut gi in group_instances {
                 let t = *gi.get_transform();
                 gi.set_transform(transform * t);

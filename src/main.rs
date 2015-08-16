@@ -1,11 +1,11 @@
-#![feature(duration, duration_span, drain)]
+#![feature(duration_span, drain)]
 
 extern crate image;
 extern crate rand;
 extern crate docopt;
 extern crate rustc_serialize;
-extern crate threadpool;
 extern crate num_cpus;
+extern crate thread_scoped;
 extern crate tray_rust;
 
 use std::vec::Vec;
@@ -13,7 +13,6 @@ use std::sync::mpsc::{self, Sender, Receiver};
 use std::path::Path;
 use std::time::Duration;
 
-use threadpool::ScopedPool;
 use rand::StdRng;
 use docopt::Docopt;
 
@@ -93,25 +92,26 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQ
 /// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
 /// of the channel where the threads will write their samples so that the receiver
 /// can write these samples to the render target
-fn spawn_workers<'a>(pool: &ScopedPool<'a>, n: u32, spp: usize, scene: &'a scene::Scene,
+fn spawn_workers<'a>(n: u32, spp: usize, scene: &'a scene::Scene,
                      queue: &'a sampler::BlockQueue, light_list: &'a Vec<&Emitter>)
-                 -> Receiver<Vec<ImageSample>> {
+                 -> (Receiver<Vec<ImageSample>>, Vec<thread_scoped::JoinGuard<'a, ()>>) {
     let (tx, rx) = mpsc::channel();
+    let mut guards = Vec::new();
     for _ in 0..n {
         let t = tx.clone();
-        pool.execute(move || {
-            thread_work(t, spp, queue, scene, light_list);
-        });
+        unsafe {
+            guards.push(thread_scoped::scoped(move || {
+                thread_work(t, spp, queue, scene, light_list);
+            }));
+        }
     }
-    rx
+    (rx, guards)
 }
 
 /// Render the scene in parallel to the render target
 fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, spp: usize){
     let dim = rt.dimensions();
     let block_queue = sampler::BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8));
-    // TODO: Actually put lights in the BVH and pass the list through to the
-    // integrator's illumination method
     let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
         match x {
             &Instance::Emitter(ref e) => Some(e),
@@ -120,13 +120,15 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
     }).collect();
     assert!(!light_list.is_empty(), "At least one light is required");
     {
-        let pool = ScopedPool::new(n);
         println!("Rendering using {} threads", n);
-        let rx = spawn_workers(&pool, n, spp, &scene, &block_queue, &light_list);
+        let (rx, guards) = spawn_workers(n, spp, &scene, &block_queue, &light_list);
         for mut v in rx.iter() {
             for s in v.drain(..) {
                 rt.write(s.x, s.y, &s.color);
             }
+        }
+        for g in guards {
+            g.join();
         }
     }
 }
@@ -142,7 +144,7 @@ fn main() {
     };
 
     let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
-    println!("Rendering took {}", d);
+    println!("Rendering took {:?}", d);
 
     let img = rt.get_render();
     let out_file = match args.flag_o {
