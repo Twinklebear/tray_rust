@@ -64,7 +64,7 @@ impl Geometry for Sphere {
         let inv_z = 1.0 / f32::sqrt(p.x * p.x + p.y * p.y);
         let cos_phi = p.x * inv_z;
         let sin_phi = p.y * inv_z;
-        let dp_du = Vector::new(-f32::consts::PI_2 * p.y, f32::consts::PI_2 * p.x, 0.0);
+        let dp_du = Vector::new(-f32::consts::PI * 2.0 * p.y, f32::consts::PI * 2.0 * p.x, 0.0);
         let dp_dv = Vector::new(p.z * cos_phi, p.z * sin_phi,
                                 -self.radius * f32::sin(theta)) * f32::consts::PI;
 
@@ -101,7 +101,7 @@ impl Sampleable for Sphere {
             let cos_theta_max = f32::sqrt(f32::max(0.0, 1.0 - self.radius * self.radius / dist_sqr));
             let cos_theta = linalg::lerp(samples.0, &cos_theta_max, &1.0);
             let sin_theta = f32::sqrt(1.0 - cos_theta * cos_theta);
-            let phi = samples.1 * f32::consts::PI_2;
+            let phi = samples.1 * f32::consts::PI * 2.0;
             // Compute angle `alpha` from center of sphere to the sampled point on the surface
             let dist = f32::sqrt(dist_sqr);
             let dist_surf = dist * cos_theta
@@ -118,11 +118,11 @@ impl Sampleable for Sphere {
     }
     /// Compute the sphere's surface area
     fn surface_area(&self) -> f32 {
-        2.0 * f32::consts::PI_2 * self.radius
+        2.0 * f32::consts::PI * 2.0 * self.radius
     }
     /// Compute the PDF that the ray from `p` with direction `w_i` intersects
     /// the shape
-    fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
+    fn pdf(&self, p: &Point, _: &Vector) -> f32 {
         let dist_sqr = p.distance_sqr(&Point::broadcast(0.0));
         // The PDF is uniform if we're insidfe the sphere
         if dist_sqr - self.radius * self.radius < 0.0001 {

@@ -21,14 +21,14 @@ impl Blinn {
 
 impl MicrofacetDistribution for Blinn {
     fn eval(&self, w_h: &Vector) -> f32 {
-        (self.exponent + 2.0) * 1.0 / f32::consts::PI_2
+        (self.exponent + 2.0) * 1.0 / f32::consts::PI * 2.0
             * f32::powf(f32::abs(bxdf::cos_theta(w_h)), self.exponent)
     }
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Vector, f32) {
         // Sample a direction on the hemisphere for the half-vector
         let cos_theta = f32::powf(samples.0, 1.0 / (self.exponent + 1.0));
         let sin_theta = f32::sqrt(f32::max(0.0, 1.0 - cos_theta * cos_theta));
-        let phi = f32::consts::PI_2 * samples.1;
+        let phi = f32::consts::PI * 2.0 * samples.1;
         let mut w_h = linalg::spherical_dir(sin_theta, cos_theta, phi);
         if !bxdf::same_hemisphere(w_o, &w_h) {
             w_h = -w_h;
@@ -40,7 +40,7 @@ impl MicrofacetDistribution for Blinn {
             (w_i, 0.0)
         } else {
             let pdf_val = ((self.exponent + 1.0) * f32::powf(cos_theta, self.exponent))
-                        / (f32::consts::PI_2 * 4.0 * d);
+                        / (f32::consts::PI * 2.0 * 4.0 * d);
             (w_i, pdf_val)
         }
     }
@@ -52,7 +52,7 @@ impl MicrofacetDistribution for Blinn {
             0.0
         } else {
             ((self.exponent + 1.0) * f32::powf(cos_theta, self.exponent))
-                / (f32::consts::PI_2 * 4.0 * d)
+                / (f32::consts::PI * 2.0 * 4.0 * d)
         }
     }
 }

@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use geometry::{Boundable, BBox, BoundableGeom, DifferentialGeometry};
 use material::Material;
-use linalg::{self, Transform, Ray};
+use linalg::{Transform, Ray};
 
 /// An instance of geometry in the scene that only receives light
 pub struct Receiver {

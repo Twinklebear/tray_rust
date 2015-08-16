@@ -125,7 +125,7 @@ impl Emitter {
     }
     /// Return the radiance emitted by the light in the direction `w`
     /// from point `p` on the light's surface with normal `n`
-    pub fn radiance(&self, w: &Vector, p: &Point, n: &Normal) -> Colorf {
+    pub fn radiance(&self, w: &Vector, _: &Point, n: &Normal) -> Colorf {
         if linalg::dot(w, n) > 0.0 { self.emission } else { Colorf::black() }
     }
     /// Get the transform to place the emitter into world space

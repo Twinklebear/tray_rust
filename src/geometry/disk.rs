@@ -59,14 +59,14 @@ impl Geometry for Disk {
         }
         let mut phi = f32::atan2(p.y, p.x);
         if phi < 0.0 {
-            phi = phi + f32::consts::PI_2;
+            phi = phi + f32::consts::PI * 2.0;
         }
-        if phi > f32::consts::PI_2 {
+        if phi > f32::consts::PI * 2.0 {
             return None;
         }
         ray.max_t = t;
         let hit_radius = f32::sqrt(dist_sqr);
-        let dp_du = Vector::new(-f32::consts::PI_2 * p.y, f32::consts::PI_2 * p.x, 0.0);
+        let dp_du = Vector::new(-f32::consts::PI * 2.0 * p.y, f32::consts::PI * 2.0 * p.x, 0.0);
         let dp_dv = ((self.inner_radius - self.radius) / hit_radius) * Vector::new(p.x, p.y, 0.0);
         Some(DifferentialGeometry::new(&p, &Normal::new(0.0, 0.0, 1.0), &dp_du, &dp_dv, self))
     }

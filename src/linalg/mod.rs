@@ -63,7 +63,7 @@ pub fn spherical_theta(v: &vector::Vector) -> f32 {
 /// Compute the value of phi for the vector in the spherical coordinate system
 pub fn spherical_phi(v: &vector::Vector) -> f32 {
     match f32::atan2(v.y, v.x) {
-        x if x < 0f32 => x + f32::consts::PI_2,
+        x if x < 0f32 => x + f32::consts::PI * 2.0,
         x             => x,
     }
 }

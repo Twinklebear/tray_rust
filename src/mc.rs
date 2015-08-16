@@ -65,21 +65,21 @@ pub fn power_heuristic(n_f: f32, pdf_f: f32, n_g: f32, pdf_g: f32) -> f32 {
 }
 /// Return the PDF for uniformly sampling a cone with some max solid angle
 pub fn uniform_cone_pdf(cos_theta: f32) -> f32 {
-    1.0 / (f32::consts::PI_2 * (1.0 - cos_theta))
+    1.0 / (f32::consts::PI * 2.0 * (1.0 - cos_theta))
 }
 /// Uniformly sample a direction in a cone with max angle `cos_theta_max` where
 /// the cone lies along the z-axis
 pub fn uniform_sample_cone(samples: &(f32, f32), cos_theta_max: f32) -> Vector {
     let cos_theta = linalg::lerp(samples.0, &cos_theta_max, &1.0);
     let sin_theta = f32::sqrt(1.0 - cos_theta * cos_theta);
-    let phi = samples.1 * f32::consts::PI_2;
+    let phi = samples.1 * f32::consts::PI * 2.0;
     Vector::new(f32::cos(phi) * sin_theta, f32::sin(phi) * sin_theta, cos_theta)
 }
 /// Uniformly sample a direction on the unit sphere about the origin
 pub fn uniform_sample_sphere(samples: &(f32, f32)) -> Vector {
     let z = 1.0 - 2.0 * samples.0;
     let r = f32::sqrt(f32::max(0.0, 1.0 - z * z));
-    let phi = f32::consts::PI_2 * samples.1;
+    let phi = f32::consts::PI * 2.0 * samples.1;
     Vector::new(f32::cos(phi) * r, f32::sin(phi) * r, z)
 }
 
