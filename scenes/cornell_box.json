@@ -42,108 +42,120 @@
 	],
 	"objects": [
 		{
-			"name": "back_wall",
-			"type": "receiver",
-			"material": "white_wall",
-			"geometry": {
-				"type": "plane"
-			},
+			"type": "group",
+			"name": "walls",
 			"transform": [
 				{
-					"type": "scale",
-					"scaling": 32.0
-				},
-				{
-					"type": "rotate_x",
-					"rotation": 90.0
-				},
-				{
 					"type": "translate",
-					"translation": [0.0, 20.0, 12.0]
+					"translation": [0, 0, 12]
 				}
-			]
-		},
-		{
-			"name": "left_wall",
-			"type": "receiver",
-			"material": "red_wall",
-			"geometry": {
-				"type": "plane"
-			},
-			"transform": [
+			],
+			"objects": [
 				{
-					"type": "scale",
-					"scaling": 32
+					"name": "back_wall",
+					"type": "receiver",
+					"material": "white_wall",
+					"geometry": {
+						"type": "plane"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": 32.0
+						},
+						{
+							"type": "rotate_x",
+							"rotation": 90.0
+						},
+						{
+							"type": "translate",
+							"translation": [0.0, 20.0, 0]
+						}
+					]
 				},
 				{
-					"type": "rotate_y",
-					"rotation": 90.0
+					"name": "left_wall",
+					"type": "receiver",
+					"material": "red_wall",
+					"geometry": {
+						"type": "plane"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": 32
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 90.0
+						},
+						{
+							"type": "translate",
+							"translation": [-15.0, 0.0, 0]
+						}
+					]
 				},
 				{
-					"type": "translate",
-					"translation": [-15.0, 0.0, 12.0]
-				}
-			]
-		},
-		{
-			"name": "right_wall",
-			"type": "receiver",
-			"material": "green_wall",
-			"geometry": {
-				"type": "plane"
-			},
-			"transform": [
-				{
-					"type": "scale",
-					"scaling": 32.0
+					"name": "right_wall",
+					"type": "receiver",
+					"material": "green_wall",
+					"geometry": {
+						"type": "plane"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": 32.0
+						},
+						{
+							"type": "rotate_y",
+							"rotation": -90.0
+						},
+						{
+							"type": "translate",
+							"translation": [15.0, 0.0, 0]
+						}
+					]
 				},
 				{
-					"type": "rotate_y",
-					"rotation": -90.0
+					"name": "top_wall",
+					"type": "receiver",
+					"material": "white_wall",
+					"geometry": {
+						"type": "plane"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": 32.0
+						},
+						{
+							"type": "rotate_x",
+							"rotation": 180.0
+						},
+						{
+							"type": "translate",
+							"translation": [0.0, 0.0, 12.0]
+						}
+					]
 				},
 				{
-					"type": "translate",
-					"translation": [15.0, 0.0, 12.0]
-				}
-			]
-		},
-		{
-			"name": "top_wall",
-			"type": "receiver",
-			"material": "white_wall",
-			"geometry": {
-				"type": "plane"
-			},
-			"transform": [
-				{
-					"type": "scale",
-					"scaling": 32.0
-				},
-				{
-					"type": "rotate_x",
-					"rotation": 180.0
-				},
-				{
-					"type": "translate",
-					"translation": [0.0, 0.0, 24.0]
-				}
-			]
-		},
-		{
-			"name": "bottom_wall",
-			"type": "receiver",
-			"material": "white_wall",
-			"geometry": {
-				"type": "plane"
-			},
-			"transform": [
-				{
-					"type": "scale",
-					"scaling": 32.0
-				},
-				{
-					"type": "translate",
-					"translation": [0.0, 0.0, 0.0]
+					"name": "bottom_wall",
+					"type": "receiver",
+					"material": "white_wall",
+					"geometry": {
+						"type": "plane"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": 32.0
+						},
+						{
+							"type": "translate",
+							"translation": [0.0, 0.0, -12]
+						}
+					]
 				}
 			]
 		},
