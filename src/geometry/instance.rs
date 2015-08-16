@@ -83,6 +83,20 @@ impl Instance {
             &Instance::Receiver(ref r) => &r.tag[..],
         }
     }
+    /// Get the transform for this instance
+    pub fn get_transform(&self) -> &Transform {
+        match self {
+            &Instance::Emitter(ref e) => e.get_transform(),
+            &Instance::Receiver(ref r) => r.get_transform()
+        }
+    }
+    /// Set the transform for this instance
+    pub fn set_transform(&mut self, transform: Transform) {
+        match self {
+            &mut Instance::Emitter(ref mut e) => e.set_transform(transform),
+            &mut Instance::Receiver(ref mut r) => r.set_transform(transform)
+        }
+    }
 }
 
 impl Boundable for Instance {

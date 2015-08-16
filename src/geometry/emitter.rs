@@ -76,8 +76,6 @@ pub struct Emitter {
     pub emission: Colorf,
     /// The transform to world space
     transform: Transform,
-    /// The transform to object space
-    inv_transform: Transform,
     /// Tag to identify the instance
     pub tag: String,
 }
@@ -95,15 +93,12 @@ impl Emitter {
         Emitter { emitter: EmitterType::Area(geom, material),
                   emission: emission,
                   transform: transform,
-                  inv_transform: transform.inverse(),
                   tag: tag.to_string() }
     }
     pub fn point(pos: Point, emission: Colorf, tag: String) -> Emitter {
-        let transform = Transform::translate(&(pos - Point::broadcast(0.0)));
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
-                  transform: transform,
-                  inv_transform: transform.inverse(),
+                  transform: Transform::translate(&(pos - Point::broadcast(0.0))),
                   tag: tag.to_string() }
     }
     /// Test the ray for intersection against this insance of geometry.
@@ -133,6 +128,14 @@ impl Emitter {
     pub fn radiance(&self, w: &Vector, p: &Point, n: &Normal) -> Colorf {
         if linalg::dot(w, n) > 0.0 { self.emission } else { Colorf::black() }
     }
+    /// Get the transform to place the emitter into world space
+    pub fn get_transform(&self) -> &Transform {
+        return &self.transform;
+    }
+    /// Set the transform to place the emitter into world space
+    pub fn set_transform(&mut self, transform: Transform) {
+        self.transform = transform;
+    }
 }
 
 impl Boundable for Emitter {
@@ -157,7 +160,7 @@ impl Light for Emitter {
                 (self.emission / pos.distance_sqr(p), w_i, 1.0, OcclusionTester::test_points(p, &pos))
             }
             &EmitterType::Area(ref g, _) => {
-                let p_l = self.inv_transform * *p;
+                let p_l = self.transform.inv_mul_point(p);
                 let (p_sampled, normal) = g.sample(&p_l, samples);
                 let w_il = (p_sampled - p_l).normalized();
                 let pdf = g.pdf(&p_l, &w_il);
@@ -177,8 +180,8 @@ impl Light for Emitter {
         match &self.emitter {
             &EmitterType::Point => 0.0,
             &EmitterType::Area(ref g, _ ) => {
-                let p_l = self.inv_transform * *p;
-                let w = (self.inv_transform * *w_i).normalized();
+                let p_l = self.transform.inv_mul_point(p);
+                let w = (self.transform.inv_mul_vector(w_i)).normalized();
                 g.pdf(&p_l, &w)
             }
         }
