@@ -255,9 +255,6 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             } else if emit_ty == "area" {
                 let mat_name = o.find("material").expect("A material is required for an object")
                     .as_string().expect("Object material name must be a string");
-                // TODO: How the fucking hell to put a format string through fucking expect
-                // do I really need to do expect(&format!("awlalwd", stuff)[..]) ? Because that's
-                // stupid
                 let mat = materials.get(mat_name)
                     .expect("Material was not found in the material list").clone();
                 let geom = load_sampleable_geometry(o.find("geometry")
@@ -270,9 +267,6 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
         } else if ty == "receiver" {
             let mat_name = o.find("material").expect("A material is required for an object")
                     .as_string().expect("Object material name must be a string");
-            // TODO: How the fucking hell to put a format string through fucking expect
-            // do I really need to do expect(&format!("awlalwd", stuff)[..]) ? Because that's
-            // stupid
             let mat = materials.get(mat_name)
                 .expect("Material was not found in the material list").clone();
             let geom = load_geometry(path, &mut mesh_cache, o.find("geometry")
@@ -432,7 +426,7 @@ fn load_transform(elem: &Value) -> Option<Transform> {
             let v;
             if s.is_array() {
                 v = load_vector(s).expect("Invalid vector specified for scaling vector");
-            } else if s.is_f64() {
+            } else if s.is_number() {
                 v = Vector::broadcast(s.as_f64().expect("Invalid float specified for scale value") as f32);
             } else {
                 panic!("Scaling value should be an array of 3 floats or a single float");

@@ -73,7 +73,7 @@
 			"transform": [
 				{
 					"type": "scale",
-					"scaling": 32.0
+					"scaling": 32
 				},
 				{
 					"type": "rotate_y",
