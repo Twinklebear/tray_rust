@@ -5,11 +5,11 @@ extern crate rand;
 extern crate docopt;
 extern crate rustc_serialize;
 extern crate num_cpus;
-extern crate thread_scoped;
+extern crate scoped_threadpool;
 extern crate tray_rust;
 
 use std::vec::Vec;
-use std::sync::mpsc::{self, Sender, Receiver};
+use std::sync::mpsc::{self, Sender};
 use std::path::Path;
 use std::time::Duration;
 
@@ -89,54 +89,40 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQ
     }
 }
 
-/// Spawn `n` worker threads to render the scene in parallel. Returns the receive end
-/// of the channel where the threads will write their samples so that the receiver
-/// can write these samples to the render target
-fn spawn_workers<'a>(n: u32, spp: usize, scene: &'a scene::Scene,
-                     queue: &'a sampler::BlockQueue, light_list: &'a Vec<&Emitter>)
-                 -> (Receiver<Vec<ImageSample>>, Vec<thread_scoped::JoinGuard<'a, ()>>) {
-    let (tx, rx) = mpsc::channel();
-    let mut guards = Vec::new();
-    for _ in 0..n {
-        let t = tx.clone();
-        // TODO: This is bad! However since the broken/deprecated thread::scoped API was
-        // removed along with threadpool's ScopedPool we don't really have many options
-        // for keeping the (albeit buggy) scoped thread behavior. I'd rather not re-write
-        // the code back to how it was using ThreadPool only to re-write again when
-        // thread::scoped returns in some form so this semi-nasty alternative is all
-        // that's left to do.
-        unsafe {
-            guards.push(thread_scoped::scoped(move || {
-                thread_work(t, spp, queue, scene, light_list);
-            }));
-        }
-    }
-    (rx, guards)
-}
-
-/// Render the scene in parallel to the render target
+/// Render the scene in parallel using `n` threads and write the result to the render target
 fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, spp: usize){
-    let dim = rt.dimensions();
-    let block_queue = sampler::BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8));
-    let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
-        match x {
-            &Instance::Emitter(ref e) => Some(e),
-            _ => None,
-        }
-    }).collect();
-    assert!(!light_list.is_empty(), "At least one light is required");
-    {
-        println!("Rendering using {} threads", n);
-        let (rx, guards) = spawn_workers(n, spp, &scene, &block_queue, &light_list);
+    let mut pool = scoped_threadpool::Pool::new(n);
+    println!("Rendering using {} threads", n);
+    pool.scoped(|scope| {
+        let dim = rt.dimensions();
+        let block_queue = sampler::BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8));
+        let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
+            match x {
+                &Instance::Emitter(ref e) => Some(e),
+                _ => None,
+            }
+        }).collect();
+        assert!(!light_list.is_empty(), "At least one light is required");
+
+        let rx = {
+            let (tx, rx) = mpsc::channel();
+            for _ in 0..n {
+                let t = tx.clone();
+                let b = &block_queue;
+                let l = &light_list;
+                scope.execute(move || {
+                    thread_work(t, spp, b, scene, l);
+                });
+            }
+            rx
+        };
+
         for mut v in rx.iter() {
             for s in v.drain(..) {
                 rt.write(s.x, s.y, &s.color);
             }
         }
-        for g in guards {
-            g.join();
-        }
-    }
+    });
 }
 
 fn main() {
