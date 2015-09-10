@@ -30,5 +30,9 @@ impl Filter for Gaussian {
     fn weight(&self, x: f32, y: f32) -> f32 {
         self.gaussian_1d(x, self.exp_x) * self.gaussian_1d(y, self.exp_y)
     }
+    fn width(&self) -> f32 { self.w }
+    fn inv_width(&self) -> f32 { self.inv_w }
+    fn height(&self) -> f32 { self.h }
+    fn inv_height(&self) -> f32 { self.inv_h }
 }
 
