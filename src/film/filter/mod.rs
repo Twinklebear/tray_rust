@@ -1,5 +1,7 @@
 //! The filter module provides reconstruction filters to be used
-//! when writing samples to the render target
+//! when writing samples to the render target. The filter width and
+//! height refer to how many pixels the filter covers, where a single
+//! pixel is 0.5x0.5
 
 pub use self::gaussian::Gaussian;
 

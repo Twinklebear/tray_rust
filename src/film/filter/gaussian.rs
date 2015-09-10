@@ -4,6 +4,7 @@ use std::f32;
 
 use film::filter::Filter;
 
+#[derive(Copy, Clone, Debug)]
 pub struct Gaussian {
     w: f32,
     h: f32,
