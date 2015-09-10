@@ -36,6 +36,7 @@ impl RenderTarget {
         let ix = x_range.0;
         let iy = y_range.0;
         // TODO: Can't currently overload the += operator
+        // Coming soon though, see RFC #953 https://github.com/rust-lang/rfcs/pull/953
         self.pixels[iy * self.width + ix].r += c.r;
         self.pixels[iy * self.width + ix].g += c.g;
         self.pixels[iy * self.width + ix].b += c.b;

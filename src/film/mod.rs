@@ -8,4 +8,5 @@ pub use self::camera::Camera;
 pub mod color;
 pub mod render_target;
 pub mod camera;
+pub mod filter;
 
