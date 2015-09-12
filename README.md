@@ -57,9 +57,9 @@ CPUs. The machine is an early/engineering sample from Intel so your results may 
 Intel for the hardware! Some older images renders are shown as well without timing since they were
 run on a different machine.
 
-[![Model gallery](http://i.imgur.com/sjvHAhD.jpg)](http://i.imgur.com/sjvHAhD.jpg)
+[![Model gallery](https://drive.google.com/file/d/0B-l_lLEMo1YeYWh3ZEFkRE5YQlU/view?usp=sharing)](https://drive.google.com/file/d/0B-l_lLEMo1YeYWh3ZEFkRE5YQlU/view?usp=sharing)
 
-1920x1080, 4096 samples/pixel. Rendering: 00:13:51.274.
+1920x1080, 4096 samples/pixel. Rendering: 00:43:20.91.
 
 The following images compare sphere vs. disk area lights.
 
