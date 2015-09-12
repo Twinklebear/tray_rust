@@ -175,7 +175,7 @@
 			"material": "blue_glass",
 			"geometry": {
 				"type": "mesh",
-				"file": "models/suzanne.obj",
+				"file": "models/smooth_suzanne.obj",
 				"model": "Suzanne"
 			},
 			"transform": [

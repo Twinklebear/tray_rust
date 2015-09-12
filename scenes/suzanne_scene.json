@@ -1,0 +1,204 @@
+{
+	"camera": {
+		"width": 800,
+		"height": 600,
+		"samples": 128,
+		"fov": 28,
+		"position": [0.0, -52.0, 12.0],
+		"target": [0.0, 0.0, 12.0],
+		"up": [0.0, 0.0, 1.0]
+	},
+	"integrator": {
+		"type": "pathtracer",
+		"min_depth": 4,
+		"max_depth": 8
+	},
+	"materials": [
+		{
+			"type": "plastic",
+			"name": "white_wall_plastic",
+			"diffuse": [0.740063, 0.742313, 0.733934],
+			"gloss": [0.740063, 0.742313, 0.733934],
+			"roughness": 0.005
+		},
+		{
+			"type": "matte",
+			"name": "white_wall",
+			"diffuse": [0.740063, 0.742313, 0.733934],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "red_wall",
+			"diffuse": [0.366046, 0.0371827, 0.0416385],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "green_wall",
+			"diffuse": [0.162928, 0.408903, 0.0833759],
+			"roughness": 1.0
+		},
+		{
+			"name": "blue_acrylic",
+			"type": "merl",
+			"file": "brdfs/blue-acrylic.binary"
+		}
+	],
+	"objects": [
+		{
+			"name": "back_wall",
+			"type": "receiver",
+			"material": "white_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 90.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 20.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "left_wall",
+			"type": "receiver",
+			"material": "red_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 90.0
+				},
+				{
+					"type": "translate",
+					"translation": [-15.0, 0.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "right_wall",
+			"type": "receiver",
+			"material": "green_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -90.0
+				},
+				{
+					"type": "translate",
+					"translation": [15.0, 0.0, 12.0]
+				}
+			]
+		},
+		{
+			"name": "top_wall",
+			"type": "receiver",
+			"material": "white_wall",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 180.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 24.0]
+				}
+			]
+		},
+		{
+			"name": "bottom_wall",
+			"type": "receiver",
+			"material": "white_wall_plastic",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 32.0
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 0.0]
+				}
+			]
+		},
+		{
+			"name": "light",
+			"type": "emitter",
+			"material": "white_wall",
+			"emitter": "area",
+			"emission": [0.780131, 0.780409, 0.775833, 40.0],
+			"geometry": {
+				"type": "disk",
+				"radius": 3.5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 180
+				},
+				{
+					"type": "translate",
+					"translation": [0.0, 0.0, 23.85]
+				}
+			]
+		},
+		{
+			"name": "suzanne",
+			"type": "receiver",
+			"material": "blue_acrylic",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/smooth_suzanne.obj",
+				"model": "Suzanne"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 7.0
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				},
+				{
+					"type": "translate",
+					"translation": [0, 9, 10]
+				}
+			]
+		}
+	]
+}
+
+
