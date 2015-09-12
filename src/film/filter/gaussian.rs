@@ -1,9 +1,11 @@
-//! Provides a Gaussian reconstruction filter
+//! Provides a Gaussian reconstruction filter.
 
 use std::f32;
 
 use film::filter::Filter;
 
+/// A Gaussian reconstruction filter.
+/// Recommended parameters to try: w = 2.0, h = 2.0, alpha = 2.0
 #[derive(Copy, Clone, Debug)]
 pub struct Gaussian {
     w: f32,
@@ -22,14 +24,14 @@ impl Gaussian {
             exp_y: f32::exp(-alpha * h * h)
         }
     }
-    fn gaussian_1d(&self, x: f32, e: f32) -> f32 {
+    fn weight_1d(&self, x: f32, e: f32) -> f32 {
         f32::max(0.0, f32::exp(-self.alpha * x * x) - e)
     }
 }
 
 impl Filter for Gaussian {
     fn weight(&self, x: f32, y: f32) -> f32 {
-        self.gaussian_1d(x, self.exp_x) * self.gaussian_1d(y, self.exp_y)
+        self.weight_1d(x, self.exp_x) * self.weight_1d(y, self.exp_y)
     }
     fn width(&self) -> f32 { self.w }
     fn inv_width(&self) -> f32 { self.inv_w }

@@ -21,7 +21,7 @@ use tray_rust::geometry::{Geometry, Instance, Emitter};
 use tray_rust::sampler::{self, Sampler};
 use tray_rust::scene;
 use tray_rust::integrator::Integrator;
-use tray_rust::film::filter::Gaussian;
+use tray_rust::film::filter;
 
 static USAGE: &'static str = "
 Usage: tray_rust <scenefile> [options]
@@ -130,7 +130,7 @@ fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
     let (scene, spp, (width, height)) = scene::Scene::load_file(&args.arg_scenefile[..]);
-    let mut rt = film::RenderTarget::new(width, height, Box::new(Gaussian::new(1.5, 1.5, 1.0)));
+    let mut rt = film::RenderTarget::new(width, height, Box::new(filter::MitchellNetravali::new(2.0, 2.0, 1.0 / 3.0, 1.0 / 3.0)));
     let n = match args.flag_n {
         Some(n) => n,
         None => num_cpus::get() as u32,
