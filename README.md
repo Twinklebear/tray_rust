@@ -57,7 +57,8 @@ CPUs. The machine is an early/engineering sample from Intel so your results may 
 Intel for the hardware! Some older images renders are shown as well without timing since they were
 run on a different machine.
 
-[![Model gallery](https://drive.google.com/file/d/0B-l_lLEMo1YeYWh3ZEFkRE5YQlU/view?usp=sharing)](https://drive.google.com/file/d/0B-l_lLEMo1YeYWh3ZEFkRE5YQlU/view?usp=sharing)
+[![Model gallery](https://lh5.googleusercontent.com/n2Wr4p21o30z5C4J2RxAoEC0O-EIx0-shUW4nLJumqEv8JaAfw_HSFaGM6mKkC-tlvCvs-XhLFjgyxY=w2526-h1226)]
+(https://drive.google.com/file/d/0B-l_lLEMo1YeYWh3ZEFkRE5YQlU/view?usp=sharing)
 
 1920x1080, 4096 samples/pixel. Rendering: 00:43:20.91.
 
