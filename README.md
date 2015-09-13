@@ -57,15 +57,13 @@ CPUs. The machine is an early/engineering sample from Intel so your results may 
 Intel for the hardware! Some older images renders are shown as well without timing since they were
 run on a different machine.
 
-[![Model gallery](https://lh4.googleusercontent.com/NODU-OXFSgoyT6lt_7LcvzoLQWYiV_Pf7mfs5kN8nkdX99WCYL1dXwsjOfG_Ei6_8YJC1qUsd_hhRwk=w2526-h1226)]
-(https://drive.google.com/file/d/0B-l_lLEMo1YeekhCUFd2MkNES28/view?usp=sharing)
+[![Model gallery](http://i.imgur.com/Jgji1Y0.jpg)](http://i.imgur.com/Jgji1Y0.jpg)
 
 1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
 
 The following images compare disk vs. sphere area lights.
 
-[![Rust Logo with friends, disk](https://lh3.googleusercontent.com/76Id8M-MzvMSDgmNVWaZbNcF8_8ZbAKu5A2PUj_7tkayDxYPSoICKr3r0rcq9XLLLPjopmw7Ybe-4T0=w2526-h1226)]
-(https://drive.google.com/file/d/0B-l_lLEMo1Yec3dGdnVZRW5YTXM/view?usp=sharing)
+[![Rust Logo with friends, disk](http://i.imgur.com/Z34BleZ.jpg)](http://i.imgur.com/Z34BleZ.jpg)
 
 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 

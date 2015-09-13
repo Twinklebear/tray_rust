@@ -55,15 +55,30 @@
 //! CPUs. The machine is an early/engineering sample from Intel so your results may differ, but massive thanks to
 //! Intel for the hardware! Some older images renders are shown as well without timing since they were
 //! run on a different machine.
+//!
+[![Model gallery](http://i.imgur.com/Jgji1Y0.jpg)](http://i.imgur.com/Jgji1Y0.jpg)
+
+1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
+
+The following images compare disk vs. sphere area lights.
+
+[![Rust Logo with friends, disk](http://i.imgur.com/Z34BleZ.jpg)](http://i.imgur.com/Z34BleZ.jpg)
 //! 
-//! <a href="http://i.imgur.com/sjvHAhD.jpg">
-//! <img src="http://i.imgur.com/sjvHAhD.png" alt="Model gallery"
+//! <a href="http://i.imgur.com/Jgji1Y0.jpg">
+//! <img src="http://i.imgur.com/Jgji1Y0.png" alt="Model gallery"
 //!     style="display:block; max-width:100%; height:auto">
 //! </a>
 //! 
-//! 1920x1080, 4096 samples/pixel. Rendering: 00:13:51.274.
+//! 1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
 //! 
-//! The following images compare sphere vs. disk area lights.
+//! The following images compare disk vs. sphere area lights.
+//! 
+//! <a href="http://i.imgur.com/Z34BleZ.jpg">
+//! <img src="http://i.imgur.com/Z34BleZ.png" alt="Rust Logo with friends, disk"
+//!     style="display:block; max-width:100%; height:auto">
+//! </a>
+//! 
+//! 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 //! 
 //! <a href="http://i.imgur.com/N06g1hW.jpg">
 //! <img src="http://i.imgur.com/N06g1hW.png" alt="Rust Logo with friends, sphere"
@@ -71,13 +86,6 @@
 //! </a>
 //! 
 //! 1920x1080, 4096 samples/pixel. Rendering: 00:46:11.822.
-//! 
-//! <a href="http://i.imgur.com/aRnbeqV.jpg">
-//! <img src="http://i.imgur.com/aRnbeqV.png" alt="Rust Logo with friends, disk"
-//!     style="display:block; max-width:100%; height:auto">
-//! </a>
-//! 
-//! 1920x1080, 4096 samples/pixel. Rendering: 00:33:58.461.
 //! 
 //! <a href="http://i.imgur.com/Nea7P64.jpg">
 //! <img src="http://i.imgur.com/Nea7P64.png" alt="Cornell Box"
