@@ -65,7 +65,7 @@ run on a different machine.
 
 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 
-[![Cornell Box](http://i.imgur.com/Nea7P64.png)](http://i.imgur.com/Nea7P64.png)
+[![Cornell Box](http://i.imgur.com/CUvJwum.jpg)](http://i.imgur.com/CUvJwum.jpg)
 
-800x600, 4096 samples/pixel. Rendering: 00:03:36.196.
+800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
 

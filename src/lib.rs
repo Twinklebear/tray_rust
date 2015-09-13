@@ -70,12 +70,12 @@
 //! 
 //! 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 //! 
-//! <a href="http://i.imgur.com/Nea7P64.jpg">
-//! <img src="http://i.imgur.com/Nea7P64.png" alt="Cornell Box"
+//! <a href="http://i.imgur.com/CUvJwum.jpg">
+//! <img src="http://i.imgur.com/CUvJwum.png" alt="Cornell Box"
 //!     style="display:block; max-width:100%; height:auto">
 //! </a>
 //! 
-//! 800x600, 4096 samples/pixel. Rendering: 00:03:36.196.
+//! 800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
 //!
 
 extern crate enum_set as enum_set;
