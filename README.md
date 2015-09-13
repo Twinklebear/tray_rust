@@ -61,29 +61,11 @@ run on a different machine.
 
 1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
 
-The following images compare disk vs. sphere area lights.
-
 [![Rust Logo with friends, disk](http://i.imgur.com/Z34BleZ.jpg)](http://i.imgur.com/Z34BleZ.jpg)
 
 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 
-[![Rust Logo with friends, sphere](http://i.imgur.com/N06g1hW.jpg)](http://i.imgur.com/N06g1hW.jpg)
-
-1920x1080, 4096 samples/pixel. Rendering: 00:46:11.822.
-
 [![Cornell Box](http://i.imgur.com/Nea7P64.png)](http://i.imgur.com/Nea7P64.png)
 
 800x600, 4096 samples/pixel. Rendering: 00:03:36.196.
-
-[![Rust Logo with friends, point light](http://i.imgur.com/9QU6fOU.png)](http://i.imgur.com/9QU6fOU.png)
-
-1920x1080, 2048 samples/pixel.
-
-[![Rust Logo, point light](http://i.imgur.com/JouSgr5.png)](http://i.imgur.com/JouSgr5.png)
-
-800x600, 1024 samples/pixel.
-
-[![Smallpt, point light](http://i.imgur.com/fUEv6Au.png)](http://i.imgur.com/fUEv6Au.png)
-
-800x600, 1024 samples/pixel.
 

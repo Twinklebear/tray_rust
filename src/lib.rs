@@ -63,8 +63,6 @@
 //! 
 //! 1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
 //! 
-//! The following images compare disk vs. sphere area lights.
-//! 
 //! <a href="http://i.imgur.com/Z34BleZ.jpg">
 //! <img src="http://i.imgur.com/Z34BleZ.png" alt="Rust Logo with friends, disk"
 //!     style="display:block; max-width:100%; height:auto">
@@ -72,40 +70,13 @@
 //! 
 //! 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 //! 
-//! <a href="http://i.imgur.com/N06g1hW.jpg">
-//! <img src="http://i.imgur.com/N06g1hW.png" alt="Rust Logo with friends, sphere"
-//!     style="display:block; max-width:100%; height:auto">
-//! </a>
-//! 
-//! 1920x1080, 4096 samples/pixel. Rendering: 00:46:11.822.
-//! 
 //! <a href="http://i.imgur.com/Nea7P64.jpg">
 //! <img src="http://i.imgur.com/Nea7P64.png" alt="Cornell Box"
 //!     style="display:block; max-width:100%; height:auto">
 //! </a>
 //! 
 //! 800x600, 4096 samples/pixel. Rendering: 00:03:36.196.
-//! 
-//! <a href="http://i.imgur.com/9QU6fOU.jpg">
-//! <img src="http://i.imgur.com/9QU6fOU.png" alt="Rust Logo with friends, point light"
-//!     style="display:block; max-width:100%; height:auto">
-//! </a>
-//! 
-//! 1920x1080, 2048 samples/pixel.
-//! 
-//! <a href="http://i.imgur.com/JouSgr5.jpg">
-//! <img src="http://i.imgur.com/JouSgr5.png" alt="Rust Logo, point light"
-//!     style="display:block; max-width:100%; height:auto">
-//! </a>
-//! 
-//! 800x600, 1024 samples/pixel.
-//! 
-//! <a href="http://i.imgur.com/fUEv6Au.jpg">
-//! <img src="http://i.imgur.com/fUEv6Au.png" alt="Smallpt with point light"
-//!     style="display:block; max-width:100%; height:auto">
-//! </a>
-//! 
-//! 800x600, 1024 samples/pixel.
+//!
 
 extern crate enum_set as enum_set;
 extern crate rand;
