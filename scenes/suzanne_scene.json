@@ -43,6 +43,13 @@
 			"name": "blue_acrylic",
 			"type": "merl",
 			"file": "brdfs/blue-acrylic.binary"
+		},
+		{
+			"type": "glass",
+			"name": "glass",
+			"reflect": [1.0, 1.0, 1.0],
+			"transmit": [1.0, 1.0, 1.0],
+			"eta": 1.52
 		}
 	],
 	"objects": [
@@ -177,7 +184,7 @@
 		{
 			"name": "suzanne",
 			"type": "receiver",
-			"material": "blue_acrylic",
+			"material": "glass",
 			"geometry": {
 				"type": "mesh",
 				"file": "models/smooth_suzanne.obj",
