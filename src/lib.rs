@@ -72,7 +72,7 @@
 //! 
 //! <a href="http://i.imgur.com/CUvJwum.jpg">
 //! <img src="http://i.imgur.com/CUvJwum.png" alt="Cornell Box"
-//!     style="display:block; max-width:100%; height:auto">
+//!     style="display:block; max-width:100%; height:auto; margin:auto">
 //! </a>
 //! 
 //! 800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
