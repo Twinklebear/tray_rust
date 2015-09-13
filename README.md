@@ -69,3 +69,7 @@ run on a different machine.
 
 800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
 
+[![Suzanne Box](http://i.imgur.com/XjrOGJv.jpg)](http://i.imgur.com/XjrOGJv.jpg)
+
+800x600, 4096 samples/pixel. Rendering: 00:11:23.67.
+

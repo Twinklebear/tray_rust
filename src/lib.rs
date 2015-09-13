@@ -77,6 +77,13 @@
 //! 
 //! 800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
 //!
+//! <a href="http://i.imgur.com/XjrOGJv.jpg">
+//! <img src="http://i.imgur.com/XjrOGJv.png" alt="Suzanne Box"
+//!     style="display:block; max-width:100%; height:auto; margin:auto">
+//! </a>
+//! 
+//! 800x600, 4096 samples/pixel. Rendering: 00:11:23.67.
+//!
 
 extern crate enum_set as enum_set;
 extern crate rand;
