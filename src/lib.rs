@@ -56,14 +56,6 @@
 //! Intel for the hardware! Some older images renders are shown as well without timing since they were
 //! run on a different machine.
 //!
-[![Model gallery](http://i.imgur.com/Jgji1Y0.jpg)](http://i.imgur.com/Jgji1Y0.jpg)
-
-1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
-
-The following images compare disk vs. sphere area lights.
-
-[![Rust Logo with friends, disk](http://i.imgur.com/Z34BleZ.jpg)](http://i.imgur.com/Z34BleZ.jpg)
-//! 
 //! <a href="http://i.imgur.com/Jgji1Y0.jpg">
 //! <img src="http://i.imgur.com/Jgji1Y0.png" alt="Model gallery"
 //!     style="display:block; max-width:100%; height:auto">
