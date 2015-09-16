@@ -13,6 +13,7 @@ pub use self::matrix4::Matrix4;
 pub use self::transform::Transform;
 pub use self::quaternion::Quaternion;
 pub use self::keyframe::Keyframe;
+pub use self::animated_transform::AnimatedTransform;
 
 pub mod vector;
 pub mod normal;
@@ -22,6 +23,7 @@ pub mod matrix4;
 pub mod transform;
 pub mod quaternion;
 pub mod keyframe;
+pub mod animated_transform;
 
 /// Enum representing on of the 3 spatial axes
 #[derive(Copy, Clone, Debug)]
