@@ -62,8 +62,8 @@ impl Quaternion {
         Quaternion::from_matrix(&t.mat)
     }
     /// Get the rotation transform described by this quaternion
-    pub fn to_transform(&self) -> Transform {
-        Transform::from_mat(&Matrix4::new(
+    pub fn to_matrix(&self) -> Matrix4 {
+        Matrix4::new(
             [1.0 - 2.0 * (f32::powf(self.v.y, 2.0) + f32::powf(self.v.x, 2.0)),
              2.0 * (self.v.x * self.v.y + self.v.z * self.w),
              2.0 * (self.v.x * self.v.z - self.v.y * self.w),
@@ -80,7 +80,11 @@ impl Quaternion {
              0.0,
 
              0.0, 0.0, 0.0, 1.0
-            ]))
+            ])
+    }
+    /// Get the rotation transform described by this quaternion
+    pub fn to_transform(&self) -> Transform {
+        Transform::from_mat(&self.to_matrix())
     }
     /// Get the normalized quaternion for this rotation
     pub fn normalized(&self) -> Quaternion {
