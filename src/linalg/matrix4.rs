@@ -1,5 +1,6 @@
 use std::iter::{FromIterator, IntoIterator};
 use std::ops::{Add, Sub, Mul};
+use std::slice::Iter;
 
 /// Matrix4 is a 4x4 matrix stored in row-major format
 #[derive(Debug, PartialEq, Copy, Clone)]
@@ -169,6 +170,11 @@ impl Matrix4 {
         }
         inv
     }
+    /// Return an iterator over the matrix's elements. The iterator goes
+    /// row by row through the matrix.
+    pub fn iter(&self) -> Iter<f32> {
+        self.mat.iter()
+    }
 }
 
 impl FromIterator<f32> for Matrix4 {
@@ -215,6 +221,22 @@ impl Mul for Matrix4 {
             }
         }
         res
+    }
+}
+
+impl Mul<f32> for Matrix4 {
+    type Output = Matrix4;
+    /// Multiply the matrix by a scalar
+    fn mul(self, rhs: f32) -> Matrix4 {
+        self.mat.iter().map(|&x| x * rhs).collect()
+    }
+}
+
+impl Mul<Matrix4> for f32 {
+    type Output = Matrix4;
+    /// Multiply the matrix by a scalar
+    fn mul(self, rhs: Matrix4) -> Matrix4 {
+        rhs.mat.iter().map(|&x| x * self).collect()
     }
 }
 
