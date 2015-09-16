@@ -35,13 +35,15 @@ impl Keyframe {
             *m.at_mut(3, i) = 0.0;
         }
         *m.at_mut(3, 3) = 1.0;
+        println!("m = {:?}", m);
         // Extract rotation component using polar decomposition by computing
         // M_{i + 1} = 1/2 (M_i + (M_i^T)^-1) to convergence
         let mut rot_mat = m;
         for _ in 0..100 {
             let m_inv_trans = rot_mat.transpose().inverse();
+            println!("computed inverse");
             let r_next: Matrix4 = rot_mat.iter().zip(m_inv_trans.iter())
-                .map(|(&a, &b)| 0.5 * (a - b)).collect();
+                .map(|(&a, &b)| 0.5 * (a + b)).collect();
             let mut norm = 0.0;
             for i in 0..3 {
                 let n = f32::abs(*rot_mat.at(i, 0) - *r_next.at(i, 0))
