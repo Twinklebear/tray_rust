@@ -31,7 +31,7 @@ use std::collections::HashMap;
 
 use serde_json::{self, Value};
 
-use linalg::{Transform, Point, Vector, Ray};
+use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
 use film::{Camera, Colorf};
 use geometry::{Sphere, Plane, Instance, Intersection, BVH, Mesh, Disk,
                Cone, BoundableGeom, SampleableGeom};
@@ -239,10 +239,20 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             .as_string().expect("Object name must be a string").to_string();
         let ty = o.find("type").expect("A type is required for an object")
             .as_string().expect("Object type must be a string");
-        let transform = match o.find("transform") {
-            Some(t) => load_transform(t).expect("Invalid transform specified"),
-            None => Transform::identity(),
-        };
+        let transform =
+            if name != "animation_test" {
+                match o.find("transform") {
+                    Some(t) => load_transform(t).expect("Invalid transform specified"),
+                    None => Transform::identity(),
+                }
+            } else {
+                let base = Transform::rotate_z(-15.0) * Transform::scale(&Vector::new(4.0, 4.0, 5.0));
+                let start = Keyframe::new(&(Transform::translate(&Vector::new(4.0, -3.0, 2.5)) * base), 0.0);
+                let middle = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 0.0, 5.5)) * Transform::rotate_z(15.0) * base), 1.0);
+                let end = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 0.0, 5.5)) * Transform::rotate_x(45.0) * Transform::rotate_z(15.0) * base), 2.0);
+                let animation = AnimatedTransform::with_keyframes(vec![start, middle, end]);
+                animation.transform(1.8)
+            };
         if ty == "emitter" {
             let emit_ty = o.find("emitter").expect("An emitter type is required for emitters")
                 .as_string().expect("Emitter type must be a string");

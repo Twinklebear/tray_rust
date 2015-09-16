@@ -2,7 +2,7 @@
 	"camera": {
 		"width": 800,
 		"height": 600,
-		"samples": 16,
+		"samples": 8,
 		"fov": 30,
 		"position": [0.0, -60.0, 12.0],
 		"target": [0.0, 0.0, 12.0],
@@ -206,7 +206,7 @@
 			]
 		},
 		{
-			"name": "short_cube",
+			"name": "animation_test",
 			"type": "receiver",
 			"material": "white_plastic",
 			"geometry": {
@@ -225,7 +225,7 @@
 				},
 				{
 					"type": "translate",
-					"translation": [4, -3, 2.5]
+					"translation": [4, -3.0, 2.5]
 				}
 			]
 		}
