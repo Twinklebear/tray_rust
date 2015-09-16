@@ -35,14 +35,16 @@ impl AnimatedTransform {
     pub fn transform(&self, time: f32) -> Transform {
         if self.keyframes.is_empty() {
             Transform::identity()
-        } else if time < self.keyframes.iter().next().unwrap().time {
-            self.keyframes.iter().next().unwrap().transform()
-        } else if time > self.keyframes.iter().last().unwrap().time {
-            self.keyframes.iter().last().unwrap().transform()
         } else {
-            let first = self.keyframes.iter().take_while(|k| k.time < time).last().unwrap();
-            let second = self.keyframes.iter().skip_while(|k| k.time < time).next().unwrap();
-            keyframe::interpolate(time, first, second)
+            let first = self.keyframes.iter().take_while(|k| k.time < time).last();
+            let second = self.keyframes.iter().skip_while(|k| k.time < time).next();
+            if first.is_none() {
+                self.keyframes.iter().next().unwrap().transform()
+            } else if second.is_none() {
+                self.keyframes.iter().last().unwrap().transform()
+            } else {
+                keyframe::interpolate(time, first.unwrap(), second.unwrap())
+            }
         }
     }
 }
