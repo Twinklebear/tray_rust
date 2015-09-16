@@ -20,10 +20,9 @@ impl Quaternion {
     pub fn identity() -> Quaternion {
         Quaternion { v: Vector::broadcast(0.0), w: 1.0 }
     }
-    /// Construct a quaternion from the rotation transform
+    /// Construct a quaternion from the rotation matrix
     /// Based on Shoemake 1991
-    pub fn from_transform(t: &Transform) -> Quaternion {
-        let m = &t.mat;
+    pub fn from_matrix(m: &Matrix4) -> Quaternion {
         let trace = *m.at(0, 0) + *m.at(1, 1) + *m.at(2, 2);
         if trace > 0.0 {
             // Compute w from matrix trace, then the vector
@@ -57,6 +56,10 @@ impl Quaternion {
             q[k] = (*m.at(k, i) + *m.at(i, k)) * s;
             Quaternion { v: q, w: w }
         }
+    }
+    /// Construct the quaternion from the transform
+    pub fn from_transform(t: &Transform) -> Quaternion {
+        Quaternion::from_matrix(&t.mat)
     }
     /// Get the rotation transform described by this quaternion
     pub fn to_transform(&self) -> Transform {
