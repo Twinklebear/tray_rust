@@ -2,6 +2,7 @@
 //! with a specific point in time
 
 use std::f32;
+use std::cmp::{Eq, Ord, PartialOrd, PartialEq, Ordering};
 
 use linalg::{self, quaternion, Vector, Matrix4, Quaternion, Transform};
 
@@ -19,6 +20,7 @@ impl Keyframe {
     /// transform passed with the time point `time`. The transform will
     /// be stored in a decomposed form, M = TRS.
     pub fn new(transform: &Transform, time: f32) -> Keyframe {
+        assert!(f32::is_finite(time));
         let (t, r, s) = Keyframe::decompose(transform);
         Keyframe { time: time, translation: t, rotation: r, scaling: s }
     }
@@ -54,6 +56,11 @@ impl Keyframe {
         }
         (translation, Quaternion::from_matrix(&rot_mat), rot_mat.inverse() * m)
     }
+    /// Return the transformation stored for this keyframe
+    pub fn transform(&self) -> Transform {
+        let m = self.rotation.to_matrix() * self.scaling;
+        Transform::translate(&self.translation) * Transform::from_mat(&m)
+    }
 }
 
 /// Interpolate between the two keyframes at some time. If time is before
@@ -77,6 +84,26 @@ pub fn interpolate(time: f32, a: &Keyframe, b: &Keyframe) -> Transform {
                 .map(|(a, b)| linalg::lerp(dt, a, b)).collect();
         let m = rotation.to_matrix() * scaling;
         Transform::translate(&translation) * Transform::from_mat(&m)
+    }
+}
+
+impl Ord for Keyframe {
+    fn cmp(&self, other: &Keyframe) -> Ordering {
+        self.partial_cmp(other).unwrap()
+    }
+}
+
+impl PartialOrd for Keyframe {
+    fn partial_cmp(&self, other: &Keyframe) -> Option<Ordering> {
+        self.time.partial_cmp(&other.time)
+    }
+}
+
+impl Eq for Keyframe {}
+
+impl PartialEq for Keyframe {
+    fn eq(&self, other: &Keyframe) -> bool {
+        self.time == other.time
     }
 }
 
