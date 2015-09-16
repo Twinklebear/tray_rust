@@ -3,7 +3,7 @@
 
 use std::f32;
 
-use linalg::{Vector, Matrix4, Quaternion, Transform};
+use linalg::{self, quaternion, Vector, Matrix4, Quaternion, Transform};
 
 /// A transformation associated with a specific point in time
 #[derive(Debug, Copy, Clone)]
@@ -53,6 +53,30 @@ impl Keyframe {
             }
         }
         (translation, Quaternion::from_matrix(&rot_mat), rot_mat.inverse() * m)
+    }
+}
+
+/// Interpolate between the two keyframes at some time. If time is before
+/// or after the interval spanned by the keyframes then the nearest one is
+/// returned. Otherwise the transforms are interpolated and this new
+/// transform is returned.
+pub fn interpolate(time: f32, a: &Keyframe, b: &Keyframe) -> Transform {
+    // Order the transformations by their time points
+    let (first, second) = if a.time < b.time { (a, b) } else { (b, a) };
+    if time <= first.time {
+        let m = first.rotation.to_matrix() * first.scaling;
+        Transform::translate(&first.translation) * Transform::from_mat(&m)
+    } else if time >= second.time {
+        let m = second.rotation.to_matrix() * second.scaling;
+        Transform::translate(&second.translation) * Transform::from_mat(&m)
+    } else {
+        let dt = (time - first.time) / (second.time - first.time);
+        let translation = (1.0 - dt) * first.translation + dt * second.translation;
+        let rotation = quaternion::slerp(dt, &first.rotation, &second.rotation);
+        let scaling: Matrix4 = first.scaling.iter().zip(second.scaling.iter())
+                .map(|(a, b)| linalg::lerp(dt, a, b)).collect();
+        let m = rotation.to_matrix() * scaling;
+        Transform::translate(&translation) * Transform::from_mat(&m)
     }
 }
 
