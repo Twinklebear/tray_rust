@@ -117,7 +117,10 @@ fn load_camera(elem: &Value) -> (Camera, usize, (usize, usize)) {
             Transform::look_at(&pos, &target, &up)
         },
     };
-    let camera = Camera::new(transform, fov, (width, height));
+    let start = Keyframe::new(&transform, 0.0);
+    let end = Keyframe::new(&(Transform::translate(&Vector::new(0.0, 6.0, 0.0)) * transform), 1.0);
+    let animation = AnimatedTransform::with_keyframes(vec![start, end]);
+    let camera = Camera::new(animation, fov, (width, height));
     (camera, spp, (width, height))
 }
 
@@ -254,13 +257,13 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
                 }
             } else {
                 let parent_start = Keyframe::new(&(Transform::translate(&Vector::new(-1.0, 0.0, 0.0))), 0.0);
-                let parent_end = Keyframe::new(&(Transform::translate(&Vector::new(-0.5, 2.0, 0.0)) * Transform::rotate_y(45.0)), 1.5);
+                let parent_end = Keyframe::new(&(Transform::translate(&Vector::new(-0.5, 0.0, 2.0)) * Transform::rotate_z(45.0)), 1.5);
                 let parent_animation = AnimatedTransform::with_keyframes(vec![parent_start, parent_end]);
 
-                let base = Transform::rotate_z(-15.0) * Transform::scale(&Vector::new(4.0, 4.0, 5.0));
-                let start = Keyframe::new(&(Transform::translate(&Vector::new(4.0, -3.0, 2.5)) * base), 0.0);
-                let middle = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 0.0, 5.5)) * Transform::rotate_z(15.0) * base), 1.0);
-                let end = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 0.0, 5.5)) * Transform::rotate_x(45.0) * Transform::rotate_z(15.0) * base), 2.0);
+                let base = Transform::rotate_y(15.0) * Transform::scale(&Vector::new(4.0, 5.0, 4.0));
+                let start = Keyframe::new(&(Transform::translate(&Vector::new(4.0, 2.5, -3.0)) * base), 0.0);
+                let middle = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_y(15.0) * base), 1.0);
+                let end = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_x(45.0) * Transform::rotate_y(15.0) * base), 2.0);
                 let animation = parent_animation * AnimatedTransform::with_keyframes(vec![start, middle, end]);
                 animation.transform(2.0)
             };

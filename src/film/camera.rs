@@ -17,13 +17,13 @@
 //! }
 /// ```
 
-use linalg::{Transform, Vector, Point, Ray};
+use linalg::{Transform, Vector, Point, Ray, AnimatedTransform};
 
 /// Our camera for the ray tracer, has a transformation to position it in world space
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Camera {
     /// Transformation from camera to world space
-    cam_world: Transform,
+    cam_world: AnimatedTransform,
     /// Transformation from raster to camera space
     raster_cam: Transform,
 }
@@ -32,7 +32,9 @@ impl Camera {
     /// Create the camera with some orientation in the world specified by `cam_world`
     /// and a perspective projection with `fov`. The render target dimensions `dims`
     /// are needed to construct the raster -> camera transform
-    pub fn new(cam_world: Transform, fov: f32, dims: (usize, usize)) -> Camera {
+    /// `animation` is used to move the camera ote that this is specified in camera space
+    /// where the camera is at the origin looking down the -z axis
+    pub fn new(cam_world: AnimatedTransform, fov: f32, dims: (usize, usize)) -> Camera {
         let aspect_ratio = (dims.0 as f32) / (dims.1 as f32);
         let screen =
             if aspect_ratio > 1.0 {
@@ -48,11 +50,11 @@ impl Camera {
         Camera { cam_world: cam_world, raster_cam: cam_screen.inverse() * raster_screen }
     }
     /// Generate a ray from the camera through the pixel `px`
-    pub fn generate_ray(&self, px: &(f32, f32)) -> Ray {
+    pub fn generate_ray(&self, px: &(f32, f32), time: f32) -> Ray {
         // Take the raster space position -> camera space
         let px_pos = self.raster_cam * Point::new(px.0, px.1, 0.0);
         let d = Vector::new(px_pos.x, px_pos.y, px_pos.z).normalized();
-        self.cam_world * Ray::new(&Point::broadcast(0.0), &d)
+        self.cam_world.transform(time) * Ray::new(&Point::broadcast(0.0), &d)
     }
 }
 

@@ -37,22 +37,23 @@ impl AnimatedTransform {
         // Step through the transform stack, applying each animation transform at this
         // time as we move up
         for stack in &self.keyframes[..] {
-            let t = if stack.len() == 1 {
-                let first = stack.iter().next().unwrap();
-                first.transform()
-            } else {
-                // TODO: Binary search here somehow? Or does the BTreeSet have some faster impl
-                // of take/skip while?
-                let first = stack.iter().take_while(|k| k.time < time).last();
-                let second = stack.iter().skip_while(|k| k.time < time).next();
-                if first.is_none() {
-                    stack.iter().next().unwrap().transform()
-                } else if second.is_none() {
-                    stack.iter().last().unwrap().transform()
+            let t =
+                if stack.len() == 1 {
+                    let first = stack.iter().next().unwrap();
+                    first.transform()
                 } else {
-                    keyframe::interpolate(time, first.unwrap(), second.unwrap())
-                }
-            };
+                    // TODO: Binary search here somehow? Or does the BTreeSet have some faster impl
+                    // of take/skip while?
+                    let first = stack.iter().take_while(|k| k.time < time).last();
+                    let second = stack.iter().skip_while(|k| k.time < time).next();
+                    if first.is_none() {
+                        stack.iter().next().unwrap().transform()
+                    } else if second.is_none() {
+                        stack.iter().last().unwrap().transform()
+                    } else {
+                        keyframe::interpolate(time, first.unwrap(), second.unwrap())
+                    }
+                };
             transform = t * transform;
         }
         transform
