@@ -6,16 +6,8 @@
 		"fov": 30,
 		"transform": [
 			{
-				"type": "scale",
-				"scaling": [1, -1, 1]
-			},
-			{
-				"type": "rotate_x",
-				"rotation": -90
-			},
-			{
 				"type": "translate",
-				"translation": [0, -60, 12]
+				"translation": [0, 12, -60]
 			}
 		]
 	},
@@ -58,7 +50,7 @@
 			"transform": [
 				{
 					"type": "translate",
-					"translation": [0, 0, 12]
+					"translation": [0, 12, 0]
 				}
 			],
 			"objects": [
@@ -75,12 +67,8 @@
 							"scaling": 32.0
 						},
 						{
-							"type": "rotate_x",
-							"rotation": 90.0
-						},
-						{
 							"type": "translate",
-							"translation": [0.0, 20.0, 0]
+							"translation": [0, 0, 20]
 						}
 					]
 				},
@@ -102,7 +90,7 @@
 						},
 						{
 							"type": "translate",
-							"translation": [-15.0, 0.0, 0]
+							"translation": [-15.0, 0, 0]
 						}
 					]
 				},
@@ -124,7 +112,7 @@
 						},
 						{
 							"type": "translate",
-							"translation": [15.0, 0.0, 0]
+							"translation": [15.0, 0, 0]
 						}
 					]
 				},
@@ -142,11 +130,11 @@
 						},
 						{
 							"type": "rotate_x",
-							"rotation": 180.0
+							"rotation": 90.0
 						},
 						{
 							"type": "translate",
-							"translation": [0.0, 0.0, 12.0]
+							"translation": [0.0, 12, 0]
 						}
 					]
 				},
@@ -163,8 +151,12 @@
 							"scaling": 32.0
 						},
 						{
+							"type": "rotate_x",
+							"rotation": 90
+						},
+						{
 							"type": "translate",
-							"translation": [0.0, 0.0, -12]
+							"translation": [0.0, -12, 0]
 						}
 					]
 				}
@@ -184,11 +176,11 @@
 			"transform": [
 				{
 					"type": "rotate_x",
-					"rotation": 180
+					"rotation": 90
 				},
 				{
 					"type": "translate",
-					"translation": [0.0, 0.0, 23.8]
+					"translation": [0, 23.8, 0]
 				}
 			]
 		},
@@ -204,20 +196,20 @@
 			"transform": [
 				{
 					"type": "scale",
-					"scaling": [4, 4, 10]
+					"scaling": [4, 10, 4]
 				},
 				{
-					"type": "rotate_z",
-					"rotation": 20
+					"type": "rotate_y",
+					"rotation": -20
 				},
 				{
 					"type": "translate",
-					"translation": [-6, 6, 5]
+					"translation": [-6, 5, 6]
 				}
 			]
 		},
 		{
-			"name": "animation_test",
+			"name": "short_block",
 			"type": "receiver",
 			"material": "white_plastic",
 			"geometry": {
@@ -228,15 +220,15 @@
 			"transform": [
 				{
 					"type": "scale",
-					"scaling": [4, 4, 5]
+					"scaling": [4, 5, 4]
 				},
 				{
-					"type": "rotate_z",
-					"rotation": -15
+					"type": "rotate_y",
+					"rotation": 15
 				},
 				{
 					"type": "translate",
-					"translation": [4, -3.0, 2.5]
+					"translation": [4, 2.5, -3.0]
 				}
 			]
 		}
