@@ -246,12 +246,16 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
                     None => Transform::identity(),
                 }
             } else {
+                let parent_start = Keyframe::new(&(Transform::translate(&Vector::new(-1.0, 0.0, 0.0))), 0.0);
+                let parent_end = Keyframe::new(&(Transform::translate(&Vector::new(-0.5, 2.0, 0.0)) * Transform::rotate_y(45.0)), 1.5);
+                let parent_animation = AnimatedTransform::with_keyframes(vec![parent_start, parent_end]);
+
                 let base = Transform::rotate_z(-15.0) * Transform::scale(&Vector::new(4.0, 4.0, 5.0));
                 let start = Keyframe::new(&(Transform::translate(&Vector::new(4.0, -3.0, 2.5)) * base), 0.0);
                 let middle = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 0.0, 5.5)) * Transform::rotate_z(15.0) * base), 1.0);
                 let end = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 0.0, 5.5)) * Transform::rotate_x(45.0) * Transform::rotate_z(15.0) * base), 2.0);
-                let animation = AnimatedTransform::with_keyframes(vec![start, middle, end]);
-                animation.transform(1.8)
+                let animation = parent_animation * AnimatedTransform::with_keyframes(vec![start, middle, end]);
+                animation.transform(2.0)
             };
         if ty == "emitter" {
             let emit_ty = o.find("emitter").expect("An emitter type is required for emitters")
