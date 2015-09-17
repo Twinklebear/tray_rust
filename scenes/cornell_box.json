@@ -4,9 +4,20 @@
 		"height": 600,
 		"samples": 8,
 		"fov": 30,
-		"position": [0.0, -60.0, 12.0],
-		"target": [0.0, 0.0, 12.0],
-		"up": [0.0, 0.0, 1.0]
+		"transform": [
+			{
+				"type": "scale",
+				"scaling": [1, -1, 1]
+			},
+			{
+				"type": "rotate_x",
+				"rotation": -90
+			},
+			{
+				"type": "translate",
+				"translation": [0, -60, 12]
+			}
+		]
 	},
 	"integrator": {
 		"type": "pathtracer",

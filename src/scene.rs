@@ -102,15 +102,22 @@ fn load_camera(elem: &Value) -> (Camera, usize, (usize, usize)) {
         .as_u64().expect("Image height must be a number") as usize;
     let spp = elem.find("samples").expect("The camera must specify the number of samples per pixel")
         .as_u64().expect("Samples per pixel must be a number") as usize;
-    let pos = load_point(elem.find("position").expect("The camera must specify a position"))
-                          .expect("position must be an array of 3 floats");
-    let target = load_point(elem.find("target").expect("The camera must specify a target"))
-                          .expect("target must be an array of 3 floats");
-    let up = load_vector(elem.find("up").expect("The camera must specify an up vector"))
-                          .expect("up must be an array of 3 floats");
     let fov = elem.find("fov").expect("The camera must specify a field of view").as_f64()
-                .expect("fov must be a float") as f32;
-    let camera = Camera::new(Transform::look_at(&pos, &target, &up), fov, (width, height));
+        .expect("fov must be a float") as f32;
+    let transform = match elem.find("transform") {
+        Some(t) => load_transform(t).expect("Invalid transform specified"),
+        None => {
+            println!("Warning! Specifying transforms with pos, target and up vectors is deprecated!");
+            let pos = load_point(elem.find("position").expect("The camera must specify a position"))
+                .expect("position must be an array of 3 floats");
+            let target = load_point(elem.find("target").expect("The camera must specify a target"))
+                .expect("target must be an array of 3 floats");
+            let up = load_vector(elem.find("up").expect("The camera must specify an up vector"))
+                .expect("up must be an array of 3 floats");
+            Transform::look_at(&pos, &target, &up)
+        },
+    };
+    let camera = Camera::new(transform, fov, (width, height));
     (camera, spp, (width, height))
 }
 
