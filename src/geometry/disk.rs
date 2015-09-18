@@ -92,7 +92,9 @@ impl Sampleable for Disk {
         f32::consts::PI * (self.radius * self.radius - self.inner_radius * self.inner_radius)
     }
     fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
-        let mut ray = Ray::segment(&p, &w_i, 0.001, f32::INFINITY);
+        // Time doesn't matter here, we're already in the object's space so we're moving
+        // with it so to speak
+        let mut ray = Ray::segment(&p, &w_i, 0.001, f32::INFINITY, 0.0);
         match self.intersect(&mut ray) {
             Some(d) => {
                 let w = -*w_i;

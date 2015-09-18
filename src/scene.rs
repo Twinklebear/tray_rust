@@ -120,7 +120,7 @@ fn load_camera(elem: &Value) -> (Camera, usize, (usize, usize)) {
     let start = Keyframe::new(&transform, 0.0);
     let end = Keyframe::new(&(Transform::translate(&Vector::new(0.0, 1.0, 0.0)) * transform), 1.0);
     let animation = AnimatedTransform::with_keyframes(vec![start, end]);
-    let camera = Camera::new(animation, fov, (width, height));
+    let camera = Camera::new(animation, fov, (width, height), 0.0, 1.0);
     (camera, spp, (width, height))
 }
 

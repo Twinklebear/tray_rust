@@ -17,24 +17,26 @@ pub struct Ray {
     pub max_t: f32,
     /// Recursion depth of the ray
     pub depth: u32,
+    /// Time point sampled by this ray
+    pub time: f32,
 }
 
 impl Ray {
     /// Create a new ray from `o` heading in `d` with infinite length
-    pub fn new(o: &Point, d: &Vector) -> Ray {
-        Ray { o: *o, d: *d, min_t: 0f32, max_t: f32::INFINITY, depth: 0 }
+    pub fn new(o: &Point, d: &Vector, time: f32) -> Ray {
+        Ray { o: *o, d: *d, min_t: 0f32, max_t: f32::INFINITY, depth: 0, time: time }
     }
     /// Create a new segment ray from `o + min_t * d` to `o + max_t * d`
-    pub fn segment(o: &Point, d: &Vector, min_t: f32, max_t: f32) -> Ray {
-        Ray { o: *o, d: *d, min_t: min_t, max_t: max_t, depth: 0}
+    pub fn segment(o: &Point, d: &Vector, min_t: f32, max_t: f32, time: f32) -> Ray {
+        Ray { o: *o, d: *d, min_t: min_t, max_t: max_t, depth: 0, time: time }
     }
     /// Create a child ray from the parent starting at `o` and heading in `d`
     pub fn child(&self, o: &Point, d: &Vector) -> Ray {
-        Ray { o: *o, d: *d, min_t: 0f32, max_t: f32::INFINITY, depth: self.depth + 1 }
+        Ray { o: *o, d: *d, min_t: 0f32, max_t: f32::INFINITY, depth: self.depth + 1, time: self.time }
     }
     /// Create a child ray segment from `o + min_t * d` to `o + max_t * d`
     pub fn child_segment(&self, o: &Point, d: &Vector, min_t: f32, max_t: f32) -> Ray {
-        Ray { o: *o, d: *d, min_t: min_t, max_t: max_t, depth: self.depth + 1}
+        Ray { o: *o, d: *d, min_t: min_t, max_t: max_t, depth: self.depth + 1, time: self.time }
     }
     /// Evaulate the ray equation at some t value and return the point
     /// returns result of `self.o + t * self.d`

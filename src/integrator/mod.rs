@@ -98,10 +98,10 @@ pub trait Integrator {
     /// - `light_sample` 3 random samples for the light
     /// - `bsdf_sample` 3 random samples for the bsdf
     fn sample_one_light(&self, scene: &Scene, light_list: &Vec<&Emitter>, w_o: &Vector, p: &Point,
-                        bsdf: &BSDF, light_sample: &Sample, bsdf_sample: &Sample) -> Colorf {
+                        bsdf: &BSDF, light_sample: &Sample, bsdf_sample: &Sample, time: f32) -> Colorf {
         let l = cmp::min((light_sample.one_d * light_list.len() as f32) as usize, light_list.len() - 1);
         self.estimate_direct(scene, w_o, p, bsdf, light_sample, bsdf_sample, light_list[l],
-                             BxDFType::non_specular())
+                             BxDFType::non_specular(), time)
     }
     /// Estimate the direct light contribution to the surface being shaded by the light
     /// using multiple importance sampling
@@ -114,11 +114,11 @@ pub trait Integrator {
     /// - `light` light to sample contribution from
     /// - `flags` flags for which BxDF types to sample
     fn estimate_direct(&self, scene: &Scene, w_o: &Vector, p: &Point, bsdf: &BSDF, light_sample: &Sample,
-                       bsdf_sample: &Sample, light: &Light, flags: EnumSet<BxDFType>) -> Colorf {
+                       bsdf_sample: &Sample, light: &Light, flags: EnumSet<BxDFType>, time: f32) -> Colorf {
         let mut direct_light = Colorf::black();
         // Sample the light first
         let (li, w_i, pdf_light, occlusion) = light.sample_incident(&bsdf.p, &light_sample.two_d);
-        if pdf_light > 0.0 && !li.is_black() && !occlusion.occluded(scene) {
+        if pdf_light > 0.0 && !li.is_black() && !occlusion.occluded(scene, time) {
             let f = bsdf.eval(w_o, &w_i, flags);
             if !f.is_black() {
                 if light.delta_light() {
@@ -144,7 +144,7 @@ pub trait Integrator {
                     w = mc::power_heuristic(1.0, pdf_bsdf, 1.0, pdf_light);
                 }
                 // Find out if the ray along w_i actually hits the light source
-                let mut ray = Ray::segment(p, &w_i, 0.001, f32::INFINITY);
+                let mut ray = Ray::segment(p, &w_i, 0.001, f32::INFINITY, time);
                 let mut li = Colorf::black();
                 match scene.intersect(&mut ray) {
                     Some(h) => {

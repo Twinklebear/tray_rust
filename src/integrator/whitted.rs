@@ -54,7 +54,7 @@ impl Integrator for Whitted {
         for light in light_list {
             let (li, w_i, pdf, occlusion) = light.sample_incident(&hit.dg.p, &sample_2d[0]);
             let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
-            if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {
+            if !li.is_black() && !f.is_black() && !occlusion.occluded(scene, ray.time) {
                 illum = illum + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
             }
         }

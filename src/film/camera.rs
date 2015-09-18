@@ -10,12 +10,15 @@
 //!     "width": 800,
 //!     "height": 600,
 //!     "samples" 512,
-//!     "position": [0, 8, 20],
-//!     "target": [0, 3, 0],
-//!     "up": [0, 1, 0],
 //!     "fov": 50.0
+//!     "transform": [
+//!         {
+//!             "type": "translate",
+//!             "translation": [0, 12, -60]
+//!         }
+//!     ]
 //! }
-/// ```
+//! ```
 
 use linalg::{Transform, Vector, Point, Ray, AnimatedTransform};
 
@@ -26,6 +29,10 @@ pub struct Camera {
     cam_world: AnimatedTransform,
     /// Transformation from raster to camera space
     raster_cam: Transform,
+    /// Shutter open time for this frame
+    shutter_open: f32,
+    /// Shutter close time for this frame
+    shutter_close: f32,
 }
 
 impl Camera {
@@ -34,7 +41,8 @@ impl Camera {
     /// are needed to construct the raster -> camera transform
     /// `animation` is used to move the camera ote that this is specified in camera space
     /// where the camera is at the origin looking down the -z axis
-    pub fn new(cam_world: AnimatedTransform, fov: f32, dims: (usize, usize)) -> Camera {
+    pub fn new(cam_world: AnimatedTransform, fov: f32, dims: (usize, usize), shutter_open: f32,
+               shutter_close: f32) -> Camera {
         let aspect_ratio = (dims.0 as f32) / (dims.1 as f32);
         let screen =
             if aspect_ratio > 1.0 {
@@ -47,14 +55,18 @@ impl Camera {
             * Transform::translate(&Vector::new(-screen[0], -screen[3], 0.0));
         let raster_screen = screen_raster.inverse();
         let cam_screen = Transform::perspective(fov, 1.0, 1000.0);
-        Camera { cam_world: cam_world, raster_cam: cam_screen.inverse() * raster_screen }
+        Camera { cam_world: cam_world, raster_cam: cam_screen.inverse() * raster_screen,
+                 shutter_open: shutter_open, shutter_close: shutter_close
+        }
     }
     /// Generate a ray from the camera through the pixel `px`
     pub fn generate_ray(&self, px: &(f32, f32), time: f32) -> Ray {
         // Take the raster space position -> camera space
         let px_pos = self.raster_cam * Point::new(px.0, px.1, 0.0);
         let d = Vector::new(px_pos.x, px_pos.y, px_pos.z).normalized();
-        self.cam_world.transform(time) * Ray::new(&Point::broadcast(0.0), &d)
+        // Compute the time being sampled for this frame based on shutter open/close times
+        let frame_time = (self.shutter_close - self.shutter_open) * time + self.shutter_open;
+        self.cam_world.transform(frame_time) * Ray::new(&Point::broadcast(0.0), &d, frame_time)
     }
 }
 

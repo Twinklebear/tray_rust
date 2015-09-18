@@ -19,16 +19,17 @@ pub struct OcclusionTester {
 impl OcclusionTester {
     /// Create an occlusion tester to perform the test between two points
     pub fn test_points(a: &Point, b: &Point) -> OcclusionTester {
-        OcclusionTester { ray: Ray::segment(a, &(*b - *a), 0.001, 0.999) }
+        OcclusionTester { ray: Ray::segment(a, &(*b - *a), 0.001, 0.999, 0.0) }
     }
     /// Create an occlusion tester to perform the test along the ray starting at `p`
     /// and in direction `d`
     pub fn test_ray(p: &Point, d: &Vector) -> OcclusionTester {
-        OcclusionTester { ray: Ray::segment(p, d, 0.001, f32::INFINITY) }
+        OcclusionTester { ray: Ray::segment(p, d, 0.001, f32::INFINITY, 0.0) }
     }
     /// Perform the occlusion test in the scene
-    pub fn occluded(&self, scene: &Scene) -> bool {
+    pub fn occluded(&self, scene: &Scene, time: f32) -> bool {
         let mut r = self.ray;
+        r.time = time;
         if let Some(_) = scene.intersect(&mut r) {
             true
         } else {

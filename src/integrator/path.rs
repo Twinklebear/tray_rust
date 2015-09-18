@@ -77,7 +77,7 @@ impl Integrator for Path {
             let light_sample = Sample::new(&l_samples[bounce], l_samples_comp[bounce]);
             let bsdf_sample = Sample::new(&bsdf_samples[bounce], bsdf_samples_comp[bounce]);
             let li = self.sample_one_light(scene, light_list, &w_o, &current_hit.dg.p, &bsdf,
-                                           &light_sample, &bsdf_sample);
+                                           &light_sample, &bsdf_sample, ray.time);
             illum = illum + path_throughput * li;
 
             // Determine the next direction to take the path by sampling the BSDF
