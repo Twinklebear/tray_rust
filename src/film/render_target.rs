@@ -68,6 +68,12 @@ impl RenderTarget {
             }
         }
     }
+    /// Clear the render target to black
+    pub fn clear(&mut self) {
+        for p in self.pixels.iter_mut() {
+            *p = Colorf::broadcast(0.0);
+        }
+    }
     /// Get the dimensions of the render target
     pub fn dimensions(&self) -> (usize, usize) {
         (self.width, self.height)

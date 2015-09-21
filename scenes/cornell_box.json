@@ -209,7 +209,7 @@
 			]
 		},
 		{
-			"name": "short_block",
+			"name": "animation_test",
 			"type": "receiver",
 			"material": "white_plastic",
 			"geometry": {

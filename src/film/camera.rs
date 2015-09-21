@@ -59,6 +59,11 @@ impl Camera {
                  shutter_open: shutter_open, shutter_close: shutter_close
         }
     }
+    /// Update the camera's shutter open/close time
+    pub fn update_shutter(&mut self, open: f32, close: f32) {
+        self.shutter_open = open;
+        self.shutter_close = close;
+    }
     /// Generate a ray from the camera through the pixel `px`
     pub fn generate_ray(&self, px: &(f32, f32), time: f32) -> Ray {
         // Take the raster space position -> camera space

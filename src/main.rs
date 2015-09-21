@@ -132,26 +132,34 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
-    let (scene, spp, (width, height)) = scene::Scene::load_file(&args.arg_scenefile[..]);
+    let (mut scene, spp, (width, height)) = scene::Scene::load_file(&args.arg_scenefile[..]);
     let mut rt = film::RenderTarget::new(width, height, Box::new(filter::MitchellNetravali::new(2.0, 2.0, 1.0 / 3.0, 1.0 / 3.0)));
     let n = match args.flag_n {
         Some(n) => n,
         None => num_cpus::get() as u32,
     };
 
-    let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
-    let time = d.as_secs() as f64 + (d.subsec_nanos() as f64) / 1_000_000_000.0;
-    println!("Rendering took {}s", time);
+    // Render 5 frames. TODO: This should be read from scene file
+    let scene_time = 2.0;
+    let frames = 20;
+    let time_step = scene_time / (frames as f32);
+    for i in 0..frames {
+        scene.camera.update_shutter(i as f32 * time_step, (i as f32 + 1.0) * time_step);
+        let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
+        let time = d.as_secs() as f64 + (d.subsec_nanos() as f64) / 1_000_000_000.0;
+        println!("Rendering took {}s", time);
 
-    let img = rt.get_render();
-    let out_file = match args.flag_o {
-        Some(f) => f,
-        None => "out.png".to_string(),
-    };
+        let img = rt.get_render();
+        let out_file = match &args.flag_o {
+            &Some(ref f) => f.to_string(),
+            &None => format!("out_frame{}.png", i).to_string(),
+        };
 
-    match image::save_buffer(&Path::new(&out_file), &img[..], width as u32, height as u32, image::RGB(8)) {
-        Ok(_) => {},
-        Err(e) => println!("Error saving image, {}", e),
-    };
+        match image::save_buffer(&Path::new(&out_file), &img[..], width as u32, height as u32, image::RGB(8)) {
+            Ok(_) => {},
+            Err(e) => println!("Error saving image, {}", e),
+        };
+        rt.clear();
+    }
 }
 
