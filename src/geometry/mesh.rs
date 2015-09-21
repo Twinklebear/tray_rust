@@ -41,7 +41,7 @@ impl Mesh {
             Triangle::new(i[0] as usize, i[1] as usize, i[2] as usize, positions.clone(),
                           normals.clone(), texcoords.clone())
             }).collect();
-        Mesh { bvh: BVH::new(16, triangles) }
+        Mesh { bvh: BVH::unanimated(16, triangles) }
     }
     /// Load all the meshes defined in an OBJ file and return them in a hashmap that maps the
     /// model's name in the file to its loaded mesh
@@ -84,8 +84,8 @@ impl Geometry for Mesh {
 }
 
 impl Boundable for Mesh {
-    fn bounds(&self) -> BBox {
-        self.bvh.bounds()
+    fn bounds(&self, start: f32, end: f32) -> BBox {
+        self.bvh.bounds(start, end)
     }
 }
 
@@ -181,7 +181,7 @@ impl Geometry for Triangle {
 }
 
 impl Boundable for Triangle {
-    fn bounds(&self) -> BBox {
+    fn bounds(&self, _: f32, _: f32) -> BBox {
         BBox::singular(self.positions[self.a])
             .point_union(&self.positions[self.b])
             .point_union(&self.positions[self.c])

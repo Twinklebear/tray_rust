@@ -65,7 +65,7 @@ use std::sync::Arc;
 use geometry::{Intersection, Boundable, BBox, BoundableGeom, Receiver, Emitter,
                SampleableGeom};
 use material::Material;
-use linalg::{Transform, Point, Ray};
+use linalg::{Transform, Point, Ray, AnimatedTransform};
 use film::Colorf;
 
 /// Defines an instance of some geometry with its own transform and material
@@ -77,7 +77,7 @@ pub enum Instance {
 impl Instance {
     /// Create an instance of the geometry in the scene that will only receive light.
     pub fn receiver(geom: Arc<BoundableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-               transform: Transform, tag: String) -> Instance {
+               transform: AnimatedTransform, tag: String) -> Instance {
         Instance::Receiver(Receiver::new(geom, material, transform, tag))
     }
     /// Create an instance of the geometry in the scene that will emit and receive light
@@ -109,7 +109,7 @@ impl Instance {
         }
     }
     /// Get the transform for this instance
-    pub fn get_transform(&self) -> &Transform {
+    pub fn get_transform(&self) -> Transform {
         match self {
             &Instance::Emitter(ref e) => e.get_transform(),
             &Instance::Receiver(ref r) => r.get_transform()
@@ -125,10 +125,10 @@ impl Instance {
 }
 
 impl Boundable for Instance {
-    fn bounds(&self) -> BBox {
+    fn bounds(&self, start: f32, end: f32) -> BBox {
         match self {
-            &Instance::Emitter(ref e) => e.bounds(),
-            &Instance::Receiver(ref r) => r.bounds(),
+            &Instance::Emitter(ref e) => e.bounds(start, end),
+            &Instance::Receiver(ref r) => r.bounds(start, end),
         }
     }
 }

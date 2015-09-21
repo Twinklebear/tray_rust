@@ -73,7 +73,7 @@ impl Geometry for Disk {
 }
 
 impl Boundable for Disk {
-    fn bounds(&self) -> BBox {
+    fn bounds(&self, _: f32, _: f32) -> BBox {
         BBox::span(Point::new(-self.radius, -self.radius, -0.1), Point::new(self.radius, self.radius, 0.1))
     }
 }

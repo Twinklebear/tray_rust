@@ -80,7 +80,8 @@ impl Scene {
         assert!(!instances.is_empty(), "Aborting: the scene does not have any objects!");
         let scene = Scene {
             camera: camera,
-            bvh: BVH::new(4, instances),
+            // TODO: Read time parameters from the scene file, update BVH every few frames
+            bvh: BVH::new(4, instances, 0.0, 2.0),
             integrator: integrator,
         };
         (scene, spp, dim)
@@ -118,9 +119,8 @@ fn load_camera(elem: &Value) -> (Camera, usize, (usize, usize)) {
         },
     };
     let start = Keyframe::new(&transform, 0.0);
-    let end = Keyframe::new(&(Transform::translate(&Vector::new(0.0, 1.0, 0.0)) * transform), 1.0);
-    let animation = AnimatedTransform::with_keyframes(vec![start, end]);
-    let camera = Camera::new(animation, fov, (width, height), 0.0, 1.0);
+    let animation = AnimatedTransform::with_keyframes(vec![start]);
+    let camera = Camera::new(animation, fov, (width, height), 0.7, 1.3);
     (camera, spp, (width, height))
 }
 
@@ -249,12 +249,13 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             .as_string().expect("Object name must be a string").to_string();
         let ty = o.find("type").expect("A type is required for an object")
             .as_string().expect("Object type must be a string");
-        let transform =
+        let (anim_transform, transform) =
             if name != "animation_test" {
-                match o.find("transform") {
+                let t = match o.find("transform") {
                     Some(t) => load_transform(t).expect("Invalid transform specified"),
                     None => Transform::identity(),
-                }
+                };
+                (AnimatedTransform::with_keyframes(vec![Keyframe::new(&t, 0.0)]), t)
             } else {
                 let parent_start = Keyframe::new(&(Transform::translate(&Vector::new(-1.0, 0.0, 0.0))), 0.0);
                 let parent_end = Keyframe::new(&(Transform::translate(&Vector::new(-0.5, 0.0, 2.0)) * Transform::rotate_z(45.0)), 1.5);
@@ -262,10 +263,9 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
 
                 let base = Transform::rotate_y(15.0) * Transform::scale(&Vector::new(4.0, 5.0, 4.0));
                 let start = Keyframe::new(&(Transform::translate(&Vector::new(4.0, 2.5, -3.0)) * base), 0.0);
-                let middle = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_y(15.0) * base), 1.0);
-                let end = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_x(45.0) * Transform::rotate_y(15.0) * base), 2.0);
-                let animation = parent_animation * AnimatedTransform::with_keyframes(vec![start, middle, end]);
-                animation.transform(2.0)
+                let middle = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_y(-15.0) * base), 1.0);
+                let end = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_x(45.0) * Transform::rotate_y(-15.0) * base), 2.0);
+                (AnimatedTransform::with_keyframes(vec![start, middle, end]), Transform::identity())
             };
         if ty == "emitter" {
             let emit_ty = o.find("emitter").expect("An emitter type is required for emitters")
@@ -297,12 +297,12 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             let geom = load_geometry(path, &mut mesh_cache, o.find("geometry")
                                      .expect("Geometry is required for receivers"));
 
-            instances.push(Instance::receiver(geom, mat, transform, name));
+            instances.push(Instance::receiver(geom, mat, anim_transform, name));
         } else if ty == "group" {
             let group_objects = o.find("objects").expect("A group must specify an array of objects in the group");
             let group_instances = load_objects(path, materials, group_objects);
             for mut gi in group_instances {
-                let t = *gi.get_transform();
+                let t = gi.get_transform();
                 gi.set_transform(transform * t);
                 instances.push(gi);
             }

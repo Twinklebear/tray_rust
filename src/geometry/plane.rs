@@ -45,7 +45,7 @@ impl Geometry for Plane {
 }
 
 impl Boundable for Plane {
-    fn bounds(&self) -> BBox {
+    fn bounds(&self, _: f32, _: f32) -> BBox {
         BBox::span(Point::new(-1.0, -1.0, 0.0), Point::new(1.0, 1.0, 0.0))
     }
 }

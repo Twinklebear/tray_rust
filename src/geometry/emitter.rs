@@ -129,8 +129,8 @@ impl Emitter {
         if linalg::dot(w, n) > 0.0 { self.emission } else { Colorf::black() }
     }
     /// Get the transform to place the emitter into world space
-    pub fn get_transform(&self) -> &Transform {
-        return &self.transform;
+    pub fn get_transform(&self) -> Transform {
+        return self.transform;
     }
     /// Set the transform to place the emitter into world space
     pub fn set_transform(&mut self, transform: Transform) {
@@ -139,11 +139,11 @@ impl Emitter {
 }
 
 impl Boundable for Emitter {
-    fn bounds(&self) -> BBox {
+    fn bounds(&self, start: f32, end: f32) -> BBox {
         match &self.emitter {
             &EmitterType::Point => BBox::singular(self.transform * Point::broadcast(0.0)),
             &EmitterType::Area(ref g, _) => {
-                self.transform * g.bounds()
+                self.transform * g.bounds(start, end)
             },
         }
     }

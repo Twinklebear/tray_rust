@@ -73,7 +73,7 @@ impl Geometry for Sphere {
 }
 
 impl Boundable for Sphere {
-    fn bounds(&self) -> BBox {
+    fn bounds(&self, _: f32, _: f32) -> BBox {
         BBox::span(Point::new(-self.radius, -self.radius, -self.radius),
                    Point::new(self.radius, self.radius, self.radius))
     }

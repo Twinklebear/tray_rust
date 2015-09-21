@@ -4,7 +4,8 @@
 use std::collections::BTreeSet;
 use std::ops::Mul;
 
-use linalg::{keyframe, Keyframe, Transform};
+use linalg::{self, keyframe, Keyframe, Transform};
+use geometry::BBox;
 
 /// An animated transform that blends between the keyframes in its transformation
 /// list over time.
@@ -57,6 +58,25 @@ impl AnimatedTransform {
             transform = t * transform;
         }
         transform
+    }
+    /// Compute the bounds of the box moving through the animation sequence by sampling time
+    pub fn animation_bounds(&self, b: &BBox, start: f32, end: f32) -> BBox {
+        if !self.is_animated() {
+            let t = self.transform(start);
+            t * *b
+        } else {
+            let mut ret = BBox::new();
+            for i in 0..128 {
+                let time = linalg::lerp((i as f32) / 127.0, &start, &end);
+                let t = self.transform(time);
+                ret = ret.box_union(&(t * *b));
+            }
+            ret
+        }
+    }
+    /// Check if the transform is actually animated
+    pub fn is_animated(&self) -> bool {
+        self.keyframes.is_empty() || self.keyframes.iter().fold(true, |b, stack| b && stack.len() > 1)
     }
 }
 

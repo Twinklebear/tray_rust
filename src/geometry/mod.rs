@@ -63,8 +63,11 @@ pub trait Geometry {
 
 /// Trait implemented by scene objects that can report an AABB describing their bounds
 pub trait Boundable {
-    /// Get an AABB reporting the object's bounds in space
-    fn bounds(&self) -> BBox;
+    /// Get an AABB reporting the object's bounds over the time period
+    /// The default implementation assumes the object isn't animated and
+    /// simply returns its bounds. This is kind of a hack to use
+    /// the BVH for animated geomtry (instances) and non-animated geometry (triangles).
+    fn bounds(&self, start: f32, end: f32) -> BBox;
 }
 
 /// Trait implemented by geometry that can sample a point on its surface

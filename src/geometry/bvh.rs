@@ -23,15 +23,20 @@ pub struct BVH<T: Boundable> {
 }
 
 impl<T: Boundable> BVH<T> {
-    /// Create a new BVH using a SAH construction algorithm
-    pub fn new(max_geom: usize, geometry: Vec<T>) -> BVH<T> {
+    /// Create a new non-animated BVH holding the geometry
+    pub fn unanimated(max_geom: usize, geometry: Vec<T>) -> BVH<T> {
+        BVH::<T>::new(max_geom, geometry, 0.0, 0.0)
+    }
+    /// Create a new BVH using a SAH construction algorithm which holds the scene
+    /// geometry for some time period.
+    pub fn new(max_geom: usize, geometry: Vec<T>, start: f32, end: f32) -> BVH<T> {
         assert!(!geometry.is_empty());
         let mut flat_tree = Vec::new();
         let mut ordered_geom = Vec::with_capacity(geometry.len());
         {
             let mut build_geom = Vec::with_capacity(geometry.len());
             for (i, g) in geometry.iter().enumerate() {
-                build_geom.push(GeomInfo::new(g, i));
+                build_geom.push(GeomInfo::new(g, i, start, end));
             }
             // TODO: How to sort the geometry into the flatten tree ordering?
             // we have the indices things should end up in stored in ordered geom
@@ -40,7 +45,7 @@ impl<T: Boundable> BVH<T> {
             // it knows the index of the items
             let mut total_nodes = 0;
             let root = Box::new(BVH::build(&mut build_geom[..], &mut ordered_geom, &mut total_nodes,
-                                  max_geom));
+                                  max_geom, start, end));
             flat_tree.reserve(total_nodes);
             BVH::<T>::flatten_tree(&root, &mut flat_tree);
             assert_eq!(flat_tree.len(), total_nodes);
@@ -108,10 +113,10 @@ impl<T: Boundable> BVH<T> {
     /// `ordered_geom` will be filled out with the indices of the geometry in the flattened
     /// tree ordering for more efficient access
     fn build(build_info: &mut [GeomInfo<T>], ordered_geom: &mut Vec<usize>,
-             total_nodes: &mut usize, max_geom: usize) -> BuildNode {
+             total_nodes: &mut usize, max_geom: usize, start: f32, end: f32) -> BuildNode {
         *total_nodes += 1;
         // Find bounding box for all geometry we're trying to store at this level
-        let bounds = build_info.iter().fold(BBox::new(), |b, g| b.box_union(&g.geom.bounds()));
+        let bounds = build_info.iter().fold(BBox::new(), |b, g| b.box_union(&g.geom.bounds(start, end)));
         let ngeom = build_info.len();
         if ngeom == 1 {
             return BVH::build_leaf(build_info, ordered_geom, bounds);
@@ -129,9 +134,9 @@ impl<T: Boundable> BVH<T> {
                 return BVH::build_leaf(&mut build_info[..], ordered_geom, bounds);
             } else {
                 let l = Box::new(BVH::build(&mut build_info[..mid], ordered_geom,
-                                            total_nodes, max_geom));
+                                            total_nodes, max_geom, start, end));
                 let r = Box::new(BVH::build(&mut build_info[mid..], ordered_geom,
-                                            total_nodes, max_geom));
+                                            total_nodes, max_geom, start, end));
                 return BuildNode::interior([l, r], split_axis);
             }
         }
@@ -196,9 +201,9 @@ impl<T: Boundable> BVH<T> {
         }
         assert!(mid != 0 && mid != build_info.len());
         let l = Box::new(BVH::build(&mut build_info[..mid], ordered_geom,
-                                    total_nodes, max_geom));
+                                    total_nodes, max_geom, start, end));
         let r = Box::new(BVH::build(&mut build_info[mid..], ordered_geom,
-                                    total_nodes, max_geom));
+                                    total_nodes, max_geom, start, end));
         return BuildNode::interior([l, r], split_axis);
     }
     /// Construct a new leaf node containing the passed geometry. Indices will be
@@ -239,7 +244,7 @@ impl<T: Boundable> BVH<T> {
 }
 
 impl<T: Boundable> Boundable for BVH<T> {
-    fn bounds(&self) -> BBox {
+    fn bounds(&self, _: f32, _: f32) -> BBox {
         self.tree[0].bounds
     }
 }
@@ -295,8 +300,8 @@ struct GeomInfo<'a, T: 'a> {
 
 impl<'a, T: Boundable> GeomInfo<'a, T> {
     /// Create a new reference to some geometry
-    fn new(geom: &'a T, geom_idx: usize) -> GeomInfo<T> {
-        let bounds = geom.bounds();
+    fn new(geom: &'a T, geom_idx: usize, start: f32, end: f32) -> GeomInfo<T> {
+        let bounds = geom.bounds(start, end);
         GeomInfo { geom: geom, geom_idx: geom_idx,
                    center: bounds.lerp(0.5, 0.5, 0.5),
                    bounds: bounds }
