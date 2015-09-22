@@ -117,7 +117,7 @@ pub trait Integrator {
                        bsdf_sample: &Sample, light: &Light, flags: EnumSet<BxDFType>, time: f32) -> Colorf {
         let mut direct_light = Colorf::black();
         // Sample the light first
-        let (li, w_i, pdf_light, occlusion) = light.sample_incident(&bsdf.p, &light_sample.two_d);
+        let (li, w_i, pdf_light, occlusion) = light.sample_incident(&bsdf.p, &light_sample.two_d, time);
         if pdf_light > 0.0 && !li.is_black() && !occlusion.occluded(scene, time) {
             let f = bsdf.eval(w_o, &w_i, flags);
             if !f.is_black() {
@@ -137,7 +137,7 @@ pub trait Integrator {
                 // Handle delta distributions the same way we did for the light
                 let mut w = 1.0;
                 if !sampled_type.contains(&BxDFType::Specular) {
-                    let pdf_light = light.pdf(p, &w_i);
+                    let pdf_light = light.pdf(p, &w_i, time);
                     if pdf_light == 0.0 {
                         return direct_light;
                     }

@@ -249,14 +249,15 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             .as_string().expect("Object name must be a string").to_string();
         let ty = o.find("type").expect("A type is required for an object")
             .as_string().expect("Object type must be a string");
-        let (anim_transform, transform) =
+        let transform =
             if name != "animation_test" {
                 let t = match o.find("transform") {
                     Some(t) => load_transform(t).expect("Invalid transform specified"),
                     None => Transform::identity(),
                 };
-                (AnimatedTransform::with_keyframes(vec![Keyframe::new(&t, 0.0)]), t)
+                AnimatedTransform::with_keyframes(vec![Keyframe::new(&t, 0.0)])
             } else {
+                /*
                 let parent_start = Keyframe::new(&(Transform::translate(&Vector::new(-1.0, 0.0, 0.0))), 0.0);
                 let parent_end = Keyframe::new(&(Transform::translate(&Vector::new(-0.5, 0.0, 2.0)) * Transform::rotate_z(45.0)), 1.5);
                 let parent_animation = AnimatedTransform::with_keyframes(vec![parent_start, parent_end]);
@@ -265,7 +266,11 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
                 let start = Keyframe::new(&(Transform::translate(&Vector::new(4.0, 2.5, -3.0)) * base), 0.0);
                 let middle = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_y(-15.0) * base), 1.0);
                 let end = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_x(45.0) * Transform::rotate_y(-15.0) * base), 2.0);
-                (AnimatedTransform::with_keyframes(vec![start, middle, end]), Transform::identity())
+                AnimatedTransform::with_keyframes(vec![start, middle, end])
+                */
+                let start = Keyframe::new(&(Transform::translate(&Vector::new(0.0, 23.8, 0.0)) * Transform::rotate_x(90.0)), 0.0);
+                let end = Keyframe::new(&(Transform::translate(&Vector::new(-6.0, 20.0, 0.0)) * Transform::rotate_z(35.0) * Transform::rotate_x(90.0)), 2.0);
+                AnimatedTransform::with_keyframes(vec![start, end])
             };
         if ty == "emitter" {
             let emit_ty = o.find("emitter").expect("An emitter type is required for emitters")
@@ -297,13 +302,15 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             let geom = load_geometry(path, &mut mesh_cache, o.find("geometry")
                                      .expect("Geometry is required for receivers"));
 
-            instances.push(Instance::receiver(geom, mat, anim_transform, name));
+            instances.push(Instance::receiver(geom, mat, transform, name));
         } else if ty == "group" {
             let group_objects = o.find("objects").expect("A group must specify an array of objects in the group");
             let group_instances = load_objects(path, materials, group_objects);
             for mut gi in group_instances {
-                let t = gi.get_transform();
-                gi.set_transform(transform * t);
+                {
+                    let t = gi.get_transform().clone();
+                    gi.set_transform(transform.clone() * t);
+                }
                 instances.push(gi);
             }
         } else {

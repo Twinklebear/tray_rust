@@ -45,11 +45,11 @@ pub trait Light {
     /// Sample the illumination from the light arriving at the point `p`
     /// Returns the color, incident light direction, pdf and occlusion tester object
     /// `samples` will be used to randomly sample the light.
-    fn sample_incident(&self, p: &Point, samples: &(f32, f32))
+    fn sample_incident(&self, p: &Point, samples: &(f32, f32), time: f32)
         -> (Colorf, Vector, f32, OcclusionTester);
     /// Determine if the light is described by a delta distribution
     fn delta_light(&self) -> bool;
     /// Compute the PDF for sampling the point with incident direction `w_i`
-    fn pdf(&self, p: &Point, w_i: &Vector) -> f32;
+    fn pdf(&self, p: &Point, w_i: &Vector, time: f32) -> f32;
 }
 

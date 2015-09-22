@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use geometry::{Boundable, BBox, BoundableGeom, DifferentialGeometry};
 use material::Material;
-use linalg::{Transform, Ray, AnimatedTransform, Keyframe};
+use linalg::{Ray, AnimatedTransform};
 
 /// An instance of geometry in the scene that only receives light
 pub struct Receiver {
@@ -42,15 +42,12 @@ impl Receiver {
         Some((dg, &*self.material))
     }
     /// Get the transform to place the receiver into world space
-    pub fn get_transform(&self) -> Transform {
-        // TODO: Hack to avoid dealing with animated groups temporarily
-        return self.transform.transform(0.0);
+    pub fn get_transform(&self) -> &AnimatedTransform {
+        &self.transform
     }
     /// Set the transform to place the receiver into world space
-    pub fn set_transform(&mut self, transform: Transform) {
-        //self.transform = transform;
-        // Hack to avoid dealing with animated groups temporarily
-        self.transform = AnimatedTransform::with_keyframes(vec![Keyframe::new(&transform, 0.0)]);
+    pub fn set_transform(&mut self, transform: AnimatedTransform) {
+        self.transform = transform;
     }
 }
 

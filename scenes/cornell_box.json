@@ -163,7 +163,7 @@
 			]
 		},
 		{
-			"name": "light",
+			"name": "animation_test",
 			"type": "emitter",
 			"material": "white_wall",
 			"emitter": "area",
@@ -209,7 +209,7 @@
 			]
 		},
 		{
-			"name": "animation_test",
+			"name": "short_block",
 			"type": "receiver",
 			"material": "white_plastic",
 			"geometry": {

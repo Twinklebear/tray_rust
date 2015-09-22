@@ -65,7 +65,7 @@ use std::sync::Arc;
 use geometry::{Intersection, Boundable, BBox, BoundableGeom, Receiver, Emitter,
                SampleableGeom};
 use material::Material;
-use linalg::{Transform, Point, Ray, AnimatedTransform};
+use linalg::{Point, Ray, AnimatedTransform};
 use film::Colorf;
 
 /// Defines an instance of some geometry with its own transform and material
@@ -82,7 +82,7 @@ impl Instance {
     }
     /// Create an instance of the geometry in the scene that will emit and receive light
     pub fn area_light(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-               emission: Colorf, transform: Transform, tag: String) -> Instance {
+               emission: Colorf, transform: AnimatedTransform, tag: String) -> Instance {
         Instance::Emitter(Emitter::area(geom, material, emission, transform, tag))
     }
     pub fn point_light(pos: Point, emission: Colorf, tag: String) ->  Instance {
@@ -109,14 +109,14 @@ impl Instance {
         }
     }
     /// Get the transform for this instance
-    pub fn get_transform(&self) -> Transform {
+    pub fn get_transform(&self) -> &AnimatedTransform {
         match self {
             &Instance::Emitter(ref e) => e.get_transform(),
             &Instance::Receiver(ref r) => r.get_transform()
         }
     }
     /// Set the transform for this instance
-    pub fn set_transform(&mut self, transform: Transform) {
+    pub fn set_transform(&mut self, transform: AnimatedTransform) {
         match self {
             &mut Instance::Emitter(ref mut e) => e.set_transform(transform),
             &mut Instance::Receiver(ref mut r) => r.set_transform(transform)

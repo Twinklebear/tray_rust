@@ -55,7 +55,7 @@
 use std::sync::Arc;
 use geometry::{Boundable, BBox, SampleableGeom, DifferentialGeometry};
 use material::Material;
-use linalg::{self, Transform, Point, Ray, Vector, Normal};
+use linalg::{self, Transform, AnimatedTransform, Keyframe, Point, Ray, Vector, Normal};
 use film::Colorf;
 use light::{Light, OcclusionTester};
 
@@ -75,7 +75,7 @@ pub struct Emitter {
     /// The light intensity emitted
     pub emission: Colorf,
     /// The transform to world space
-    transform: Transform,
+    transform: AnimatedTransform,
     /// Tag to identify the instance
     pub tag: String,
 }
@@ -86,19 +86,23 @@ impl Emitter {
     /// We also need MIS in the path tracer's direct light sampling so we get
     /// good quality
     pub fn area(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-                emission: Colorf, transform: Transform, tag: String) -> Emitter {
+                emission: Colorf, transform: AnimatedTransform, tag: String) -> Emitter {
+        // TODO: How to change this transform to handle scaling within the animation?
+        /*
         if transform.has_scale() {
             println!("Warning: scaling detected in area light transform, this may give incorrect results");
         }
+        */
         Emitter { emitter: EmitterType::Area(geom, material),
                   emission: emission,
                   transform: transform,
                   tag: tag.to_string() }
     }
+    /// Create a new point light. TODO: Should we just take a transform here as well?
     pub fn point(pos: Point, emission: Colorf, tag: String) -> Emitter {
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
-                  transform: Transform::translate(&(pos - Point::broadcast(0.0))),
+                  transform: AnimatedTransform::with_keyframes(vec![Keyframe::new(&Transform::translate(&(pos - Point::broadcast(0.0))), 0.0)]),
                   tag: tag.to_string() }
     }
     /// Test the ray for intersection against this insance of geometry.
@@ -108,17 +112,18 @@ impl Emitter {
         match &self.emitter {
             &EmitterType::Point => None,
             &EmitterType::Area(ref geom, ref mat) => {
-                let mut local = self.transform.inv_mul_ray(ray);
+                let transform = self.transform.transform(ray.time);
+                let mut local = transform.inv_mul_ray(ray);
                 let mut dg = match geom.intersect(&mut local) {
                     Some(dg) => dg,
                     None => return None,
                 };
                 ray.max_t = local.max_t;
-                dg.p = self.transform * dg.p;
-                dg.n = self.transform * dg.n;
-                dg.ng = self.transform * dg.ng;
-                dg.dp_du = self.transform * dg.dp_du;
-                dg.dp_dv = self.transform * dg.dp_dv;
+                dg.p = transform * dg.p;
+                dg.n = transform * dg.n;
+                dg.ng = transform * dg.ng;
+                dg.dp_du = transform * dg.dp_du;
+                dg.dp_dv = transform * dg.dp_dv;
                 Some((dg, &**mat))
             },
         }
@@ -129,11 +134,11 @@ impl Emitter {
         if linalg::dot(w, n) > 0.0 { self.emission } else { Colorf::black() }
     }
     /// Get the transform to place the emitter into world space
-    pub fn get_transform(&self) -> Transform {
-        return self.transform;
+    pub fn get_transform(&self) -> &AnimatedTransform {
+        &self.transform
     }
     /// Set the transform to place the emitter into world space
-    pub fn set_transform(&mut self, transform: Transform) {
+    pub fn set_transform(&mut self, transform: AnimatedTransform) {
         self.transform = transform;
     }
 }
@@ -141,32 +146,34 @@ impl Emitter {
 impl Boundable for Emitter {
     fn bounds(&self, start: f32, end: f32) -> BBox {
         match &self.emitter {
-            &EmitterType::Point => BBox::singular(self.transform * Point::broadcast(0.0)),
+            &EmitterType::Point => self.transform.animation_bounds(&BBox::singular(Point::broadcast(0.0)), start, end),
             &EmitterType::Area(ref g, _) => {
-                self.transform * g.bounds(start, end)
+                self.transform.animation_bounds(&g.bounds(start, end), start, end)
             },
         }
     }
 }
 
 impl Light for Emitter {
-    fn sample_incident(&self, p: &Point, samples: &(f32, f32))
+    fn sample_incident(&self, p: &Point, samples: &(f32, f32), time: f32)
         -> (Colorf, Vector, f32, OcclusionTester)
     {
         match &self.emitter {
             &EmitterType::Point => {
-                let pos = self.transform * Point::broadcast(0.0);
+                let transform = self.transform.transform(time);
+                let pos = transform * Point::broadcast(0.0);
                 let w_i = (pos - *p).normalized();
                 (self.emission / pos.distance_sqr(p), w_i, 1.0, OcclusionTester::test_points(p, &pos))
             }
             &EmitterType::Area(ref g, _) => {
-                let p_l = self.transform.inv_mul_point(p);
+                let transform = self.transform.transform(time);
+                let p_l = transform.inv_mul_point(p);
                 let (p_sampled, normal) = g.sample(&p_l, samples);
                 let w_il = (p_sampled - p_l).normalized();
                 let pdf = g.pdf(&p_l, &w_il);
                 let radiance = self.radiance(&-w_il, &p_sampled, &normal);
-                let p_w = self.transform * p_sampled;
-                (radiance, self.transform * w_il, pdf, OcclusionTester::test_points(&p, &p_w))
+                let p_w = transform * p_sampled;
+                (radiance, transform * w_il, pdf, OcclusionTester::test_points(&p, &p_w))
             },
         }
     }
@@ -176,12 +183,13 @@ impl Light for Emitter {
             _ => false,
         }
     }
-    fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
+    fn pdf(&self, p: &Point, w_i: &Vector, time: f32) -> f32 {
         match &self.emitter {
             &EmitterType::Point => 0.0,
             &EmitterType::Area(ref g, _ ) => {
-                let p_l = self.transform.inv_mul_point(p);
-                let w = (self.transform.inv_mul_vector(w_i)).normalized();
+                let transform = self.transform.transform(time);
+                let p_l = transform.inv_mul_point(p);
+                let w = (transform.inv_mul_vector(w_i)).normalized();
                 g.pdf(&p_l, &w)
             }
         }

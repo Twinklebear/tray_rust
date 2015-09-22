@@ -152,7 +152,7 @@ fn main() {
         let img = rt.get_render();
         let out_file = match &args.flag_o {
             &Some(ref f) => f.to_string(),
-            &None => format!("out_frame{}.png", i).to_string(),
+            &None => format!("out_frame{:03}.png", i).to_string(),
         };
 
         match image::save_buffer(&Path::new(&out_file), &img[..], width as u32, height as u32, image::RGB(8)) {
