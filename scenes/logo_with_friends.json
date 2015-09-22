@@ -1,12 +1,23 @@
 {
 	"camera": {
-		"width": 1920,
-		"height": 1080,
-		"samples": 16,
+		"width": 1280,
+		"height": 720,
+		"samples": 2,
 		"fov": 28,
-		"position": [0.0, -52.0, 12.0],
-		"target": [0.0, 0.0, 12.0],
-		"up": [0.0, 0.0, 1.0]
+		"transform": [
+			{
+				"type": "rotate_x",
+				"rotation": -90
+			},
+			{
+				"type": "rotate_y",
+				"rotation": 180
+			},
+			{
+				"type": "translate",
+				"translation": [0.0, -52.0, 12.0]
+			}
+		]
 	},
 	"integrator": {
 		"type": "pathtracer",
