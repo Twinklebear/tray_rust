@@ -17,12 +17,11 @@ use std::time::Duration;
 use rand::StdRng;
 use docopt::Docopt;
 
-use tray_rust::film;
+use tray_rust::film::{self, filter, ImageSample};
 use tray_rust::geometry::{Geometry, Instance, Emitter};
 use tray_rust::sampler::{self, Sampler};
 use tray_rust::scene;
 use tray_rust::integrator::Integrator;
-use tray_rust::film::filter;
 
 static USAGE: &'static str = "
 Usage: tray_rust <scenefile> [options]
@@ -42,28 +41,16 @@ struct Args {
     flag_n: Option<u32>,
 }
 
-/// A struct containing results of an image sample where a ray was fired through
-/// continuous pixel coordinates [x, y] and color `color` was computed
-struct ImageSample {
-    x: f32,
-    y: f32,
-    color: film::Colorf,
-}
-
-impl ImageSample {
-    pub fn new(x: f32, y: f32, color: film::Colorf) -> ImageSample {
-        ImageSample { x: x, y: y, color: color }
-    }
-}
-
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
 /// values recieved to the render target
 fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQueue,
-               scene: &scene::Scene, light_list: &Vec<&Emitter>) {
+               scene: &scene::Scene, target: &film::RenderTarget, light_list: &Vec<&Emitter>) {
     let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), spp);
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut time_samples: Vec<_> = iter::repeat(0.0).take(sampler.max_spp()).collect();
+    let block_dim = queue.block_dim();
+    let mut block_samples = Vec::with_capacity(sampler.max_spp() * (block_dim.0 * block_dim.1) as usize);
     let mut rng = match StdRng::new() {
         Ok(r) => r,
         Err(e) => { println!("Failed to get StdRng, {}", e); return }
@@ -83,6 +70,7 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQ
                     let c = scene.integrator.illumination(scene, light_list, &ray,
                                                           &hit, &mut sampler, &mut rng).clamp();
                     samples.push(ImageSample::new(s.0, s.1, c));
+                    block_samples.push(ImageSample::new(s.0, s.1, c));
                 }
             }
             if let Err(e) = tx.send(samples) {
@@ -90,6 +78,7 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQ
                 return;
             }
         }
+        target.write_block(&block_samples, sampler.get_region());
     }
 }
 
@@ -113,9 +102,10 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
             for _ in 0..n {
                 let t = tx.clone();
                 let b = &block_queue;
+                let r = &*rt;
                 let l = &light_list;
                 scope.execute(move || {
-                    thread_work(t, spp, b, scene, l);
+                    thread_work(t, spp, b, scene, r, l);
                 });
             }
             rx
@@ -133,15 +123,17 @@ fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
     let (mut scene, spp, (width, height)) = scene::Scene::load_file(&args.arg_scenefile[..]);
-    let mut rt = film::RenderTarget::new(width, height, Box::new(filter::MitchellNetravali::new(2.0, 2.0, 1.0 / 3.0, 1.0 / 3.0)));
+    let mut rt = film::RenderTarget::new(width, height,
+                    Box::new(filter::MitchellNetravali::new(2.0, 2.0, 1.0 / 3.0, 1.0 / 3.0))
+                    as Box<filter::Filter + Send + Sync>);
     let n = match args.flag_n {
         Some(n) => n,
         None => num_cpus::get() as u32,
     };
 
     // Render 5 frames. TODO: This should be read from scene file
-    let scene_time = 2.0;
-    let frames = 20;
+    let scene_time = 0.0;
+    let frames = 1;
     let time_step = scene_time / (frames as f32);
     for i in 0..frames {
         scene.camera.update_shutter(i as f32 * time_step, (i as f32 + 1.0) * time_step);
@@ -156,6 +148,11 @@ fn main() {
         };
 
         match image::save_buffer(&Path::new(&out_file), &img[..], width as u32, height as u32, image::RGB(8)) {
+            Ok(_) => {},
+            Err(e) => println!("Error saving image, {}", e),
+        };
+        let img = rt.get_block_render();
+        match image::save_buffer(&Path::new("block_out.png"), &img[..], width as u32, height as u32, image::RGB(8)) {
             Ok(_) => {},
             Err(e) => println!("Error saving image, {}", e),
         };

@@ -68,6 +68,9 @@ impl Sampler for LowDiscrepancy {
     fn select_block(&mut self, start: (u32, u32)) {
         self.region.select_region(start);
     }
+    fn get_region(&self) -> &Region {
+        &self.region
+    }
 }
 
 /// Generate a 2D pattern of low discrepancy samples to fill the slice

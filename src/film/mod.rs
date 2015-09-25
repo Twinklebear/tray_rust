@@ -4,6 +4,7 @@
 pub use self::color::Colorf;
 pub use self::render_target::RenderTarget;
 pub use self::camera::Camera;
+pub use self::render_target::ImageSample;
 
 pub mod color;
 pub mod render_target;

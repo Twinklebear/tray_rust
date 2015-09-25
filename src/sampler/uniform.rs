@@ -49,5 +49,8 @@ impl Sampler for Uniform {
     fn select_block(&mut self, start: (u32, u32)) {
         self.region.select_region(start);
     }
+    fn get_region(&self) -> &Region{
+        &self.region
+    }
 }
 

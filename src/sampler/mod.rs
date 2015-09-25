@@ -36,6 +36,8 @@ pub trait Sampler {
     /// the starting `(x, y)` block index for the new block. The block starting
     /// position will be calculated as `dimensions * start`
     fn select_block(&mut self, start: (u32, u32));
+    /// Get the region being samples
+    fn get_region(&self) -> &Region;
 }
 
 /// Provides a simple way to pass around a 3 component sample consisting of one 2D and
