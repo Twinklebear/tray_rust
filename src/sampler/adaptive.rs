@@ -64,8 +64,8 @@ impl Sampler for Adaptive {
         }
 
         self.samples_taken += self.min_spp;
-        if samples.len() < self.samples_taken {
-            samples.resize(self.samples_taken, (0.0, 0.0));
+        if samples.len() < self.min_spp {
+            samples.resize(self.min_spp, (0.0, 0.0));
         }
         self.get_samples_2d(&mut samples[..], rng);
         for s in samples.iter_mut() {
