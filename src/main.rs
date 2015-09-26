@@ -71,7 +71,7 @@ fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
                 }
             }
         }
-        target.write_block(&block_samples, sampler.get_region());
+        target.write(&block_samples, sampler.get_region());
         block_samples.clear();
     }
 }
