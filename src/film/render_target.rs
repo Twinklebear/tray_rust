@@ -130,7 +130,8 @@ impl RenderTarget {
                             filtered_samples[px].r += weight * c.color.r;
                             filtered_samples[px].g += weight * c.color.g;
                             filtered_samples[px].b += weight * c.color.b;
-                            filtered_samples[px].a += weight;
+                            // TODO: Remove this it's just for debugging adaptive sampler
+                            filtered_samples[px].a += 1.0;//weight;
                         }
                     }
                 }
@@ -166,6 +167,8 @@ impl RenderTarget {
         let mut render: Vec<u8> = iter::repeat(0u8).take(self.width * self.height * 3).collect();
         let x_blocks = self.width / self.lock_size.0 as usize;
         let y_blocks = self.height / self.lock_size.1 as usize;
+        let min_spp = 32.0;
+        let max_spp = 128.0;
         for by in 0..y_blocks {
             for bx in 0..x_blocks {
                 let block_x_start = bx * self.lock_size.0 as usize;
@@ -176,10 +179,11 @@ impl RenderTarget {
                     for x in 0..self.lock_size.0 as usize {
                         let c = &pixels[y * self.lock_size.0 as usize + x];
                         if c.a > 0.0 {
+                            let spp = (c.a - min_spp) / (max_spp - min_spp);
                             let cn = (*c / c.a).clamp().to_srgb();
                             let px = (y + block_y_start) * self.width * 3 + (x + block_x_start) * 3;
                             for i in 0..3 {
-                                render[px + i] = (cn[i] * 255.0) as u8;
+                                render[px + i] = (spp * 255.0) as u8;
                             }
                         }
                     }

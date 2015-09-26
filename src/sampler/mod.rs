@@ -3,14 +3,17 @@
 //! on through a simple trait interface
 
 use rand::StdRng;
+use film::ImageSample;
 
 pub use self::uniform::Uniform;
 pub use self::ld::LowDiscrepancy;
+pub use self::adaptive::Adaptive;
 pub use self::block_queue::BlockQueue;
 
 pub mod morton;
 pub mod uniform;
 pub mod ld;
+pub mod adaptive;
 pub mod block_queue;
 
 /// Provides the interface for all samplers to implement. Defines functions for
@@ -38,6 +41,11 @@ pub trait Sampler {
     fn select_block(&mut self, start: (u32, u32));
     /// Get the region being samples
     fn get_region(&self) -> &Region;
+    /// Let the sampler inspect the results of sampling the pixel so it can
+    /// determine if more samples should be taken. Returns true if these samples
+    /// are ok to use, false if more need to be taken. The default implementation
+    /// just returns true.
+    fn report_results(&mut self, samples: &[ImageSample]) -> bool { true }
 }
 
 /// Provides a simple way to pass around a 3 component sample consisting of one 2D and
