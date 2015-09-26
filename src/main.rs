@@ -79,6 +79,7 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQ
             }
         }
         target.write_block(&block_samples, sampler.get_region());
+        block_samples.clear();
     }
 }
 
