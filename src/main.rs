@@ -106,7 +106,7 @@ fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
     let (mut scene, spp, image_dim) = scene::Scene::load_file(&args.arg_scenefile[..]);
-    let mut rt = film::RenderTarget::new(image_dim, (4, 4),
+    let mut rt = film::RenderTarget::new(image_dim, (2, 2),
                     Box::new(filter::MitchellNetravali::new(2.0, 2.0, 1.0 / 3.0, 1.0 / 3.0))
                     as Box<filter::Filter + Send + Sync>);
     let n = match args.flag_n {
