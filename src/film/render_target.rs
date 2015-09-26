@@ -31,17 +31,20 @@ pub struct RenderTarget {
     width: usize,
     height: usize,
     pixels: Vec<Colorf>,
-    pixels_locked: Vec<Mutex<[Colorf; 8 * 8]>>,
+    pixels_locked: Vec<Mutex<Vec<Colorf>>>,
+    lock_size: (i32, i32),
     filter: Box<Filter + Send + Sync>,
     filter_table: Vec<f32>,
 }
 
 impl RenderTarget {
     /// Create a render target with `width * height` pixels
-    pub fn new(width: usize, height: usize, filter: Box<Filter + Send + Sync>) -> RenderTarget {
-        if width % 8 != 0 || height % 8 != 0 {
-            panic!("Image with dimension {:?} not evenly divided by blocks of {:?}", (width, height), (8, 8));
+    pub fn new(image_dim: (usize, usize), lock_size: (usize, usize), filter: Box<Filter + Send + Sync>) -> RenderTarget {
+        if image_dim.0 % lock_size.0 != 0 || image_dim.1 % lock_size.1 != 0 {
+            panic!("Image with dimension {:?} not evenly divided by blocks of {:?}", image_dim, lock_size);
         }
+        let width = image_dim.0;
+        let height = image_dim.1;
         let mut filter_table: Vec<f32> = iter::repeat(0.0).take(FILTER_TABLE_SIZE * FILTER_TABLE_SIZE)
             .collect();
         for y in 0..FILTER_TABLE_SIZE {
@@ -51,18 +54,19 @@ impl RenderTarget {
                 filter_table[y * FILTER_TABLE_SIZE + x] = filter.weight(fx, fy);
             }
         }
-        let x_blocks = width / 8;
-        let y_blocks = height / 8;
+        let x_blocks = width / lock_size.0;
+        let y_blocks = height / lock_size.1;
         println!("x_blocks = {}, y_blocks = {}", x_blocks, y_blocks);
         println!("width / 0.5 = {}, height / 0.5 = {}", f32::floor(filter.width() / 0.5),
             f32::floor(filter.height() / 0.5));
         let mut pixels_locked = Vec::with_capacity(x_blocks * y_blocks);
         for _ in 0..x_blocks * y_blocks {
-            pixels_locked.push(Mutex::new([Colorf::broadcast(0.0); 8 * 8]));
+            pixels_locked.push(Mutex::new(iter::repeat(Colorf::broadcast(0.0)).take(lock_size.0 * lock_size.1).collect()));
         }
         RenderTarget { width: width, height: height,
             pixels: iter::repeat(Colorf::broadcast(0.0)).take(width * height).collect(),
             pixels_locked: pixels_locked,
+            lock_size: (lock_size.0 as i32, lock_size.1 as i32),
             filter: filter,
             filter_table: filter_table,
         }
@@ -112,18 +116,20 @@ impl RenderTarget {
         println!("Writing starting at {:?} with filter pixels = {:?}\n\tx_range = {:?}, y_range = {:?}",
                  region.start, filter_pixels, x_range, y_range);
          */
-        let block_x_range = (x_range.0 / 8, x_range.1 / 8);
-        let block_y_range = (y_range.0 / 8, y_range.1 / 8);
+        let block_x_range = (x_range.0 / self.lock_size.0, x_range.1 / self.lock_size.0);
+        let block_y_range = (y_range.0 / self.lock_size.1, y_range.1 / self.lock_size.1);
         //println!("\tBlock x range {:?}, y range {:?}", block_x_range, block_y_range);
         if x_range.1 - x_range.0 < 0 || y_range.1 - y_range.0 < 0 {
                 return;
         }
-        let blocks_per_row = self.width as i32 / 8;
+        let blocks_per_row = self.width as i32 / self.lock_size.0;
         for y in block_y_range.0..block_y_range.1 + 1 {
             for x in block_x_range.0..block_x_range.1 + 1 {
                 //println!("\tBlock [{}, {}] is index {}", x, y, y * blocks_per_row + x);
-                let x_write_range = (cmp::max(x_range.0, x * 8), cmp::min(x_range.1 + 1, x * 8 + 8));
-                let y_write_range = (cmp::max(y_range.0, y * 8), cmp::min(y_range.1 + 1, y * 8 + 8));
+                let x_write_range = (cmp::max(x_range.0, x * self.lock_size.0),
+                                     cmp::min(x_range.1 + 1, x * self.lock_size.0 + self.lock_size.0));
+                let y_write_range = (cmp::max(y_range.0, y * self.lock_size.1),
+                                     cmp::min(y_range.1 + 1, y * self.lock_size.1 + self.lock_size.1));
                 //println!("\tWriting to pixels x range: {:?}, y range {:?}", x_write_range, y_write_range);
                 let block_samples = samples.iter().filter(|s| {
                     s.x >= (x_write_range.0 - filter_pixels.0) as f32
@@ -132,7 +138,9 @@ impl RenderTarget {
                         && s.y < (y_write_range.1 + filter_pixels.1) as f32
                 });
                 // Acquire lock for the block and write the samples
-                // TODO: Move more work out of critical section
+                // TODO: Move more work out of critical section. We only need to store the actual
+                // final filtered pixel values for the region, not weights + filtered vals for each
+                // sample
                 let block_idx = (y * blocks_per_row + x) as usize;
                 let mut pixels = self.pixels_locked[block_idx].lock().unwrap();
                 for c in block_samples {
@@ -147,9 +155,9 @@ impl RenderTarget {
                                 * FILTER_TABLE_SIZE as f32;
                             let fx_idx = cmp::min(fx as usize, FILTER_TABLE_SIZE - 1);
                             let weight = self.filter_table[fy_idx * FILTER_TABLE_SIZE + fx_idx];
+                            let px = ((iy - y * self.lock_size.0) * self.lock_size.0 + ix - x * self.lock_size.0) as usize;
                             // TODO: Can't currently overload the += operator
                             // Coming soon though, see RFC #953 https://github.com/rust-lang/rfcs/pull/953
-                            let px = ((iy - y * 8) * 8 + ix - x * 8) as usize;
                             //println!("\tWriting pixel [{}, {}], block pix index = {}", ix, iy, px);
                             pixels[px].r += weight * c.color.r;
                             pixels[px].g += weight * c.color.g;
@@ -174,35 +182,19 @@ impl RenderTarget {
     /// Convert the floating point color buffer to 24bpp sRGB for output to an image
     pub fn get_render(&self) -> Vec<u8> {
         let mut render: Vec<u8> = iter::repeat(0u8).take(self.width * self.height * 3).collect();
-        for y in 0..self.height {
-            for x in 0..self.width {
-                let c = &self.pixels[y * self.width + x];
-                if c.a != 0.0 {
-                    let cn = (*c / c.a).clamp().to_srgb();
-                    for i in 0..3 {
-                        render[y * self.width * 3 + x * 3 + i] = (cn[i] * 255.0) as u8;
-
-                    }
-                }
-            }
-        }
-        render
-    }
-    /// Get the lock-block rendered image (TODO this is just for debugging)
-    pub fn get_block_render(&self) -> Vec<u8> {
-        let mut render: Vec<u8> = iter::repeat(0u8).take(self.width * self.height * 3).collect();
-        let x_blocks = self.width / 8;
-        let y_blocks = self.height / 8;
+        let x_blocks = self.width / self.lock_size.0 as usize;
+        let y_blocks = self.height / self.lock_size.1 as usize;
         for by in 0..y_blocks {
             for bx in 0..x_blocks {
                 let block_idx = (by * x_blocks + bx) as usize;
                 let pixels = self.pixels_locked[block_idx].lock().unwrap();
-                for y in 0..8 {
-                    for x in 0..8 {
-                        let c = &pixels[y * 8 + x];
+                for y in 0..self.lock_size.1 as usize {
+                    for x in 0..self.lock_size.0 as usize {
+                        let c = &pixels[y * self.lock_size.0 as usize+ x];
                         if c.a > 0.0 {
                             let cn = (*c / c.a).clamp().to_srgb();
-                            let px = (y + by * 8) * self.width * 3 + (x + bx * 8) * 3;
+                            let px = (y + by * self.lock_size.0 as usize) * self.width * 3
+                                    + (x + bx * self.lock_size.0 as usize) * 3;
                             for i in 0..3 {
                                 render[px + i] = (cn[i] * 255.0) as u8;
                             }

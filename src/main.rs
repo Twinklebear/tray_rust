@@ -105,8 +105,8 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
-    let (mut scene, spp, (width, height)) = scene::Scene::load_file(&args.arg_scenefile[..]);
-    let mut rt = film::RenderTarget::new(width, height,
+    let (mut scene, spp, image_dim) = scene::Scene::load_file(&args.arg_scenefile[..]);
+    let mut rt = film::RenderTarget::new(image_dim, (4, 4),
                     Box::new(filter::MitchellNetravali::new(2.0, 2.0, 1.0 / 3.0, 1.0 / 3.0))
                     as Box<filter::Filter + Send + Sync>);
     let n = match args.flag_n {
@@ -130,12 +130,7 @@ fn main() {
             &None => format!("out_frame{:03}.png", i).to_string(),
         };
 
-        match image::save_buffer(&Path::new(&out_file), &img[..], width as u32, height as u32, image::RGB(8)) {
-            Ok(_) => {},
-            Err(e) => println!("Error saving image, {}", e),
-        };
-        let img = rt.get_block_render();
-        match image::save_buffer(&Path::new("block_out.png"), &img[..], width as u32, height as u32, image::RGB(8)) {
+        match image::save_buffer(&Path::new(&out_file), &img[..], image_dim.0 as u32, image_dim.1 as u32, image::RGB(8)) {
             Ok(_) => {},
             Err(e) => println!("Error saving image, {}", e),
         };
