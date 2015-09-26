@@ -45,7 +45,7 @@ struct Args {
 /// values recieved to the render target
 fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
                target: &film::RenderTarget, light_list: &Vec<&Emitter>) {
-    let mut sampler = sampler::Adaptive::new(queue.block_dim(), 32, 128);
+    let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), spp);
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut time_samples: Vec<_> = iter::repeat(0.0).take(sampler.max_spp()).collect();
     let block_dim = queue.block_dim();
@@ -113,7 +113,7 @@ fn main() {
 
     let (mut scene, spp, image_dim) = scene::Scene::load_file(&args.arg_scenefile[..]);
     let mut rt = film::RenderTarget::new(image_dim, (2, 2),
-                    Box::new(filter::MitchellNetravali::new(0.5, 0.5, 1.0 / 3.0, 1.0 / 3.0))
+                    Box::new(filter::MitchellNetravali::new(2.0, 2.0, 1.0 / 3.0, 1.0 / 3.0))
                     as Box<filter::Filter + Send + Sync>);
     let n = match args.flag_n {
         Some(n) => n,
