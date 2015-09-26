@@ -1,4 +1,4 @@
-#![feature(duration_span, drain)]
+#![feature(duration_span)]
 
 extern crate image;
 extern crate rand;
@@ -10,7 +10,6 @@ extern crate tray_rust;
 
 use std::vec::Vec;
 use std::iter;
-use std::sync::mpsc::{self, Sender};
 use std::path::Path;
 use std::time::Duration;
 
@@ -44,8 +43,8 @@ struct Args {
 /// Threads are each sent a sender end of the channel that is
 /// read from by the render target thread which then saves the
 /// values recieved to the render target
-fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQueue,
-               scene: &scene::Scene, target: &film::RenderTarget, light_list: &Vec<&Emitter>) {
+fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
+               target: &film::RenderTarget, light_list: &Vec<&Emitter>) {
     let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), spp);
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut time_samples: Vec<_> = iter::repeat(0.0).take(sampler.max_spp()).collect();
@@ -63,19 +62,13 @@ fn thread_work(tx: Sender<Vec<ImageSample>>, spp: usize, queue: &sampler::BlockQ
             // Get samples for a pixel and render them
             sampler.get_samples(&mut sample_pos, &mut rng);
             sampler.get_samples_1d(&mut time_samples[..], &mut rng);
-            let mut samples = Vec::with_capacity(sampler.max_spp());
             for (s, t) in sample_pos.iter().zip(time_samples.iter()) {
                 let mut ray = scene.camera.generate_ray(s, *t);
                 if let Some(hit) = scene.intersect(&mut ray) {
                     let c = scene.integrator.illumination(scene, light_list, &ray,
                                                           &hit, &mut sampler, &mut rng).clamp();
-                    samples.push(ImageSample::new(s.0, s.1, c));
                     block_samples.push(ImageSample::new(s.0, s.1, c));
                 }
-            }
-            if let Err(e) = tx.send(samples) {
-                println!("Worker thread exiting with send error {:?}", e);
-                return;
             }
         }
         target.write_block(&block_samples, sampler.get_region());
@@ -98,24 +91,13 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
         }).collect();
         assert!(!light_list.is_empty(), "At least one light is required");
 
-        let rx = {
-            let (tx, rx) = mpsc::channel();
-            for _ in 0..n {
-                let t = tx.clone();
-                let b = &block_queue;
-                let r = &*rt;
-                let l = &light_list;
-                scope.execute(move || {
-                    thread_work(t, spp, b, scene, r, l);
-                });
-            }
-            rx
-        };
-
-        for mut v in rx.iter() {
-            for s in v.drain(..) {
-                rt.write(s.x, s.y, &s.color);
-            }
+        for _ in 0..n {
+            let b = &block_queue;
+            let r = &*rt;
+            let l = &light_list;
+            scope.execute(move || {
+                thread_work(spp, b, scene, r, l);
+            });
         }
     });
 }
