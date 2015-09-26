@@ -122,6 +122,11 @@ impl RenderTarget {
         if x_range.1 - x_range.0 < 0 || y_range.1 - y_range.0 < 0 {
                 return;
         }
+        // Temporary storage for filtered samples so we can compute the filtered results for
+        // the block we're writing too without having to get the lock
+        let mut filtered_samples: Vec<_> = iter::repeat(Colorf::broadcast(0.0))
+            .take((self.lock_size.0 * self.lock_size.1) as usize).collect();
+
         let blocks_per_row = self.width as i32 / self.lock_size.0;
         for y in block_y_range.0..block_y_range.1 + 1 {
             for x in block_x_range.0..block_x_range.1 + 1 {
@@ -137,12 +142,12 @@ impl RenderTarget {
                         && s.y >= (y_write_range.0 - filter_pixels.1) as f32
                         && s.y < (y_write_range.1 + filter_pixels.1) as f32
                 });
-                // Acquire lock for the block and write the samples
-                // TODO: Move more work out of critical section. We only need to store the actual
-                // final filtered pixel values for the region, not weights + filtered vals for each
-                // sample
-                let block_idx = (y * blocks_per_row + x) as usize;
-                let mut pixels = self.pixels_locked[block_idx].lock().unwrap();
+
+                for c in &mut filtered_samples {
+                    *c = Colorf::broadcast(0.0);
+                }
+                
+                // Compute the filtered samples for the block
                 for c in block_samples {
                     let img_x = c.x - 0.5;
                     let img_y = c.y - 0.5;
@@ -158,12 +163,25 @@ impl RenderTarget {
                             let px = ((iy - y * self.lock_size.0) * self.lock_size.0 + ix - x * self.lock_size.0) as usize;
                             // TODO: Can't currently overload the += operator
                             // Coming soon though, see RFC #953 https://github.com/rust-lang/rfcs/pull/953
-                            //println!("\tWriting pixel [{}, {}], block pix index = {}", ix, iy, px);
-                            pixels[px].r += weight * c.color.r;
-                            pixels[px].g += weight * c.color.g;
-                            pixels[px].b += weight * c.color.b;
-                            pixels[px].a += weight;
+                            filtered_samples[px].r += weight * c.color.r;
+                            filtered_samples[px].g += weight * c.color.g;
+                            filtered_samples[px].b += weight * c.color.b;
+                            filtered_samples[px].a += weight;
                         }
+                    }
+                }
+
+                // Acquire lock for the block and write the samples
+                let block_idx = (y * blocks_per_row + x) as usize;
+                let mut pixels = self.pixels_locked[block_idx].lock().unwrap();
+                for iy in y_write_range.0..y_write_range.1 {
+                    for ix in x_write_range.0..x_write_range.1 {
+                        let px = ((iy - y * self.lock_size.0) * self.lock_size.0 + ix - x * self.lock_size.0) as usize;
+                        let c = &filtered_samples[px];
+                        pixels[px].r += c.r;
+                        pixels[px].g += c.g;
+                        pixels[px].b += c.b;
+                        pixels[px].a += c.a;
                     }
                 }
             }
