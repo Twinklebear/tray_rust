@@ -88,8 +88,6 @@ impl RenderTarget {
         let block_y_range = (y_range.0 / self.lock_size.1, y_range.1 / self.lock_size.1);
         // Temporary storage for filtered samples so we can compute the filtered results for
         // the block we're writing too without having to get the lock
-        // TODO: Could each thread have this locally and pass it to the render target
-        // instead of allocating it each time we write?
         let mut filtered_samples: Vec<_> = iter::repeat(Colorf::broadcast(0.0))
             .take((self.lock_size.0 * self.lock_size.1) as usize).collect();
 
@@ -114,7 +112,7 @@ impl RenderTarget {
                 for c in &mut filtered_samples {
                     *c = Colorf::broadcast(0.0);
                 }
-                
+
                 // Compute the filtered samples for the block
                 for c in block_samples {
                     let img_x = c.x - 0.5;
