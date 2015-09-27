@@ -3,10 +3,10 @@
 		"width": 800,
 		"height": 600,
 		"samples": 4,
-		"frames": 48,
+		"frames": 1,
 		"start_frame": 0,
-		"end_frame": 4,
-		"scene_time": 2,
+		"end_frame": 0,
+		"scene_time": 0,
 		"filter" : {
 			"type": "mitchell_netravali",
 			"width": 2.0,
@@ -17,10 +17,15 @@
 	},
 	"camera": {
 		"fov": 30,
-		"transform": [
+		"keyframes": [
 			{
-				"type": "translate",
-				"translation": [0, 12, -60]
+				"time": 0,
+				"transform": [
+					{
+						"type": "translate",
+						"translation": [0, 12, -60]
+					}
+				]
 			}
 		]
 	},
@@ -176,7 +181,7 @@
 			]
 		},
 		{
-			"name": "animation_test",
+			"name": "light",
 			"type": "emitter",
 			"material": "white_wall",
 			"emitter": "area",

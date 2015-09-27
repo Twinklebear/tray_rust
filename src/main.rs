@@ -134,7 +134,7 @@ fn main() {
 
     let (mut scene, mut rt, spp, frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
     let image_dim = rt.dimensions();
-    println!("Rendering using {} threads", n);
+    println!("Rendering using {} threads\n--------------------", n);
 
     let time_step = frame_info.time / frame_info.frames as f32;
     for i in frame_info.start..frame_info.end + 1 {

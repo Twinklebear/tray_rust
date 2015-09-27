@@ -143,22 +143,27 @@ fn load_filter(elem: &Value) -> Box<filter::Filter + Send + Sync> {
 fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
     let fov = elem.find("fov").expect("The camera must specify a field of view").as_f64()
         .expect("fov must be a float") as f32;
-    let transform = match elem.find("transform") {
-        Some(t) => load_transform(t).expect("Invalid transform specified"),
+    let transform = match elem.find("keyframes") {
+        Some(t) => load_keyframes(t).expect("Invalid keyframes specified"),
         None => {
-            println!("Warning! Specifying transforms with pos, target and up vectors is deprecated!");
-            let pos = load_point(elem.find("position").expect("The camera must specify a position"))
-                .expect("position must be an array of 3 floats");
-            let target = load_point(elem.find("target").expect("The camera must specify a target"))
-                .expect("target must be an array of 3 floats");
-            let up = load_vector(elem.find("up").expect("The camera must specify an up vector"))
-                .expect("up must be an array of 3 floats");
-            Transform::look_at(&pos, &target, &up)
+            let t = match elem.find("transform") {
+                Some(t) => load_transform(t).expect("Invalid transform specified"),
+                None => {
+                    println!("Warning! Specifying transforms with pos, target and up vectors is deprecated!");
+                    let pos = load_point(elem.find("position").expect("The camera must specify a position"))
+                        .expect("position must be an array of 3 floats");
+                    let target = load_point(elem.find("target").expect("The camera must specify a target"))
+                        .expect("target must be an array of 3 floats");
+                    let up = load_vector(elem.find("up").expect("The camera must specify an up vector"))
+                        .expect("up must be an array of 3 floats");
+                    Transform::look_at(&pos, &target, &up)
+                }
+            };
+            let key = Keyframe::new(&t, 0.0);
+            AnimatedTransform::with_keyframes(vec![key])
         },
     };
-    let start = Keyframe::new(&transform, 0.0);
-    let animation = AnimatedTransform::with_keyframes(vec![start]);
-    let camera = Camera::new(animation, fov, dim, 0.0, 0.0);
+    let camera = Camera::new(transform, fov, dim, 0.0, 0.0);
     camera
 }
 
@@ -287,29 +292,18 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             .as_string().expect("Object name must be a string").to_string();
         let ty = o.find("type").expect("A type is required for an object")
             .as_string().expect("Object type must be a string");
-        let transform =
-            if name != "animation_test" {
+
+        let transform = match o.find("keyframes") {
+            Some(t) => load_keyframes(t).expect("Invalid keyframes specified"),
+            None => {
                 let t = match o.find("transform") {
                     Some(t) => load_transform(t).expect("Invalid transform specified"),
-                    None => Transform::identity(),
+                    None => panic!("No transform specified for object {}", name),
                 };
-                AnimatedTransform::with_keyframes(vec![Keyframe::new(&t, 0.0)])
-            } else {
-                /*
-                let parent_start = Keyframe::new(&(Transform::translate(&Vector::new(-1.0, 0.0, 0.0))), 0.0);
-                let parent_end = Keyframe::new(&(Transform::translate(&Vector::new(-0.5, 0.0, 2.0)) * Transform::rotate_z(45.0)), 1.5);
-                let parent_animation = AnimatedTransform::with_keyframes(vec![parent_start, parent_end]);
-
-                let base = Transform::rotate_y(15.0) * Transform::scale(&Vector::new(4.0, 5.0, 4.0));
-                let start = Keyframe::new(&(Transform::translate(&Vector::new(4.0, 2.5, -3.0)) * base), 0.0);
-                let middle = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_y(-15.0) * base), 1.0);
-                let end = Keyframe::new(&(Transform::translate(&Vector::new(2.0, 5.5, 0.0)) * Transform::rotate_x(45.0) * Transform::rotate_y(-15.0) * base), 2.0);
-                AnimatedTransform::with_keyframes(vec![start, middle, end])
-                */
-                let start = Keyframe::new(&(Transform::translate(&Vector::new(0.0, 23.8, 0.0)) * Transform::rotate_x(90.0)), 0.0);
-                let end = Keyframe::new(&(Transform::translate(&Vector::new(-6.0, 20.0, 0.0)) * Transform::rotate_z(35.0) * Transform::rotate_x(90.0)), 2.0);
-                AnimatedTransform::with_keyframes(vec![start, end])
-            };
+                let key = Keyframe::new(&t, 0.0);
+                AnimatedTransform::with_keyframes(vec![key])
+            },
+        };
         if ty == "emitter" {
             let emit_ty = o.find("emitter").expect("An emitter type is required for emitters")
                 .as_string().expect("Emitter type must be a string");
@@ -545,5 +539,23 @@ fn load_transform(elem: &Value) -> Option<Transform> {
         }
     }
     Some(transform)
+}
+
+/// Load a list of keyframes specified by the element. Will panic on invalidly
+/// specified keyframes or transforms and log the error
+fn load_keyframes(elem: &Value) -> Option<AnimatedTransform> {
+    let array = match elem.as_array() {
+        Some(a) => a,
+        None => return None,
+    };
+    let mut keyframes = Vec::new();
+    for t in array {
+        let time = t.find("time").expect("A time is required for a keyframe")
+            .as_f64().expect("Time must be a number") as f32;
+        let transform = load_transform(t.find("transform").expect("A transform is required for a keyframe"))
+            .expect("Invalid transform for keyframe");
+        keyframes.push(Keyframe::new(&transform, time));
+    }
+    Some(AnimatedTransform::with_keyframes(keyframes))
 }
 
