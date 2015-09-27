@@ -58,11 +58,6 @@ fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
     // to the render target thread after each pixel
     for b in queue.iter() {
         sampler.select_block(b);
-        if b.0 >= 100 || b.1 >= 75 {
-            println!("Bad block: {:?}", b);
-        }
-        assert!(b.0 < 100 && b.1 < 75);
-
         let mut pixel_samples = 0;
         while sampler.has_samples() {
             // Get samples for a pixel and render them
