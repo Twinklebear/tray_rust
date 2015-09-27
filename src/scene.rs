@@ -32,7 +32,7 @@ use std::collections::HashMap;
 use serde_json::{self, Value};
 
 use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
-use film::{Camera, Colorf};
+use film::{filter, Camera, Colorf, RenderTarget};
 use geometry::{Sphere, Plane, Instance, Intersection, BVH, Mesh, Disk,
                Cone, BoundableGeom, SampleableGeom};
 use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal};
@@ -47,7 +47,7 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn load_file(file: &str) -> (Scene, usize, (usize, usize)) {
+    pub fn load_file(file: &str) -> (Scene, RenderTarget, usize) {
         let mut f = match File::open(file) {
             Ok(f) => f,
             Err(e) => panic!("Failed to open scene file: {}", e),
@@ -68,7 +68,8 @@ impl Scene {
             None => Path::new(file),
         };
 
-        let (camera, spp, dim) = load_camera(data.find("camera").expect("The scene must specify a camera"));
+        let (rt, spp) = load_film(data.find("film").expect("The scene must specify a film to write to"));
+        let camera = load_camera(data.find("camera").expect("The scene must specify a camera"), rt.dimensions());
         let integrator = load_integrator(data.find("integrator")
                                          .expect("The scene must specify the integrator to render with"));
         let materials = load_materials(&path, data.find("materials")
@@ -84,7 +85,7 @@ impl Scene {
             bvh: BVH::new(4, instances, 0.0, 2.0),
             integrator: integrator,
         };
-        (scene, spp, dim)
+        (scene, rt, spp)
     }
     /// Test the ray for intersections against the objects in the scene.
     /// Returns Some(Intersection) if an intersection was found and None if not.
@@ -93,16 +94,41 @@ impl Scene {
     }
 }
 
+/// Load the film described by the JSON value passed. Returns the render target
+/// along with the image dimensions and samples per pixel
+fn load_film(elem: &Value) -> (RenderTarget, usize) {
+    let width = elem.find("width").expect("The film must specify the image width")
+        .as_u64().expect("Image width must be a number") as usize;
+    let height = elem.find("height").expect("The film must specify the image height")
+        .as_u64().expect("Image height must be a number") as usize;
+    let spp = elem.find("samples").expect("The film must specify the number of samples per pixel")
+        .as_u64().expect("Samples per pixel must be a number") as usize;
+    let filter = load_filter(elem.find("filter").expect("The film must specify a reconstruction filter"));
+    (RenderTarget::new((width, height), (2, 2), filter), spp)
+}
+/// Load the reconstruction filter described by the JSON value passed
+fn load_filter(elem: &Value) -> Box<filter::Filter + Send + Sync> {
+    let width = elem.find("width").expect("The filter must specify the filter width")
+        .as_f64().expect("Filter width must be a number") as f32;
+    let height = elem.find("height").expect("The filter must specify the filter height")
+        .as_f64().expect("Filter height must be a number") as f32;
+    let ty = elem.find("type").expect("A type is required for the filter")
+        .as_string().expect("Filter type must be a string");
+    if ty == "mitchell_netravali" {
+        let b = elem.find("b").expect("A b parameter is required for the Mitchell-Netravali filter")
+            .as_f64().expect("b must be a number") as f32;
+        let c = elem.find("c").expect("A c parameter is required for the Mitchell-Netravali filter")
+            .as_f64().expect("c must be a number") as f32;
+        Box::new(filter::MitchellNetravali::new(width, height, b, c)) as Box<filter::Filter + Send + Sync>
+    } else {
+        panic!("Unrecognized filter type {}!", ty);
+    }
+}
+
 /// Load the camera described by the JSON value passed.
 /// Returns the camera along with the number of samples to take per pixel
 /// and the scene dimensions. Panics if the camera is incorrectly specified
-fn load_camera(elem: &Value) -> (Camera, usize, (usize, usize)) {
-    let width = elem.find("width").expect("The camera must specify the image width")
-        .as_u64().expect("Image width must be a number") as usize;
-    let height = elem.find("height").expect("The camera must specify the image height")
-        .as_u64().expect("Image height must be a number") as usize;
-    let spp = elem.find("samples").expect("The camera must specify the number of samples per pixel")
-        .as_u64().expect("Samples per pixel must be a number") as usize;
+fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
     let fov = elem.find("fov").expect("The camera must specify a field of view").as_f64()
         .expect("fov must be a float") as f32;
     let transform = match elem.find("transform") {
@@ -120,8 +146,8 @@ fn load_camera(elem: &Value) -> (Camera, usize, (usize, usize)) {
     };
     let start = Keyframe::new(&transform, 0.0);
     let animation = AnimatedTransform::with_keyframes(vec![start]);
-    let camera = Camera::new(animation, fov, (width, height), 0.7, 1.3);
-    (camera, spp, (width, height))
+    let camera = Camera::new(animation, fov, dim, 0.0, 0.0);
+    camera
 }
 
 /// Load the integrator described by the JSON value passed.

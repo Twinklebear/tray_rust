@@ -1,8 +1,17 @@
 {
-	"camera": {
+	"film": {
 		"width": 800,
 		"height": 600,
-		"samples": 8,
+		"samples": 4,
+		"filter" : {
+			"type": "mitchell_netravali",
+			"width": 2.0,
+			"height": 2.0,
+			"b": 0.333333333333333333,
+			"c": 0.333333333333333333
+		}
+	},
+	"camera": {
 		"fov": 30,
 		"transform": [
 			{

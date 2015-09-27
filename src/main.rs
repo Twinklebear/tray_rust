@@ -16,7 +16,7 @@ use std::time::Duration;
 use rand::StdRng;
 use docopt::Docopt;
 
-use tray_rust::film::{self, filter, ImageSample};
+use tray_rust::film::{self, ImageSample};
 use tray_rust::geometry::{Geometry, Instance, Emitter};
 use tray_rust::sampler::{self, Sampler};
 use tray_rust::scene;
@@ -109,23 +109,24 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
 
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
-
-    let (mut scene, spp, image_dim) = scene::Scene::load_file(&args.arg_scenefile[..]);
-    let mut rt = film::RenderTarget::new(image_dim, (2, 2),
-                    Box::new(filter::MitchellNetravali::new(2.0, 2.0, 1.0 / 3.0, 1.0 / 3.0))
-                    as Box<filter::Filter + Send + Sync>);
     let n = match args.flag_n {
         Some(n) => n,
         None => num_cpus::get() as u32,
     };
     let out_path = match &args.flag_o {
-        &Some(ref f) => PathBuf::from(f),
+        &Some(ref f) => {
+            let p = PathBuf::from(f);
+            // If we're writing to a directory make sure it exists
+            if p.extension() == None {
+                std::fs::create_dir(p.as_path());
+            }
+            p
+        },
         &None => PathBuf::from("./"),
     };
-    // If we're writing to a directory make sure it exists
-    if out_path.extension() == None {
-        std::fs::create_dir(out_path.as_path()).unwrap();
-    }
+
+    let (mut scene, mut rt, spp) = scene::Scene::load_file(&args.arg_scenefile[..]);
+    let image_dim = rt.dimensions();
 
     let scene_time = 2.0;
     let frames = 10;
