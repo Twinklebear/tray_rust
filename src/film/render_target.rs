@@ -30,7 +30,6 @@ impl ImageSample {
 pub struct RenderTarget {
     width: usize,
     height: usize,
-    pixels: Vec<Colorf>,
     pixels_locked: Vec<Mutex<Vec<Colorf>>>,
     lock_size: (i32, i32),
     filter: Box<Filter + Send + Sync>,
@@ -65,7 +64,6 @@ impl RenderTarget {
         }
 
         RenderTarget { width: width, height: height,
-            pixels: iter::repeat(Colorf::broadcast(0.0)).take(width * height).collect(),
             pixels_locked: pixels_locked,
             lock_size: (lock_size.0 as i32, lock_size.1 as i32),
             filter: filter,
@@ -154,8 +152,16 @@ impl RenderTarget {
     }
     /// Clear the render target to black
     pub fn clear(&mut self) {
-        for p in self.pixels.iter_mut() {
-            *p = Colorf::broadcast(0.0);
+        let x_blocks = self.width / self.lock_size.0 as usize;
+        let y_blocks = self.height / self.lock_size.1 as usize;
+        for by in 0..y_blocks {
+            for bx in 0..x_blocks {
+                let block_idx = (by * x_blocks + bx) as usize;
+                let mut pixels = self.pixels_locked[block_idx].lock().unwrap();
+                for p in pixels.iter_mut() {
+                    *p = Colorf::broadcast(0.0);
+                }
+            }
         }
     }
     /// Get the dimensions of the render target
