@@ -35,6 +35,9 @@ impl BlockQueue {
         let mut blocks: Vec<(u32, u32)> = (0..num_blocks.0 * num_blocks.1)
             .map(|i| (i % num_blocks.0, i / num_blocks.0)).collect();
         blocks.sort_by(|a, b| morton::morton2(a).cmp(&morton::morton2(b)));
+        for b in blocks.iter() {
+            println!("Block {:?}", b);
+        }
         BlockQueue { blocks: blocks, dimensions: dim, next: AtomicUsize::new(0) }
     }
     /// Get the dimensions of an individual block in the queue

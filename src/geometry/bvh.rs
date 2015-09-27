@@ -20,6 +20,8 @@ pub struct BVH<T: Boundable> {
     ordered_geom: Vec<usize>,
     /// The flattened tree structure of the BVH
     tree: Vec<FlatNode>,
+    /// Maximum amount of geometry we want to store per node
+    max_geom: usize,
 }
 
 impl<T: Boundable> BVH<T> {
@@ -53,7 +55,26 @@ impl<T: Boundable> BVH<T> {
             // TODO: I'm not sure if there's a better way that we can re-sort the geometry by the
             // indices in ordered geom
         }
-        BVH { geometry: geometry, ordered_geom: ordered_geom, tree: flat_tree }
+        BVH { geometry: geometry, ordered_geom: ordered_geom, tree: flat_tree, max_geom: max_geom }
+    }
+    /// Re-build the BVH for the time range passed
+    pub fn rebuild(&mut self, start: f32, end: f32) {
+        self.tree.clear();
+        self.ordered_geom.clear();
+        let mut build_geom = Vec::with_capacity(self.geometry.len());
+        for (i, g) in self.geometry.iter().enumerate() {
+            build_geom.push(GeomInfo::new(g, i, start, end));
+        }
+        // TODO: How to sort the geometry into the flatten tree ordering?
+        // we have the indices things should end up in stored in ordered geom
+        // but how to use this information in sort_by for example?
+        // Should we move things into/out of build_geom instead of borrowing?
+        // it knows the index of the items
+        let mut total_nodes = 0;
+        let root = Box::new(BVH::build(&mut build_geom[..], &mut self.ordered_geom, &mut total_nodes,
+                              self.max_geom, start, end));
+        self.tree.reserve(total_nodes);
+        BVH::<T>::flatten_tree(&root, &mut self.tree);
     }
     /// Traverse the BVH and call the function passed on the objects in the leaf nodes
     /// of the BVH, returning the value returned by the function after traversal completes

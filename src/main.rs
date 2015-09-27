@@ -58,6 +58,11 @@ fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
     // to the render target thread after each pixel
     for b in queue.iter() {
         sampler.select_block(b);
+        if b.0 >= 100 || b.1 >= 75 {
+            println!("Bad block {:?}", b);
+        }
+        assert!(b.0 < 100 && b.1 < 75);
+
         let mut pixel_samples = 0;
         while sampler.has_samples() {
             // Get samples for a pixel and render them
@@ -120,12 +125,17 @@ fn main() {
         None => num_cpus::get() as u32,
     };
 
-    // Render 5 frames. TODO: This should be read from scene file
-    let scene_time = 0.0;
-    let frames = 1;
+    let scene_time = 2.0;
+    let frames = 10;
     let time_step = scene_time / (frames as f32);
     for i in 0..frames {
-        scene.camera.update_shutter(i as f32 * time_step, (i as f32 + 1.0) * time_step);
+        let frame_start = i as f32 * time_step;
+        let frame_end = (i as f32 + 1.0) * time_step;
+        scene.camera.update_shutter(frame_start, frame_end);
+        // TODO: How often to re-build the BVH?
+        println!("Frame {}: re-building bvh for {} to {}", i, frame_start, frame_end);
+        scene.bvh.rebuild(frame_start, frame_end);
+        println!("Frame {}: rendering for {} to {}", i, frame_start, frame_end);
         let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
         let time = d.as_secs() as f64 + (d.subsec_nanos() as f64) / 1_000_000_000.0;
         println!("Rendering took {}s", time);
@@ -141,6 +151,7 @@ fn main() {
             Err(e) => println!("Error saving image, {}", e),
         };
         rt.clear();
+        println!("Rendered Frame {}\n--------------------", i);
     }
 }
 
