@@ -3,14 +3,14 @@ name = "tray_rust"
 version = "0.0.1"
 dependencies = [
  "byteorder 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
- "docopt 0.6.70 (registry+https://github.com/rust-lang/crates.io-index)",
+ "docopt 0.6.72 (registry+https://github.com/rust-lang/crates.io-index)",
  "enum-set 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "num_cpus 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "scoped_threadpool 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_json 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tobj 0.0.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -32,6 +32,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitflags"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "byteorder"
 version = "0.3.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -43,7 +48,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "docopt"
-version = "0.6.70"
+version = "0.6.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "regex 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -65,6 +70,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "flate2"
+version = "0.2.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "miniz-sys 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "gcc"
+version = "0.3.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "advapi32-sys 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "winapi 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "gif"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -80,7 +103,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "image"
-version = "0.3.11"
+version = "0.3.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "byteorder 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -88,6 +111,7 @@ dependencies = [
  "gif 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glob 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "num 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
+ "png 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -109,6 +133,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "miniz-sys"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "gcc 0.3.16 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "num"
 version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -123,6 +156,17 @@ version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "png"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "bitflags 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "flate2 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -186,7 +230,7 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "num 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",

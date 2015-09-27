@@ -9,14 +9,14 @@ doc = false
 
 [dependencies]
 enum-set = "0.0.5"
-rand = "0.3.8"
+rand = "0.3.9"
 rustc-serialize = "0.3.15"
-docopt = "0.6.70"
-image = "0.3.11"
+docopt = "0.6.72"
+image = "0.3.14"
 num_cpus = "0.2.6"
 tobj = "0.0.9"
 byteorder = "0.3.11"
-serde_json = "0.5.0"
+serde_json = "0.6.0"
 scoped_threadpool = "0.1.6"
 
 [profile.release]
