@@ -12,6 +12,7 @@ use std::vec::Vec;
 use std::iter;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::io::ErrorKind;
 
 use rand::StdRng;
 use docopt::Docopt;
@@ -94,7 +95,6 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
         }
     }).collect();
     assert!(!light_list.is_empty(), "At least one light is required");
-    println!("Rendering using {} threads", n);
     pool.scoped(|scope| {
         for _ in 0..n {
             let b = &block_queue;
@@ -118,20 +118,26 @@ fn main() {
             let p = PathBuf::from(f);
             // If we're writing to a directory make sure it exists
             if p.extension() == None {
-                std::fs::create_dir(p.as_path());
+                match std::fs::create_dir(p.as_path()) {
+                    Err(e) => {
+                        if e.kind() != ErrorKind::AlreadyExists {
+                            panic!("Failed to create output directory");
+                        }
+                    },
+                    Ok(_) => {},
+                }
             }
             p
         },
         &None => PathBuf::from("./"),
     };
 
-    let (mut scene, mut rt, spp) = scene::Scene::load_file(&args.arg_scenefile[..]);
+    let (mut scene, mut rt, spp, frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
     let image_dim = rt.dimensions();
+    println!("Rendering using {} threads", n);
 
-    let scene_time = 2.0;
-    let frames = 10;
-    let time_step = scene_time / (frames as f32);
-    for i in 0..frames {
+    let time_step = frame_info.time / frame_info.frames as f32;
+    for i in frame_info.start..frame_info.end + 1 {
         let frame_start = i as f32 * time_step;
         let frame_end = (i as f32 + 1.0) * time_step;
         scene.camera.update_shutter(frame_start, frame_end);
@@ -141,7 +147,7 @@ fn main() {
         println!("Frame {}: rendering for {} to {}", i, frame_start, frame_end);
         let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
         let time = d.as_secs() as f64 + (d.subsec_nanos() as f64) / 1_000_000_000.0;
-        println!("Rendering took {}s", time);
+        println!("Frame {}: Rendering took {}s", i, time);
 
         let img = rt.get_render();
         let out_file = match out_path.extension() {
@@ -153,7 +159,7 @@ fn main() {
             Err(e) => println!("Error saving image, {}", e),
         };
         rt.clear();
-        println!("Rendered Frame {} to '{}'\n--------------------", i, out_file.display());
+        println!("Frame {}: Rendered to '{}'\n--------------------", i, out_file.display());
     }
 }
 

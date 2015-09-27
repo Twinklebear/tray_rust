@@ -11,3 +11,21 @@ pub mod render_target;
 pub mod camera;
 pub mod filter;
 
+/// Struct to store various parameters for the frame timing
+pub struct FrameInfo {
+    /// Total number of frames for the scene
+    pub frames: usize,
+    /// Total time for all the entire scene (ie. for all frames)
+    pub time: f32,
+    /// Frame number to start rendering at
+    pub start: usize,
+    /// Frame number to stop rendering at
+    pub end: usize,
+}
+
+impl FrameInfo {
+    pub fn new(frames: usize, time: f32, start: usize, end: usize) -> FrameInfo {
+        FrameInfo { frames: frames, time: time, start: start, end: end }
+    }
+}
+

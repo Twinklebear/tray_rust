@@ -3,6 +3,10 @@
 		"width": 800,
 		"height": 600,
 		"samples": 4,
+		"frames": 48,
+		"start_frame": 0,
+		"end_frame": 4,
+		"scene_time": 2,
 		"filter" : {
 			"type": "mitchell_netravali",
 			"width": 2.0,

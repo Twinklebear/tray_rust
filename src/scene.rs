@@ -32,7 +32,7 @@ use std::collections::HashMap;
 use serde_json::{self, Value};
 
 use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
-use film::{filter, Camera, Colorf, RenderTarget};
+use film::{filter, Camera, Colorf, RenderTarget, FrameInfo};
 use geometry::{Sphere, Plane, Instance, Intersection, BVH, Mesh, Disk,
                Cone, BoundableGeom, SampleableGeom};
 use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal};
@@ -47,7 +47,7 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn load_file(file: &str) -> (Scene, RenderTarget, usize) {
+    pub fn load_file(file: &str) -> (Scene, RenderTarget, usize, FrameInfo) {
         let mut f = match File::open(file) {
             Ok(f) => f,
             Err(e) => panic!("Failed to open scene file: {}", e),
@@ -68,7 +68,7 @@ impl Scene {
             None => Path::new(file),
         };
 
-        let (rt, spp) = load_film(data.find("film").expect("The scene must specify a film to write to"));
+        let (rt, spp, frame_info) = load_film(data.find("film").expect("The scene must specify a film to write to"));
         let camera = load_camera(data.find("camera").expect("The scene must specify a camera"), rt.dimensions());
         let integrator = load_integrator(data.find("integrator")
                                          .expect("The scene must specify the integrator to render with"));
@@ -85,7 +85,7 @@ impl Scene {
             bvh: BVH::new(4, instances, 0.0, 2.0),
             integrator: integrator,
         };
-        (scene, rt, spp)
+        (scene, rt, spp, frame_info)
     }
     /// Test the ray for intersections against the objects in the scene.
     /// Returns Some(Intersection) if an intersection was found and None if not.
@@ -96,15 +96,27 @@ impl Scene {
 
 /// Load the film described by the JSON value passed. Returns the render target
 /// along with the image dimensions and samples per pixel
-fn load_film(elem: &Value) -> (RenderTarget, usize) {
+fn load_film(elem: &Value) -> (RenderTarget, usize, FrameInfo) {
     let width = elem.find("width").expect("The film must specify the image width")
         .as_u64().expect("Image width must be a number") as usize;
     let height = elem.find("height").expect("The film must specify the image height")
         .as_u64().expect("Image height must be a number") as usize;
     let spp = elem.find("samples").expect("The film must specify the number of samples per pixel")
         .as_u64().expect("Samples per pixel must be a number") as usize;
+    let start_frame = elem.find("start_frame").expect("The film must specify the starting frame")
+        .as_u64().expect("Start frame must be a number") as usize;
+    let end_frame = elem.find("end_frame").expect("The film must specify the frame to end on")
+        .as_u64().expect("End frame must be a number") as usize;
+    if end_frame < start_frame {
+        panic!("End frame must be greater or equal to the starting frame");
+    }
+    let frames = elem.find("frames").expect("The film must specify the total number of frames")
+        .as_u64().expect("Frames must be a number") as usize;
+    let scene_time = elem.find("scene_time").expect("The film must specify the overall scene time")
+        .as_f64().expect("Scene time must be a number") as f32;
+    let frame_info = FrameInfo::new(frames, scene_time, start_frame, end_frame);
     let filter = load_filter(elem.find("filter").expect("The film must specify a reconstruction filter"));
-    (RenderTarget::new((width, height), (2, 2), filter), spp)
+    (RenderTarget::new((width, height), (2, 2), filter), spp, frame_info)
 }
 /// Load the reconstruction filter described by the JSON value passed
 fn load_filter(elem: &Value) -> Box<filter::Filter + Send + Sync> {
