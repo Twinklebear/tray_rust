@@ -17,15 +17,10 @@
 	},
 	"camera": {
 		"fov": 30,
-		"keyframes": [
+		"transform": [
 			{
-				"time": 0,
-				"transform": [
-					{
-						"type": "translate",
-						"translation": [0, 12, -60]
-					}
-				]
+				"type": "translate",
+				"translation": [0, 12, -60]
 			}
 		]
 	},
