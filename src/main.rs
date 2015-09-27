@@ -10,7 +10,7 @@ extern crate tray_rust;
 
 use std::vec::Vec;
 use std::iter;
-use std::path::Path;
+use std::path::PathBuf;
 use std::time::Duration;
 
 use rand::StdRng;
@@ -26,8 +26,8 @@ static USAGE: &'static str = "
 Usage: tray_rust <scenefile> [options]
 
 Options:
-  -o <file>     Specify the output file to save the image. Supported formats are
-                PNG, JPG and PPM. Default is 'out.png'.
+  -o <file>     Specify the output file or directory to save the image or frames. Supported formats are
+                PNG, JPG and PPM. Default is 'frame<#>.png'.
   -n <number>   Specify the number of threads to use for rendering. Defaults to the number of cores
                 on the system.
   -h, --help    Show this message.
@@ -118,6 +118,14 @@ fn main() {
         Some(n) => n,
         None => num_cpus::get() as u32,
     };
+    let out_path = match &args.flag_o {
+        &Some(ref f) => PathBuf::from(f),
+        &None => PathBuf::from("./"),
+    };
+    // If we're writing to a directory make sure it exists
+    if out_path.extension() == None {
+        std::fs::create_dir(out_path.as_path()).unwrap();
+    }
 
     let scene_time = 2.0;
     let frames = 10;
@@ -135,17 +143,16 @@ fn main() {
         println!("Rendering took {}s", time);
 
         let img = rt.get_render();
-        let out_file = match &args.flag_o {
-            &Some(ref f) => f.to_string(),
-            &None => format!("out_frame{:03}.png", i).to_string(),
+        let out_file = match out_path.extension() {
+            Some(_) => out_path.clone(),
+            None => out_path.join(PathBuf::from(format!("frame{:05}.png", i))),
         };
-
-        match image::save_buffer(&Path::new(&out_file), &img[..], image_dim.0 as u32, image_dim.1 as u32, image::RGB(8)) {
+        match image::save_buffer(&out_file.as_path(), &img[..], image_dim.0 as u32, image_dim.1 as u32, image::RGB(8)) {
             Ok(_) => {},
             Err(e) => println!("Error saving image, {}", e),
         };
         rt.clear();
-        println!("Rendered Frame {}\n--------------------", i);
+        println!("Rendered Frame {} to '{}'\n--------------------", i, out_file.display());
     }
 }
 
