@@ -59,7 +59,7 @@ fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
     for b in queue.iter() {
         sampler.select_block(b);
         if b.0 >= 100 || b.1 >= 75 {
-            println!("Bad block {:?}", b);
+            println!("Bad block: {:?}", b);
         }
         assert!(b.0 < 100 && b.1 < 75);
 
@@ -90,18 +90,17 @@ fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
 /// Render the scene in parallel using `n` threads and write the result to the render target
 fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, spp: usize){
     let mut pool = scoped_threadpool::Pool::new(n);
+    let dim = rt.dimensions();
+    let block_queue = sampler::BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8));
+    let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
+        match x {
+            &Instance::Emitter(ref e) => Some(e),
+            _ => None,
+        }
+    }).collect();
+    assert!(!light_list.is_empty(), "At least one light is required");
     println!("Rendering using {} threads", n);
     pool.scoped(|scope| {
-        let dim = rt.dimensions();
-        let block_queue = sampler::BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8));
-        let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
-            match x {
-                &Instance::Emitter(ref e) => Some(e),
-                _ => None,
-            }
-        }).collect();
-        assert!(!light_list.is_empty(), "At least one light is required");
-
         for _ in 0..n {
             let b = &block_queue;
             let r = &*rt;
