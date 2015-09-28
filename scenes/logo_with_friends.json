@@ -1,7 +1,7 @@
 {
 	"film": {
-		"width": 800,
-		"height": 600,
+		"width": 1920,
+		"height": 1080,
 		"samples": 32,
 		"frames": 1,
 		"start_frame": 0,
