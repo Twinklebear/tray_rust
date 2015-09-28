@@ -1,12 +1,28 @@
 {
-	"camera": {
+	"film": {
 		"width": 800,
 		"height": 600,
-		"samples": 64,
+		"samples": 16,
+		"frames": 1,
+		"start_frame": 0,
+		"end_frame": 0,
+		"scene_time": 0,
+		"filter" : {
+			"type": "mitchell_netravali",
+			"width": 2.0,
+			"height": 2.0,
+			"b": 0.333333333333333333,
+			"c": 0.333333333333333333
+		}
+	},
+	"camera": {
 		"fov": 28,
-		"position": [0.0, -52.0, 12.0],
-		"target": [0.0, 0.0, 12.0],
-		"up": [0.0, 0.0, 1.0]
+		"transform": [
+			{
+				"type": "translate",
+				"translation": [0, 12, -60]
+			}
+		]
 	},
 	"integrator": {
 		"type": "pathtracer",
@@ -64,7 +80,7 @@
 			"transform": [
 				{
 					"type": "translate",
-					"translation": [0, 0, 12]
+					"translation": [0, 12, 0]
 				}
 			],
 			"objects": [
@@ -81,12 +97,8 @@
 							"scaling": 32.0
 						},
 						{
-							"type": "rotate_x",
-							"rotation": 90.0
-						},
-						{
 							"type": "translate",
-							"translation": [0.0, 20.0, 0.0]
+							"translation": [0, 0, 20]
 						}
 					]
 				},
@@ -100,7 +112,7 @@
 					"transform": [
 						{
 							"type": "scale",
-							"scaling": 32.0
+							"scaling": 32
 						},
 						{
 							"type": "rotate_y",
@@ -108,7 +120,7 @@
 						},
 						{
 							"type": "translate",
-							"translation": [-15.0, 0.0, 0.0]
+							"translation": [-15.0, 0, 0]
 						}
 					]
 				},
@@ -130,7 +142,7 @@
 						},
 						{
 							"type": "translate",
-							"translation": [15.0, 0.0, 0.0]
+							"translation": [15.0, 0, 0]
 						}
 					]
 				},
@@ -148,18 +160,18 @@
 						},
 						{
 							"type": "rotate_x",
-							"rotation": 180.0
+							"rotation": 90.0
 						},
 						{
 							"type": "translate",
-							"translation": [0.0, 0.0, 12.0]
+							"translation": [0.0, 12, 0]
 						}
 					]
 				},
 				{
 					"name": "bottom_wall",
 					"type": "receiver",
-					"material": "white_wall_plastic",
+					"material": "white_wall",
 					"geometry": {
 						"type": "plane"
 					},
@@ -169,8 +181,12 @@
 							"scaling": 32.0
 						},
 						{
+							"type": "rotate_x",
+							"rotation": 90
+						},
+						{
 							"type": "translate",
-							"translation": [0.0, 0.0, -12.0]
+							"translation": [0.0, -12, 0]
 						}
 					]
 				}
@@ -190,11 +206,11 @@
 			"transform": [
 				{
 					"type": "rotate_x",
-					"rotation": 180
+					"rotation": 90
 				},
 				{
 					"type": "translate",
-					"translation": [0.0, 0.0, 23.85]
+					"translation": [0.0, 23.85, 0]
 				}
 			]
 		},
@@ -213,12 +229,12 @@
 					"scaling": 7.0
 				},
 				{
-					"type": "rotate_x",
-					"rotation": 90
+					"type": "rotate_y",
+					"rotation": 180
 				},
 				{
 					"type": "translate",
-					"translation": [0, 9, 10]
+					"translation": [0, 10, 9]
 				}
 			]
 		},
@@ -237,16 +253,20 @@
 					"scaling": 5
 				},
 				{
+					"type": "rotate_y",
+					"rotation": 160
+				},
+				{
 					"type": "rotate_x",
-					"rotation": 55
+					"rotation": 35
 				},
 				{
 					"type": "rotate_z",
-					"rotation": 25
+					"rotation": 10
 				},
 				{
 					"type": "translate",
-					"translation": [-7, 5, 2.5]
+					"translation": [-7.5, 2.5, 5]
 				}
 			]
 		},
@@ -265,16 +285,20 @@
 					"scaling": 5
 				},
 				{
+					"type": "rotate_y",
+					"rotation": -160
+				},
+				{
 					"type": "rotate_x",
-					"rotation": 55
+					"rotation": 35
 				},
 				{
 					"type": "rotate_z",
-					"rotation": -25
+					"rotation": -10
 				},
 				{
 					"type": "translate",
-					"translation": [7, 4, 2.5]
+					"translation": [7.5, 2.5, 5]
 				}
 			]
 		}
