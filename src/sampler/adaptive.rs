@@ -19,8 +19,14 @@ pub struct Adaptive {
     /// Number of samples to take per pixel
     min_spp: usize,
     max_spp: usize,
+    /// Number of additional samples to take each time we decide
+    /// more samples are needed
+    step_size: usize,
     /// How many samples we've taken for this pixel so far
     samples_taken: usize,
+    /// The cumulative moving average of the luminance for the
+    /// number of samples taken so far
+    avg_luminance: f32,
     scramble_range: Range<u32>,
 }
 
@@ -37,18 +43,35 @@ impl Adaptive {
             print!("Warning: Adaptive sampler requires power of two samples per pixel, ");
             println!("rounding max_spp up to {}", max_spp);
         }
+        let step_size = ((max_spp - min_spp) / 10).next_power_of_two();
         Adaptive { region: Region::new((0, 0), dim), min_spp: min_spp, max_spp: max_spp,
-                   samples_taken: 0, scramble_range: Range::new(0, u32::MAX) }
+                   step_size: step_size, samples_taken: 0, avg_luminance: 0.0,
+                   scramble_range: Range::new(0, u32::MAX) }
     }
     /// Determine if more samples need to be taken for the pixel currently sampled with the
     /// set of samples passed. This is done by simply looking at the contrast difference
     /// between the samples. TODO: What are some better strategies for estimating
     /// if we need more samples?
-    fn needs_supersampling(&self, samples: &[ImageSample]) -> bool {
+    fn needs_supersampling(&mut self, samples: &[ImageSample]) -> bool {
         let max_contrast = 0.5;
-        let avg_lum = samples.iter().fold(0.0, |ac, s| ac + s.color.luminance()) / samples.len() as f32;
+        // First sampling pass, compute the initial average luminance
+        if self.samples_taken == self.min_spp {
+            self.avg_luminance = samples.iter().fold(0.0, |ac, s| ac + s.color.luminance())
+                / samples.len() as f32;
+        } else {
+            // Otherwise update the average luminance to include these samples
+            let prev_samples = samples.len() - self.step_size;
+            self.avg_luminance = samples.iter().enumerate().skip(prev_samples)
+                .fold(self.avg_luminance, |ac, (i, s)| {
+                    (s.color.luminance() + (i - 1) as f32 * ac) / i as f32
+                });
+        }
+        // What if we kept and updated the average luminance? The result of this
+        // is that we re-inspect samples that we've seen before, eg after one step up of sampling
+        // we look at the first min_spp samples again, but we've already computed their average
+        // luminance! We should keep a moving average
         for s in samples.iter() {
-            if f32::abs(s.color.luminance() - avg_lum) / avg_lum > max_contrast {
+            if f32::abs(s.color.luminance() - self.avg_luminance) / self.avg_luminance > max_contrast {
                 return true;
             }
         }
@@ -63,9 +86,16 @@ impl Sampler for Adaptive {
             return;
         }
 
-        self.samples_taken += self.min_spp;
-        if samples.len() < self.min_spp {
-            samples.resize(self.min_spp, (0.0, 0.0));
+        if self.samples_taken == 0 {
+            self.samples_taken += self.min_spp;
+            if samples.len() < self.min_spp {
+                samples.resize(self.min_spp, (0.0, 0.0));
+            }
+        } else {
+            self.samples_taken += self.step_size;
+            if samples.len() != self.step_size {
+                samples.resize(self.step_size, (0.0, 0.0));
+            }
         }
         self.get_samples_2d(&mut samples[..], rng);
         for s in samples.iter_mut() {
@@ -76,12 +106,12 @@ impl Sampler for Adaptive {
     fn get_samples_2d(&mut self, samples: &mut [(f32, f32)], rng: &mut StdRng) {
         let scramble = (self.scramble_range.ind_sample(rng),
                         self.scramble_range.ind_sample(rng));
-        ld::sample_2d(samples, scramble);
+        ld::sample_2d(samples, scramble, self.samples_taken as u32);
         rng.shuffle(samples);
     }
     fn get_samples_1d(&mut self, samples: &mut [f32], rng: &mut StdRng) {
         let scramble = self.scramble_range.ind_sample(rng);
-        ld::sample_1d(samples, scramble);
+        ld::sample_1d(samples, scramble, self.samples_taken as u32);
         rng.shuffle(samples);
     }
     fn max_spp(&self) -> usize { self.max_spp }

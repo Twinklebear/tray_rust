@@ -54,12 +54,12 @@ impl Sampler for LowDiscrepancy {
     fn get_samples_2d(&mut self, samples: &mut [(f32, f32)], rng: &mut StdRng) {
         let scramble = (self.scramble_range.ind_sample(rng),
                         self.scramble_range.ind_sample(rng));
-        sample_2d(samples, scramble);
+        sample_2d(samples, scramble, 0);
         rng.shuffle(samples);
     }
     fn get_samples_1d(&mut self, samples: &mut [f32], rng: &mut StdRng) {
         let scramble = self.scramble_range.ind_sample(rng);
-        sample_1d(samples, scramble);
+        sample_1d(samples, scramble, 0);
         rng.shuffle(samples);
     }
     fn max_spp(&self) -> usize { self.spp }
@@ -75,16 +75,16 @@ impl Sampler for LowDiscrepancy {
 
 /// Generate a 2D pattern of low discrepancy samples to fill the slice
 /// sample values will be normalized between [0, 1]
-pub fn sample_2d(samples: &mut [(f32, f32)], scramble: (u32, u32)) {
+pub fn sample_2d(samples: &mut [(f32, f32)], scramble: (u32, u32), offset: u32) {
     for s in samples.iter_mut().enumerate() {
-        *s.1 = sample_02(s.0 as u32, scramble);
+        *s.1 = sample_02(s.0 as u32 + offset, scramble);
     }
 }
 /// Generate a 1D pattern of low discrepancy samples to fill the slice
 /// sample values will be normalized between [0, 1]
-pub fn sample_1d(samples: &mut [f32], scramble: u32) {
+pub fn sample_1d(samples: &mut [f32], scramble: u32, offset: u32) {
     for s in samples.iter_mut().enumerate() {
-        *s.1 = van_der_corput(s.0 as u32, scramble);
+        *s.1 = van_der_corput(s.0 as u32 + offset, scramble);
     }
 }
 /// Generate a sample from a scrambled (0, 2) sequence
