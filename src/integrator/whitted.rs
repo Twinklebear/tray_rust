@@ -47,14 +47,14 @@ impl Integrator for Whitted {
         if ray.depth == 0 {
             if let &Instance::Emitter(ref e) = hit.instance {
                 let w = -ray.d;
-                illum = illum + e.radiance(&w, &hit.dg.p, &hit.dg.ng);
+                illum = illum + e.radiance(&w, &hit.dg.p, &hit.dg.ng, ray.time);
             }
         }
 
         for light in light_list {
             let (li, w_i, pdf, occlusion) = light.sample_incident(&hit.dg.p, &sample_2d[0], ray.time);
             let f = bsdf.eval(&w_o, &w_i, BxDFType::all());
-            if !li.is_black() && !f.is_black() && !occlusion.occluded(scene, ray.time) {
+            if !li.is_black() && !f.is_black() && !occlusion.occluded(scene) {
                 illum = illum + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
             }
         }

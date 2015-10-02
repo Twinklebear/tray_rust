@@ -56,7 +56,7 @@ use std::sync::Arc;
 use geometry::{Boundable, BBox, SampleableGeom, DifferentialGeometry};
 use material::Material;
 use linalg::{self, Transform, AnimatedTransform, Keyframe, Point, Ray, Vector, Normal};
-use film::Colorf;
+use film::{AnimatedColor, Colorf};
 use light::{Light, OcclusionTester};
 
 /// The type of emitter, either a point light or an area light
@@ -73,7 +73,7 @@ enum EmitterType {
 pub struct Emitter {
     emitter: EmitterType,
     /// The light intensity emitted
-    pub emission: Colorf,
+    pub emission: AnimatedColor,
     /// The transform to world space
     transform: AnimatedTransform,
     /// Tag to identify the instance
@@ -86,7 +86,7 @@ impl Emitter {
     /// We also need MIS in the path tracer's direct light sampling so we get
     /// good quality
     pub fn area(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-                emission: Colorf, transform: AnimatedTransform, tag: String) -> Emitter {
+                emission: AnimatedColor, transform: AnimatedTransform, tag: String) -> Emitter {
         // TODO: How to change this transform to handle scaling within the animation?
         /*
         if transform.has_scale() {
@@ -99,7 +99,7 @@ impl Emitter {
                   tag: tag.to_string() }
     }
     /// Create a new point light. TODO: Should we just take a transform here as well?
-    pub fn point(pos: Point, emission: Colorf, tag: String) -> Emitter {
+    pub fn point(pos: Point, emission: AnimatedColor, tag: String) -> Emitter {
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
                   transform: AnimatedTransform::with_keyframes(vec![Keyframe::new(&Transform::translate(&(pos - Point::broadcast(0.0))), 0.0)]),
@@ -130,8 +130,8 @@ impl Emitter {
     }
     /// Return the radiance emitted by the light in the direction `w`
     /// from point `p` on the light's surface with normal `n`
-    pub fn radiance(&self, w: &Vector, _: &Point, n: &Normal) -> Colorf {
-        if linalg::dot(w, n) > 0.0 { self.emission } else { Colorf::black() }
+    pub fn radiance(&self, w: &Vector, _: &Point, n: &Normal, time: f32) -> Colorf {
+        if linalg::dot(w, n) > 0.0 { self.emission.color(time) } else { Colorf::black() }
     }
     /// Get the transform to place the emitter into world space
     pub fn get_transform(&self) -> &AnimatedTransform {
@@ -163,7 +163,7 @@ impl Light for Emitter {
                 let transform = self.transform.transform(time);
                 let pos = transform * Point::broadcast(0.0);
                 let w_i = (pos - *p).normalized();
-                (self.emission / pos.distance_sqr(p), w_i, 1.0, OcclusionTester::test_points(p, &pos))
+                (self.emission.color(time) / pos.distance_sqr(p), w_i, 1.0, OcclusionTester::test_points(p, &pos, time))
             }
             &EmitterType::Area(ref g, _) => {
                 let transform = self.transform.transform(time);
@@ -171,9 +171,9 @@ impl Light for Emitter {
                 let (p_sampled, normal) = g.sample(&p_l, samples);
                 let w_il = (p_sampled - p_l).normalized();
                 let pdf = g.pdf(&p_l, &w_il);
-                let radiance = self.radiance(&-w_il, &p_sampled, &normal);
+                let radiance = self.radiance(&-w_il, &p_sampled, &normal, time);
                 let p_w = transform * p_sampled;
-                (radiance, transform * w_il, pdf, OcclusionTester::test_points(&p, &p_w))
+                (radiance, transform * w_il, pdf, OcclusionTester::test_points(&p, &p_w, time))
             },
         }
     }

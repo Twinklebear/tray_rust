@@ -66,7 +66,7 @@ use geometry::{Intersection, Boundable, BBox, BoundableGeom, Receiver, Emitter,
                SampleableGeom};
 use material::Material;
 use linalg::{Point, Ray, AnimatedTransform};
-use film::Colorf;
+use film::AnimatedColor;
 
 /// Defines an instance of some geometry with its own transform and material
 pub enum Instance {
@@ -82,10 +82,10 @@ impl Instance {
     }
     /// Create an instance of the geometry in the scene that will emit and receive light
     pub fn area_light(geom: Arc<SampleableGeom + Send + Sync>, material: Arc<Material + Send + Sync>,
-               emission: Colorf, transform: AnimatedTransform, tag: String) -> Instance {
+               emission: AnimatedColor, transform: AnimatedTransform, tag: String) -> Instance {
         Instance::Emitter(Emitter::area(geom, material, emission, transform, tag))
     }
-    pub fn point_light(pos: Point, emission: Colorf, tag: String) ->  Instance {
+    pub fn point_light(pos: Point, emission: AnimatedColor, tag: String) ->  Instance {
         Instance::Emitter(Emitter::point(pos, emission, tag))
     }
     /// Test the ray for intersection against this insance of geometry.

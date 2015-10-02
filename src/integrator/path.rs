@@ -69,7 +69,7 @@ impl Integrator for Path {
             if bounce == 0 || specular_bounce {
                 if let &Instance::Emitter(ref e) = current_hit.instance {
                     let w = -ray.d;
-                    illum = illum + path_throughput * e.radiance(&w, &hit.dg.p, &hit.dg.ng);
+                    illum = illum + path_throughput * e.radiance(&w, &hit.dg.p, &hit.dg.ng, ray.time);
                 }
             }
             let bsdf = current_hit.material.bsdf(&current_hit);

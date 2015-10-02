@@ -118,15 +118,15 @@ pub trait Integrator {
         let mut direct_light = Colorf::black();
         // Sample the light first
         let (li, w_i, pdf_light, occlusion) = light.sample_incident(&bsdf.p, &light_sample.two_d, time);
-        if pdf_light > 0.0 && !li.is_black() && !occlusion.occluded(scene, time) {
+        if pdf_light > 0.0 && !li.is_black() && !occlusion.occluded(scene) {
             let f = bsdf.eval(w_o, &w_i, flags);
             if !f.is_black() {
                 if light.delta_light() {
-                    direct_light = direct_light + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf_light;
+                    direct_light = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf_light;
                 } else {
                     let pdf_bsdf = bsdf.pdf(w_o, &w_i, flags);
                     let w = mc::power_heuristic(1.0, pdf_light, 1.0, pdf_bsdf);
-                    direct_light = direct_light + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) * w / pdf_light;
+                    direct_light = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) * w / pdf_light;
                 }
             }
         }
@@ -152,8 +152,8 @@ pub trait Integrator {
                             // TODO: The extra case to *const () is to workaround the ICE I
                             // encountered writing this code: https://github.com/rust-lang/rust/issues/2744/
                             if e as *const Light as *const () == light as *const Light as *const () {
-                                li = e.radiance(&-w_i, &h.dg.p, &h.dg.n)
-                            } 
+                                li = e.radiance(&-w_i, &h.dg.p, &h.dg.n, time)
+                            }
                         }
                     },
                     None => {}

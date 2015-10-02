@@ -32,7 +32,7 @@ use std::collections::HashMap;
 use serde_json::{self, Value};
 
 use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
-use film::{filter, Camera, Colorf, RenderTarget, FrameInfo};
+use film::{filter, Camera, Colorf, RenderTarget, FrameInfo, AnimatedColor, ColorKeyframe};
 use geometry::{Sphere, Plane, Instance, Intersection, BVH, Mesh, Disk,
                Cone, BoundableGeom, SampleableGeom};
 use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal};
@@ -307,7 +307,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
         if ty == "emitter" {
             let emit_ty = o.find("emitter").expect("An emitter type is required for emitters")
                 .as_string().expect("Emitter type must be a string");
-            let emission = load_color(o.find("emission").expect("An emission color is required for emitters"))
+            let emission = load_animated_color(o.find("emission").expect("An emission color is required for emitters"))
                 .expect("Emitter emission must be a color");
             if emit_ty == "point" {
                 let pos = load_point(o.find("position").expect("A position is required for point lights"))
@@ -481,6 +481,35 @@ fn load_color(elem: &Value) -> Option<Colorf> {
         c = c * v[3];
     }
     Some(c)
+}
+
+/// Load an animated color from the JSON element passed. Returns None if the
+/// element did not contain a valid color
+fn load_animated_color(elem: &Value) -> Option<AnimatedColor> {
+    let array = match elem.as_array() {
+        Some(a) => a,
+        None => return None,
+    };
+    if array.is_empty() {
+        return None;
+    }
+    // Check if this is actually just a single color value
+    if array[0].is_number() {
+       match load_color(elem){
+            Some(c) => return Some(AnimatedColor::with_keyframes(vec![ColorKeyframe::new(&c, 0.0)])),
+            None => return None,
+        }
+    } else {
+        let mut v = Vec::new();
+        for c in array.iter() {
+            let time = c.find("time").expect("A time must be specified for a color keyframe").as_f64()
+                .expect("Time for color keyframe must be a number") as f32;
+            let color = load_color(c.find("color").expect("A color must be specified for a color keyframe"))
+                .expect("A valid color is required for a color keyframe");
+            v.push(ColorKeyframe::new(&color, time));
+        }
+        return Some(AnimatedColor::with_keyframes(v));
+    }
 }
 
 /// Load a transform stack specified by the element. Will panic on invalidly specified
