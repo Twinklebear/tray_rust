@@ -43,7 +43,7 @@ impl Adaptive {
             print!("Warning: Adaptive sampler requires power of two samples per pixel, ");
             println!("rounding max_spp up to {}", max_spp);
         }
-        let step_size = ((max_spp - min_spp) / 10).next_power_of_two();
+        let step_size = ((max_spp - min_spp) / 5).next_power_of_two();
         Adaptive { region: Region::new((0, 0), dim), min_spp: min_spp, max_spp: max_spp,
                    step_size: step_size, samples_taken: 0, avg_luminance: 0.0,
                    scramble_range: Range::new(0, u32::MAX) }
