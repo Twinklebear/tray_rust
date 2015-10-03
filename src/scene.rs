@@ -341,7 +341,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             for mut gi in group_instances {
                 {
                     let t = gi.get_transform().clone();
-                    gi.set_transform(t * transform.clone());
+                    gi.set_transform(transform.clone() * t);
                 }
                 instances.push(gi);
             }
