@@ -9,13 +9,13 @@ doc = false
 
 [dependencies]
 enum-set = "0.0.5"
-rand = "0.3.9"
-rustc-serialize = "0.3.15"
-docopt = "0.6.72"
+rand = "0.3.11"
+rustc-serialize = "0.3.16"
+docopt = "0.6.73"
 image = "0.3.14"
 num_cpus = "0.2.6"
 tobj = "0.0.9"
-byteorder = "0.3.11"
+byteorder = "0.3.13"
 serde_json = "0.6.0"
 scoped_threadpool = "0.1.6"
 
