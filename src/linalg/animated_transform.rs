@@ -1,10 +1,9 @@
 //! Provides an animated transformation that moves an object between a
 //! set of specified keyframes.
 
-use std::collections::BTreeSet;
 use std::ops::Mul;
 
-use linalg::{self, keyframe, Keyframe, Transform};
+use linalg::{self, quaternion, keyframe, Keyframe, Transform};
 use geometry::BBox;
 
 /// An animated transform that blends between the keyframes in its transformation
@@ -13,7 +12,7 @@ use geometry::BBox;
 pub struct AnimatedTransform {
     /// List of animated transforms in hierarchical order, e.g. the lowest
     /// index is the object's, index 1 holds its direct parent's transform, etc.
-    keyframes: Vec<BTreeSet<Keyframe>>,
+    keyframes: Vec<Vec<Keyframe>>,
 }
 
 impl AnimatedTransform {
@@ -22,12 +21,20 @@ impl AnimatedTransform {
         AnimatedTransform { keyframes: Vec::new() }
     }
     /// Create an animated transformation blending between the passed keyframes
-    pub fn with_keyframes(keyframes: Vec<Keyframe>) -> AnimatedTransform {
-        AnimatedTransform { keyframes: vec![keyframes.into_iter().collect()] }
-    }
-    /// Insert a keyframe into the animation sequence
-    pub fn insert(&mut self, keyframe: Keyframe) {
-        self.keyframes[0].insert(keyframe);
+    pub fn with_keyframes(mut keyframes: Vec<Keyframe>) -> AnimatedTransform {
+        keyframes.sort();
+        let mut anim = AnimatedTransform { keyframes: vec![keyframes] };
+        // Step through and make sure all rotations take the shortest path
+        for mut stack in anim.keyframes.iter_mut() {
+            for i in 1..stack.len() {
+                // If the dot product is negative flip the current quaternion to
+                // take the shortest path through the rotation
+                if quaternion::dot(&stack[i - 1].rotation, &stack[i].rotation) < 0.0 {
+                    stack[i].rotation = -stack[i].rotation;
+                }
+            }
+        }
+        anim
     }
     /// Compute the transformation matrix for the animation at some time point.
     /// The transform is found by interpolating the two keyframes nearest to the
@@ -37,7 +44,7 @@ impl AnimatedTransform {
         let mut transform = Transform::identity();
         // Step through the transform stack, applying each animation transform at this
         // time as we move up
-        for stack in &self.keyframes[..] {
+        for stack in self.keyframes.iter() {
             let t =
                 if stack.len() == 1 {
                     let first = stack.iter().next().unwrap();
@@ -48,9 +55,9 @@ impl AnimatedTransform {
                     let first = stack.iter().take_while(|k| k.time < time).last();
                     let second = stack.iter().skip_while(|k| k.time < time).next();
                     if first.is_none() {
-                        stack.iter().next().unwrap().transform()
+                        stack.first().unwrap().transform()
                     } else if second.is_none() {
-                        stack.iter().last().unwrap().transform()
+                        stack.last().unwrap().transform()
                     } else {
                         keyframe::interpolate(time, first.unwrap(), second.unwrap())
                     }
