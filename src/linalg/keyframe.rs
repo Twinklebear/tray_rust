@@ -10,9 +10,9 @@ use linalg::{self, quaternion, Vector, Matrix4, Quaternion, Transform};
 #[derive(Debug, Copy, Clone)]
 pub struct Keyframe {
     pub time: f32,
-    translation: Vector,
-    rotation: Quaternion,
-    scaling: Matrix4,
+    pub translation: Vector,
+    pub rotation: Quaternion,
+    pub scaling: Matrix4,
 }
 
 impl Keyframe {
