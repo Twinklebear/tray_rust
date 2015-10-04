@@ -1,7 +1,7 @@
 //! Provides a Quaternion type for properly interpolating rotations
 
 use std::f32;
-use std::ops::{Add, Sub, Mul, Div};
+use std::ops::{Add, Sub, Mul, Div, Neg};
 
 use linalg::{self, Vector, Transform, Matrix4};
 
@@ -149,6 +149,14 @@ impl Div<f32> for Quaternion {
     /// Divide the quaternion by a scalar
     fn div(self, rhs: f32) -> Quaternion {
         Quaternion { v: self.v / rhs, w: self. w / rhs }
+    }
+}
+
+impl Neg for Quaternion {
+    type Output = Quaternion;
+    /// Negate the quaternion
+    fn neg(self) -> Quaternion {
+        Quaternion { v: -self.v, w: -self. w }
     }
 }
 
