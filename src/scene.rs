@@ -34,7 +34,7 @@ use serde_json::{self, Value};
 use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
 use film::{filter, Camera, Colorf, RenderTarget, FrameInfo, AnimatedColor, ColorKeyframe};
 use geometry::{Sphere, Plane, Instance, Intersection, BVH, Mesh, Disk,
-               Cone, BoundableGeom, SampleableGeom};
+               BoundableGeom, SampleableGeom};
 use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal};
 use integrator::{self, Integrator};
 
@@ -370,12 +370,6 @@ fn load_geometry(path: &Path, meshes: &mut HashMap<String, HashMap<String, Arc<M
         Arc::new(Disk::new(r, ir))
     } else if ty == "plane" {
         Arc::new(Plane)
-    } else if ty == "cone" {
-        let r = elem.find("radius").expect("A radius is required for a cone").as_f64()
-            .expect("radius must be a number") as f32;
-        let h = elem.find("height").expect("A height is required for a cone").as_f64()
-            .expect("height must be a number") as f32;
-        Arc::new(Cone::new(r, h))
     } else if ty == "mesh" {
         let mut file = Path::new(elem.find("file").expect("An OBJ file is required for meshes")
             .as_string().expect("OBJ filename must be a string")).to_path_buf();
