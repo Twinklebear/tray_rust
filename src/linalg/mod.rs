@@ -76,11 +76,16 @@ pub fn spherical_phi(v: &vector::Vector) -> f32 {
 /// Try to solve the quadratic equation `a*t^2 + b*t + c = 0` and return the two
 /// real roots if a solution exists
 pub fn solve_quadratic(a: f32, b: f32, c: f32) -> Option<(f32, f32)> {
-    let discrim = f32::sqrt(b * b - 4f32 * a * c);
-    if f32::is_nan(discrim) {
+    let discrim_sqr = b * b - 4.0 * a * c;
+    if discrim_sqr < 0.0 {
         None
     } else {
-        let q = if b < 0f32 { -0.5f32 * (b - discrim) } else { -0.5f32 * (b + discrim) };
+        let discrim = f32::sqrt(discrim_sqr);
+        let q = if b < 0.0 {
+            -0.5 * (b - discrim)
+        } else {
+            -0.5 * (b + discrim)
+        };
         match (q / a, c / q) {
             (x, y) if x > y => Some((y, x)),
             (x, y)          => Some((x, y)),
@@ -89,7 +94,7 @@ pub fn solve_quadratic(a: f32, b: f32, c: f32) -> Option<(f32, f32)> {
 }
 /// Compute a local ortho-normal coordinate system from a single vector.
 pub fn coordinate_system(e1: &Vector) -> (Vector, Vector) {
-	let e2 = 
+	let e2 =
         if f32::abs(e1.x) > f32::abs(e1.y) {
             let inv_len = 1.0 / f32::sqrt(e1.x * e1.x + e1.z * e1.z);
             Vector::new(-e1.z * inv_len, 0.0, e1.x * inv_len)
