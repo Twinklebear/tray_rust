@@ -74,8 +74,9 @@ impl Scene {
                                          .expect("The scene must specify the integrator to render with"));
         let materials = load_materials(&path, data.find("materials")
                                        .expect("The scene must specify an array of materials"));
-
-        let instances = load_objects(&path, &materials,
+        // mesh cache is a map of file_name -> (map of mesh name -> mesh)
+        let mut mesh_cache = HashMap::new();
+        let instances = load_objects(&path, &materials, &mut mesh_cache,
                                      data.find("objects").expect("The scene must specify a list of objects"));
 
         assert!(!instances.is_empty(), "Aborting: the scene does not have any objects!");
@@ -281,11 +282,10 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
 
 /// Loads the array of objects in the scene, assigning them materials from the materials map. Will
 /// panic if an incorrectly specified object is found.
-fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + Sync>>, elem: &Value)
+fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + Sync>>,
+                mesh_cache: &mut HashMap<String, HashMap<String, Arc<Mesh>>>, elem: &Value)
                 -> Vec<Instance> {
     let mut instances = Vec::new();
-    // mesh cache is a map of file_name -> (map of mesh name -> mesh)
-    let mut mesh_cache = HashMap::new();
     let objects = elem.as_array().expect("The objects must be an array of objects used");
     for o in objects {
         let name = o.find("name").expect("A name is required for an object")
@@ -331,13 +331,13 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
                     .as_string().expect("Object material name must be a string");
             let mat = materials.get(mat_name)
                 .expect("Material was not found in the material list").clone();
-            let geom = load_geometry(path, &mut mesh_cache, o.find("geometry")
+            let geom = load_geometry(path, mesh_cache, o.find("geometry")
                                      .expect("Geometry is required for receivers"));
 
             instances.push(Instance::receiver(geom, mat, transform, name));
         } else if ty == "group" {
             let group_objects = o.find("objects").expect("A group must specify an array of objects in the group");
-            let group_instances = load_objects(path, materials, group_objects);
+            let group_instances = load_objects(path, materials, mesh_cache, group_objects);
             for mut gi in group_instances {
                 {
                     let t = gi.get_transform().clone();
