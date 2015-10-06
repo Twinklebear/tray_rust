@@ -16,10 +16,6 @@ pub struct AnimatedTransform {
 }
 
 impl AnimatedTransform {
-    /// Create a new empty animated transform
-    pub fn new() -> AnimatedTransform {
-        AnimatedTransform { keyframes: Vec::new() }
-    }
     /// Create an animated transformation blending between the passed keyframes
     pub fn with_keyframes(mut keyframes: Vec<Keyframe>) -> AnimatedTransform {
         keyframes.sort();
