@@ -298,7 +298,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             None => {
                 let t = match o.find("transform") {
                     Some(t) => load_transform(t).expect("Invalid transform specified"),
-                    None => panic!("No transform specified for object {}", name),
+                    None => panic!("No keyframes or transform specified for object {}", name),
                 };
                 let key = Keyframe::new(&t, 0.0);
                 AnimatedTransform::with_keyframes(vec![key])
