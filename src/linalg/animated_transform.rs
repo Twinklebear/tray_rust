@@ -32,6 +32,10 @@ impl AnimatedTransform {
         }
         AnimatedTransform { keyframes: vec![BSpline::new(3, keyframes, knots)] }
     }
+    pub fn unanimated(transform: &Transform) -> AnimatedTransform {
+        let key = Keyframe::new(&transform);
+        AnimatedTransform { keyframes: vec![BSpline::new(0, vec![key], vec![0.0, 1.0])] }
+    }
     /// Compute the transformation matrix for the animation at some time point.
     /// The transform is found by interpolating the two keyframes nearest to the
     /// time point being evaluated. **TODO** a binary search of some kind to find

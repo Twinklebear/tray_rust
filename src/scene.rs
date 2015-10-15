@@ -84,7 +84,7 @@ impl Scene {
         let scene = Scene {
             camera: camera,
             // TODO: Read time parameters from the scene file, update BVH every few frames
-            bvh: BVH::new(4, instances, 0.0, 2.0),
+            bvh: BVH::new(4, instances, 0.0, frame_info.time),
             integrator: integrator,
         };
         (scene, rt, spp, frame_info)
@@ -161,8 +161,7 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
                     Transform::look_at(&pos, &target, &up)
                 }
             };
-            let key = Keyframe::new(&t);
-            AnimatedTransform::with_keyframes(vec![key, key, key, key], iter::repeat(0.0).take(8).collect())
+            AnimatedTransform::unanimated(&t)
         },
     };
     let camera = Camera::new(transform, fov, dim, 0.0, 0.0);
@@ -301,8 +300,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
                     Some(t) => load_transform(t).expect("Invalid transform specified"),
                     None => panic!("No keyframes or transform specified for object {}", name),
                 };
-                let key = Keyframe::new(&t);
-                AnimatedTransform::with_keyframes(vec![key, key, key, key], iter::repeat(0.0).take(8).collect())
+                AnimatedTransform::unanimated(&t)
             },
         };
         if ty == "emitter" {
