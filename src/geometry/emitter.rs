@@ -53,6 +53,8 @@
 //! ```
 
 use std::sync::Arc;
+use std::iter;
+
 use geometry::{Boundable, BBox, SampleableGeom, DifferentialGeometry};
 use material::Material;
 use linalg::{self, Transform, AnimatedTransform, Keyframe, Point, Ray, Vector, Normal};
@@ -100,9 +102,10 @@ impl Emitter {
     }
     /// Create a new point light. TODO: Should we just take a transform here as well?
     pub fn point(pos: Point, emission: AnimatedColor, tag: String) -> Emitter {
+        let key = Keyframe::new(&Transform::translate(&(pos - Point::broadcast(0.0))));
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
-                  transform: AnimatedTransform::with_keyframes(vec![Keyframe::new(&Transform::translate(&(pos - Point::broadcast(0.0))), 0.0)]),
+                  transform: AnimatedTransform::with_keyframes(vec![key, key, key, key], iter::repeat(0.0).take(8).collect()),
                   tag: tag.to_string() }
     }
     /// Test the ray for intersection against this insance of geometry.

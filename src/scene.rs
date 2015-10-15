@@ -28,6 +28,7 @@ use std::fs::File;
 use std::sync::Arc;
 use std::path::Path;
 use std::collections::HashMap;
+use std::iter;
 
 use serde_json::{self, Value};
 
@@ -160,8 +161,8 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
                     Transform::look_at(&pos, &target, &up)
                 }
             };
-            let key = Keyframe::new(&t, 0.0);
-            AnimatedTransform::with_keyframes(vec![key])
+            let key = Keyframe::new(&t);
+            AnimatedTransform::with_keyframes(vec![key, key, key, key], iter::repeat(0.0).take(8).collect())
         },
     };
     let camera = Camera::new(transform, fov, dim, 0.0, 0.0);
@@ -300,8 +301,8 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
                     Some(t) => load_transform(t).expect("Invalid transform specified"),
                     None => panic!("No keyframes or transform specified for object {}", name),
                 };
-                let key = Keyframe::new(&t, 0.0);
-                AnimatedTransform::with_keyframes(vec![key])
+                let key = Keyframe::new(&t);
+                AnimatedTransform::with_keyframes(vec![key, key, key, key], iter::repeat(0.0).take(8).collect())
             },
         };
         if ty == "emitter" {
@@ -567,18 +568,24 @@ fn load_transform(elem: &Value) -> Option<Transform> {
 /// Load a list of keyframes specified by the element. Will panic on invalidly
 /// specified keyframes or transforms and log the error
 fn load_keyframes(elem: &Value) -> Option<AnimatedTransform> {
-    let array = match elem.as_array() {
+    let points = match elem.find("control_points").expect("Control points are required for bspline keyframes").as_array() {
+        Some(a) => a,
+        None => return None,
+    };
+    let knots_json = match elem.find("knots").expect("knots are required for bspline keyframes").as_array() {
         Some(a) => a,
         None => return None,
     };
     let mut keyframes = Vec::new();
-    for t in array {
-        let time = t.find("time").expect("A time is required for a keyframe")
-            .as_f64().expect("Time must be a number") as f32;
+    for t in points {
         let transform = load_transform(t.find("transform").expect("A transform is required for a keyframe"))
             .expect("Invalid transform for keyframe");
-        keyframes.push(Keyframe::new(&transform, time));
+        keyframes.push(Keyframe::new(&transform));
     }
-    Some(AnimatedTransform::with_keyframes(keyframes))
+    let mut knots = Vec::new();
+    for k in knots_json {
+        knots.push(k.as_f64().expect("Knots must be numbers") as f32);
+    }
+    Some(AnimatedTransform::with_keyframes(keyframes, knots))
 }
 

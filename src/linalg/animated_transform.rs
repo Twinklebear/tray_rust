@@ -5,7 +5,7 @@ use std::ops::Mul;
 
 use bspline::BSpline;
 
-use linalg::{self, quaternion, keyframe, Keyframe, Transform};
+use linalg::{self, quaternion, Keyframe, Transform};
 use geometry::BBox;
 
 /// An animated transform that blends between the keyframes in its transformation
@@ -19,8 +19,8 @@ pub struct AnimatedTransform {
 
 impl AnimatedTransform {
     /// Create an animated transformation blending between the passed keyframes
-    pub fn with_keyframes(mut keyframes: Vec<Keyframe>) -> AnimatedTransform {
-        keyframes.sort();
+    /// TODO: Fast paths for static and linear path animations?
+    pub fn with_keyframes(mut keyframes: Vec<Keyframe>, knots: Vec<f32>) -> AnimatedTransform {
         // so we know what degree and so on.
         // Step through and make sure all rotations take the shortest path
         for i in 1..keyframes.len() {
@@ -30,13 +30,7 @@ impl AnimatedTransform {
                 keyframes[i].rotation = -keyframes[i].rotation;
             }
         }
-        // TODO: This is a hack we need to read bspline key frame info from the scene file
-        let knots = if keyframes.len() == 1 {
-            vec![keyframes[0].time, keyframes[0].time, keyframes[0].time]
-        } else {
-            vec![keyframes[0].time, keyframes[0].time, keyframes[1].time, keyframes[1].time]
-        };
-        AnimatedTransform { keyframes: vec![BSpline::new(1, keyframes, knots)] }
+        AnimatedTransform { keyframes: vec![BSpline::new(3, keyframes, knots)] }
     }
     /// Compute the transformation matrix for the animation at some time point.
     /// The transform is found by interpolating the two keyframes nearest to the

@@ -2,33 +2,31 @@
 //! with a specific point in time
 
 use std::f32;
-use std::cmp::{Eq, Ord, PartialOrd, PartialEq, Ordering};
 
 use bspline;
 
 use linalg::{self, quaternion, Vector, Matrix4, Quaternion, Transform};
 
-/// A transformation associated with a specific point in time
+/// A transformation associated with a specific point in time. Note
+/// that this transform is now more implicit since they keyframe's times
+/// are stored as knots in the b-spline animation path
 #[derive(Debug, Copy, Clone)]
 pub struct Keyframe {
-    pub time: f32,
     pub translation: Vector,
     pub rotation: Quaternion,
     pub scaling: Matrix4,
 }
 
 impl Keyframe {
-    /// Construct a new keyframe transformation by associating the
-    /// transform passed with the time point `time`. The transform will
+    /// Construct a new keyframe transformation, The transform will
     /// be stored in a decomposed form, M = TRS.
-    pub fn new(transform: &Transform, time: f32) -> Keyframe {
-        assert!(f32::is_finite(time));
+    pub fn new(transform: &Transform) -> Keyframe {
         let (t, r, s) = Keyframe::decompose(transform);
-        Keyframe { time: time, translation: t, rotation: r, scaling: s }
+        Keyframe { translation: t, rotation: r, scaling: s }
     }
     /// Construct the keyframe from the decomposed transformation
-    pub fn from_parts(translation: &Vector, rotation: &Quaternion, scaling: &Matrix4, time: f32) -> Keyframe {
-        Keyframe { time: time, translation: *translation, rotation: *rotation, scaling: *scaling }
+    pub fn from_parts(translation: &Vector, rotation: &Quaternion, scaling: &Matrix4) -> Keyframe {
+        Keyframe { translation: *translation, rotation: *rotation, scaling: *scaling }
     }
     /// Decompose the transformation into its component translation, rotation and
     /// scaling operations.
@@ -75,51 +73,7 @@ impl bspline::Interpolate for Keyframe {
         let rotation = quaternion::slerp(t, &self.rotation, &other.rotation);
         let scaling: Matrix4 = self.scaling.iter().zip(other.scaling.iter())
             .map(|(a, b)| linalg::lerp(t, a, b)).collect();
-        Keyframe::from_parts(&translation, &rotation, &scaling, t)
-    }
-}
-
-/// Interpolate between the two keyframes at some time. If time is before
-/// or after the interval spanned by the keyframes then the nearest one is
-/// returned. Otherwise the transforms are interpolated and this new
-/// transform is returned.
-pub fn interpolate(time: f32, a: &Keyframe, b: &Keyframe) -> Transform {
-    // Order the transformations by their time points
-    let (first, second) = if a.time < b.time { (a, b) } else { (b, a) };
-    if time <= first.time {
-        let m = first.rotation.to_matrix() * first.scaling;
-        Transform::translate(&first.translation) * Transform::from_mat(&m)
-    } else if time >= second.time {
-        let m = second.rotation.to_matrix() * second.scaling;
-        Transform::translate(&second.translation) * Transform::from_mat(&m)
-    } else {
-        let dt = (time - first.time) / (second.time - first.time);
-        let translation = (1.0 - dt) * first.translation + dt * second.translation;
-        let rotation = quaternion::slerp(dt, &first.rotation, &second.rotation);
-        let scaling: Matrix4 = first.scaling.iter().zip(second.scaling.iter())
-                .map(|(a, b)| linalg::lerp(dt, a, b)).collect();
-        let m = rotation.to_matrix() * scaling;
-        Transform::translate(&translation) * Transform::from_mat(&m)
-    }
-}
-
-impl Ord for Keyframe {
-    fn cmp(&self, other: &Keyframe) -> Ordering {
-        self.partial_cmp(other).unwrap()
-    }
-}
-
-impl PartialOrd for Keyframe {
-    fn partial_cmp(&self, other: &Keyframe) -> Option<Ordering> {
-        self.time.partial_cmp(&other.time)
-    }
-}
-
-impl Eq for Keyframe {}
-
-impl PartialEq for Keyframe {
-    fn eq(&self, other: &Keyframe) -> bool {
-        self.time == other.time
+        Keyframe::from_parts(&translation, &rotation, &scaling)
     }
 }
 
