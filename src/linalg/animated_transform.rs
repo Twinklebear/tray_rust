@@ -43,10 +43,12 @@ impl AnimatedTransform {
         for spline in self.keyframes.iter() {
             let domain = spline.knot_domain();
             let t =
-                if time < domain.0 || spline.control_points().count() == 1 {
+                if spline.control_points().count() == 1 {
                     spline.control_points().next().unwrap().transform()
+                } else if time < domain.0 {
+                    spline.point(domain.0).transform()
                 } else if time > domain.1 {
-                    spline.control_points().last().unwrap().transform()
+                    spline.point(domain.1).transform()
                 } else {
                     spline.point(time).transform()
                 };
