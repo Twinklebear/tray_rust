@@ -175,6 +175,14 @@ impl Matrix4 {
     pub fn iter(&self) -> Iter<f32> {
         self.mat.iter()
     }
+    pub fn has_nans(&self) -> bool {
+        for x in self.mat.iter() {
+            if x.is_nan() {
+                return true;
+            }
+        }
+        false
+    }
 }
 
 impl FromIterator<f32> for Matrix4 {
