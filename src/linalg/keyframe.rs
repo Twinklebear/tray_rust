@@ -4,6 +4,8 @@
 use std::f32;
 use std::cmp::{Eq, Ord, PartialOrd, PartialEq, Ordering};
 
+use bspline;
+
 use linalg::{self, quaternion, Vector, Matrix4, Quaternion, Transform};
 
 /// A transformation associated with a specific point in time
@@ -23,6 +25,10 @@ impl Keyframe {
         assert!(f32::is_finite(time));
         let (t, r, s) = Keyframe::decompose(transform);
         Keyframe { time: time, translation: t, rotation: r, scaling: s }
+    }
+    /// Construct the keyframe from the decomposed transformation
+    pub fn from_parts(translation: &Vector, rotation: &Quaternion, scaling: &Matrix4, time: f32) -> Keyframe {
+        Keyframe { time: time, translation: *translation, rotation: *rotation, scaling: *scaling }
     }
     /// Decompose the transformation into its component translation, rotation and
     /// scaling operations.
@@ -60,6 +66,16 @@ impl Keyframe {
     pub fn transform(&self) -> Transform {
         let m = self.rotation.to_matrix() * self.scaling;
         Transform::translate(&self.translation) * Transform::from_mat(&m)
+    }
+}
+
+impl bspline::Interpolate for Keyframe {
+    fn interpolate(&self, other: &Keyframe, t: f32) -> Keyframe {
+        let translation = (1.0 - t) * self.translation + t * other.translation;
+        let rotation = quaternion::slerp(t, &self.rotation, &other.rotation);
+        let scaling: Matrix4 = self.scaling.iter().zip(other.scaling.iter())
+            .map(|(a, b)| linalg::lerp(t, a, b)).collect();
+        Keyframe::from_parts(&translation, &rotation, &scaling, t)
     }
 }
 

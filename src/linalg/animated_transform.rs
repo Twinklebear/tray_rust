@@ -3,34 +3,40 @@
 
 use std::ops::Mul;
 
+use bspline::BSpline;
+
 use linalg::{self, quaternion, keyframe, Keyframe, Transform};
 use geometry::BBox;
 
 /// An animated transform that blends between the keyframes in its transformation
 /// list over time.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct AnimatedTransform {
     /// List of animated transforms in hierarchical order, e.g. the lowest
     /// index is the object's, index 1 holds its direct parent's transform, etc.
-    keyframes: Vec<Vec<Keyframe>>,
+    keyframes: Vec<BSpline<Keyframe>>,
 }
 
 impl AnimatedTransform {
     /// Create an animated transformation blending between the passed keyframes
     pub fn with_keyframes(mut keyframes: Vec<Keyframe>) -> AnimatedTransform {
         keyframes.sort();
-        let mut anim = AnimatedTransform { keyframes: vec![keyframes] };
+        // so we know what degree and so on.
         // Step through and make sure all rotations take the shortest path
-        for mut stack in anim.keyframes.iter_mut() {
-            for i in 1..stack.len() {
-                // If the dot product is negative flip the current quaternion to
-                // take the shortest path through the rotation
-                if quaternion::dot(&stack[i - 1].rotation, &stack[i].rotation) < 0.0 {
-                    stack[i].rotation = -stack[i].rotation;
-                }
+        for i in 1..keyframes.len() {
+            // If the dot product is negative flip the current quaternion to
+            // take the shortest path through the rotation
+            if quaternion::dot(&keyframes[i - 1].rotation, &keyframes[i].rotation) < 0.0 {
+                keyframes[i].rotation = -keyframes[i].rotation;
             }
         }
-        anim
+        // TODO: This is a hack we need to read bspline key frame info from the scene file
+        let knots = if keyframes.len() == 1 {
+            vec![keyframes[0].time, keyframes[0].time, keyframes[0].time]
+        } else {
+            vec![keyframes[0].time, keyframes[0].time, keyframes[1].time, keyframes[1].time]
+        };
+        AnimatedTransform { keyframes: vec![BSpline::new(1, keyframes, knots)] }
     }
     /// Compute the transformation matrix for the animation at some time point.
     /// The transform is found by interpolating the two keyframes nearest to the
@@ -40,23 +46,12 @@ impl AnimatedTransform {
         let mut transform = Transform::identity();
         // Step through the transform stack, applying each animation transform at this
         // time as we move up
-        for stack in self.keyframes.iter() {
+        for spline in self.keyframes.iter() {
             let t =
-                if stack.len() == 1 {
-                    let first = stack.iter().next().unwrap();
-                    first.transform()
+                if spline.control_points().count() == 1 {
+                    spline.control_points().next().unwrap().transform()
                 } else {
-                    // TODO: Binary search here somehow? Or does the BTreeSet have some faster impl
-                    // of take/skip while?
-                    let first = stack.iter().take_while(|k| k.time < time).last();
-                    let second = stack.iter().skip_while(|k| k.time < time).next();
-                    if first.is_none() {
-                        stack.first().unwrap().transform()
-                    } else if second.is_none() {
-                        stack.last().unwrap().transform()
-                    } else {
-                        keyframe::interpolate(time, first.unwrap(), second.unwrap())
-                    }
+                    spline.point(time).transform()
                 };
             transform = t * transform;
         }
@@ -79,7 +74,7 @@ impl AnimatedTransform {
     }
     /// Check if the transform is actually animated
     pub fn is_animated(&self) -> bool {
-        self.keyframes.is_empty() || self.keyframes.iter().fold(true, |b, stack| b && stack.len() > 1)
+        self.keyframes.is_empty() || self.keyframes.iter().fold(true, |b, spline| b && spline.control_points().count() > 1)
     }
 }
 
