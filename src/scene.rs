@@ -28,7 +28,6 @@ use std::fs::File;
 use std::sync::Arc;
 use std::path::Path;
 use std::collections::HashMap;
-use std::iter;
 
 use serde_json::{self, Value};
 

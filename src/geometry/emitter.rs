@@ -53,11 +53,10 @@
 //! ```
 
 use std::sync::Arc;
-use std::iter;
 
 use geometry::{Boundable, BBox, SampleableGeom, DifferentialGeometry};
 use material::Material;
-use linalg::{self, Transform, AnimatedTransform, Keyframe, Point, Ray, Vector, Normal};
+use linalg::{self, Transform, AnimatedTransform, Point, Ray, Vector, Normal};
 use film::{AnimatedColor, Colorf};
 use light::{Light, OcclusionTester};
 
