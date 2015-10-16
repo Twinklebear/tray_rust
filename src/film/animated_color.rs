@@ -71,7 +71,7 @@ impl AnimatedColor {
                 color.g = linalg::lerp(time, &f.g, &s.g);
                 color.b = linalg::lerp(time, &f.b, &s.b);
                 color.a = linalg::lerp(time, &f.a, &s.a);
-                color
+                color.clamp()
             }
         }
     }
