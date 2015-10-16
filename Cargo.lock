@@ -2,7 +2,7 @@
 name = "tray_rust"
 version = "0.0.1"
 dependencies = [
- "bspline 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "bspline 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "byteorder 0.3.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt 0.6.73 (registry+https://github.com/rust-lang/crates.io-index)",
  "enum-set 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -39,7 +39,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "bspline"
-version = "0.1.4"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
