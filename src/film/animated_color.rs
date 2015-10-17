@@ -55,8 +55,7 @@ impl AnimatedColor {
         } else if self.keyframes.len() == 1 {
             self.keyframes[0].color
         } else {
-            // TODO: Binary search here somehow? Or does the BTreeSet have some faster impl
-            // of take/skip while?
+            // TODO: Binary search here?
             let first = self.keyframes.iter().take_while(|k| k.time < time).last();
             let second = self.keyframes.iter().skip_while(|k| k.time < time).next();
             if first.is_none() {
@@ -65,12 +64,13 @@ impl AnimatedColor {
                 self.keyframes.last().unwrap().color
             } else {
                 let mut color = Colorf::black();
-                let f = first.unwrap().color;
-                let s = second.unwrap().color;
-                color.r = linalg::lerp(time, &f.r, &s.r);
-                color.g = linalg::lerp(time, &f.g, &s.g);
-                color.b = linalg::lerp(time, &f.b, &s.b);
-                color.a = linalg::lerp(time, &f.a, &s.a);
+                let fk = first.unwrap();
+                let sk = second.unwrap();
+                let t = (time - fk.time) / (sk.time - fk.time);
+                color.r = linalg::lerp(t, &fk.color.r, &sk.color.r);
+                color.g = linalg::lerp(t, &fk.color.g, &sk.color.g);
+                color.b = linalg::lerp(t, &fk.color.b, &sk.color.b);
+                color.a = linalg::lerp(t, &fk.color.a, &sk.color.a);
                 color
             }
         }
