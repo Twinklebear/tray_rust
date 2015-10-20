@@ -17,7 +17,7 @@ use std::io::ErrorKind;
 use rand::StdRng;
 use docopt::Docopt;
 
-use tray_rust::film::{self, ImageSample};
+use tray_rust::film::{self, ImageSample, Colorf};
 use tray_rust::geometry::{Geometry, Instance, Emitter};
 use tray_rust::sampler::{self, Sampler};
 use tray_rust::scene;
@@ -70,6 +70,8 @@ fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
                     let c = scene.integrator.illumination(scene, light_list, &ray,
                                                           &hit, &mut sampler, &mut rng).clamp();
                     block_samples.push(ImageSample::new(s.0, s.1, c));
+                } else {
+                    block_samples.push(ImageSample::new(s.0, s.1, Colorf::black()));
                 }
             }
             // If the samples are ok the samples for the next pixel start at the end of the current
