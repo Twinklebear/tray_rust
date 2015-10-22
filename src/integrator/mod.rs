@@ -149,9 +149,7 @@ pub trait Integrator {
                 match scene.intersect(&mut ray) {
                     Some(h) => {
                         if let &Instance::Emitter(ref e) = h.instance {
-                            // TODO: The extra case to *const () is to workaround the ICE I
-                            // encountered writing this code: https://github.com/rust-lang/rust/issues/2744/
-                            if e as *const Light as *const () == light as *const Light as *const () {
+                            if e as *const Light == light as *const Light {
                                 li = e.radiance(&-w_i, &h.dg.p, &h.dg.n, time)
                             }
                         }
