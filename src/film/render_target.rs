@@ -128,7 +128,6 @@ impl RenderTarget {
                             filtered_samples[px].r += weight * c.color.r;
                             filtered_samples[px].g += weight * c.color.g;
                             filtered_samples[px].b += weight * c.color.b;
-                            // TODO: Remove this it's just for debugging adaptive sampler
                             filtered_samples[px].a += weight;
                         }
                     }
