@@ -150,7 +150,7 @@ fn main() {
         let start = clock_ticks::precise_time_s();
         render_parallel(&mut rt, &scene, &mut pool, spp);
         let time = clock_ticks::precise_time_s() - start;
-        println!("Frame {}: Rendering took {}s", i, time);
+        println!("Frame {}: rendering took {}s", i, time);
 
         let img = rt.get_render();
         let out_file = match out_path.extension() {
@@ -162,7 +162,7 @@ fn main() {
             Err(e) => println!("Error saving image, {}", e),
         };
         rt.clear();
-        println!("Frame {}: Rendered to '{}'\n--------------------", i, out_file.display());
+        println!("Frame {}: rendered to '{}'\n--------------------", i, out_file.display());
     }
     let time = clock_ticks::precise_time_s() - scene_start;
     println!("Rendering entire sequence took {}s", time);
