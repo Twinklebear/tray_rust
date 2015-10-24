@@ -9,8 +9,8 @@ and various physically based material models (including measured data from the
 
 Building
 ---
-Unfortunately the project does currently require Rust nightly as I make use of some unstable features
-(eg. Vec::resize). I hope to get things running on stable Rust once these features get stabilized.
+Unfortunately the project does currently require Rust nightly or beta as I make use of some features
+that haven't made it into stable rust yet. Once 1.4 is released as stable the project will build on stable Rust.
 
 [![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)
 
