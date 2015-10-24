@@ -84,8 +84,7 @@ fn thread_work(spp: usize, queue: &sampler::BlockQueue, scene: &scene::Scene,
 }
 
 /// Render the scene in parallel using `n` threads and write the result to the render target
-fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, spp: usize){
-    let mut pool = scoped_threadpool::Pool::new(n);
+fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, pool: &mut scoped_threadpool::Pool, spp: usize){
     let dim = rt.dimensions();
     let block_queue = sampler::BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8));
     let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
@@ -95,6 +94,7 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
         }
     }).collect();
     assert!(!light_list.is_empty(), "At least one light is required");
+    let n = pool.thread_count();
     pool.scoped(|scope| {
         for _ in 0..n {
             let b = &block_queue;
@@ -135,6 +135,7 @@ fn main() {
     let (mut scene, mut rt, spp, frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
     let image_dim = rt.dimensions();
     println!("Rendering using {} threads\n--------------------", n);
+    let mut pool = scoped_threadpool::Pool::new(n);
     let scene_start = clock_ticks::precise_time_s();
 
     let time_step = frame_info.time / frame_info.frames as f32;
@@ -147,7 +148,7 @@ fn main() {
         scene.bvh.rebuild(frame_start, frame_end);
         println!("Frame {}: rendering for {} to {}", i, frame_start, frame_end);
         let start = clock_ticks::precise_time_s();
-        render_parallel(&mut rt, &scene, n, spp);
+        render_parallel(&mut rt, &scene, &mut pool, spp);
         let time = clock_ticks::precise_time_s() - start;
         println!("Frame {}: Rendering took {}s", i, time);
 
