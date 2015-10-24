@@ -4,8 +4,7 @@
 //! same as those from the Low Discrepancy sampler but the
 //! number of samples taken per pixel will vary.
 
-use std::u32;
-use std::f32;
+use std::{u32, f32, iter};
 use rand::{Rng, StdRng};
 use rand::distributions::{IndependentSample, Range};
 
@@ -89,12 +88,14 @@ impl Sampler for Adaptive {
         if self.samples_taken == 0 {
             self.samples_taken += self.min_spp;
             if samples.len() < self.min_spp {
-                samples.resize(self.min_spp, (0.0, 0.0));
+                let len = self.min_spp - samples.len();
+                samples.extend(iter::repeat((0.0, 0.0)).take(len));
             }
         } else {
             self.samples_taken += self.step_size;
             if samples.len() != self.step_size {
-                samples.resize(self.step_size, (0.0, 0.0));
+                let len = self.step_size - samples.len();
+                samples.extend(iter::repeat((0.0, 0.0)).take(len));
             }
         }
         self.get_samples_2d(&mut samples[..], rng);

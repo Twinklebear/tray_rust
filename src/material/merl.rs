@@ -18,6 +18,7 @@
 //! ]
 //! ```
 
+use std::iter;
 use std::path::Path;
 use std::fs::File;
 use std::io::BufReader;
@@ -59,7 +60,7 @@ impl Merl {
 
         let n_vals = n_theta_h * n_theta_d * n_phi_d;
         let mut brdf = Vec::with_capacity(3 * n_vals);
-        brdf.resize(3 * n_vals, 0.0);
+        brdf.extend(iter::repeat(0.0).take(3 * n_vals));
         let scaling = [1.0 / 1500.0, 1.0 / 1500.0, 1.66 / 1500.0];
         // Read the n_vals corresponding to the red, green or blue component
         for (c, s) in scaling.iter().enumerate() {

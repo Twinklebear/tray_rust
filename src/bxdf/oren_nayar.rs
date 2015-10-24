@@ -4,7 +4,7 @@
 use std::f32;
 use enum_set::EnumSet;
 
-use linalg::Vector;
+use linalg::{self, Vector};
 use film::Colorf;
 use bxdf::{self, BxDF, BxDFType};
 
@@ -24,7 +24,7 @@ impl OrenNayar {
     /// `roughness` should be the variance of the Gaussian describing the
     /// microfacet distribution
     pub fn new(c: &Colorf, roughness: f32) -> OrenNayar {
-        let mut sigma = f32::to_radians(roughness);
+        let mut sigma = linalg::to_radians(roughness);
         sigma *= sigma;
         OrenNayar { albedo: *c,
                     a: 1.0 - 0.5 * sigma / (sigma + 0.33),

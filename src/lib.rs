@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-#![feature(float_extras, vec_resize)]
 
 //! # tray\_rust - A Toy Ray Tracer in Rust
 //! 

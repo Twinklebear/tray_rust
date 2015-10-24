@@ -1,17 +1,15 @@
-#![feature(duration_span)]
-
 extern crate image;
 extern crate rand;
 extern crate docopt;
 extern crate rustc_serialize;
 extern crate num_cpus;
 extern crate scoped_threadpool;
+extern crate clock_ticks;
 extern crate tray_rust;
 
 use std::vec::Vec;
 use std::iter;
 use std::path::PathBuf;
-use std::time::Duration;
 use std::io::ErrorKind;
 
 use rand::StdRng;
@@ -137,6 +135,7 @@ fn main() {
     let (mut scene, mut rt, spp, frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
     let image_dim = rt.dimensions();
     println!("Rendering using {} threads\n--------------------", n);
+    let scene_start = clock_ticks::precise_time_s();
 
     let time_step = frame_info.time / frame_info.frames as f32;
     for i in frame_info.start..frame_info.end + 1 {
@@ -147,8 +146,9 @@ fn main() {
         println!("Frame {}: re-building bvh for {} to {}", i, frame_start, frame_end);
         scene.bvh.rebuild(frame_start, frame_end);
         println!("Frame {}: rendering for {} to {}", i, frame_start, frame_end);
-        let d = Duration::span(|| render_parallel(&mut rt, &scene, n, spp));
-        let time = d.as_secs() as f64 + (d.subsec_nanos() as f64) / 1_000_000_000.0;
+        let start = clock_ticks::precise_time_s();
+        render_parallel(&mut rt, &scene, n, spp);
+        let time = clock_ticks::precise_time_s() - start;
         println!("Frame {}: Rendering took {}s", i, time);
 
         let img = rt.get_render();
@@ -163,5 +163,7 @@ fn main() {
         rt.clear();
         println!("Frame {}: Rendered to '{}'\n--------------------", i, out_file.display());
     }
+    let time = clock_ticks::precise_time_s() - scene_start;
+    println!("Rendering entire sequence took {}s", time);
 }
 

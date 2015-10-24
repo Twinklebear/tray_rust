@@ -1,8 +1,7 @@
 //! Provides a high quality sampling scheme based on (0, 2)-sequences
 //! See sec. 7.4.3 of Physically Based Rendering
 
-use std::u32;
-use std::f32;
+use std::{u32, f32, iter};
 use rand::{Rng, StdRng};
 use rand::distributions::{IndependentSample, Range};
 
@@ -37,7 +36,8 @@ impl Sampler for LowDiscrepancy {
             return;
         }
         if samples.len() < self.spp {
-            samples.resize(self.spp, (0.0, 0.0));
+            let len = self.spp - samples.len();
+            samples.extend(iter::repeat((0.0, 0.0)).take(len));
         }
         self.get_samples_2d(&mut samples[..], rng);
         for s in samples.iter_mut() {
