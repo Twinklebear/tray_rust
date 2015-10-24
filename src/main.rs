@@ -100,7 +100,7 @@ fn render_parallel(rt: &mut film::RenderTarget, scene: &scene::Scene, n: u32, sp
     pool.scoped(|scope| {
         for _ in 0..n {
             let b = &block_queue;
-            let r = &*rt;
+            let ref r = rt;
             let l = &light_list;
             scope.execute(move || {
                 thread_work(spp, b, scene, r, l);
