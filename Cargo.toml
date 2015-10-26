@@ -18,7 +18,7 @@ tobj = "0.0.9"
 byteorder = "0.3.13"
 serde_json = "0.6.0"
 scoped_threadpool = "0.1.6"
-bspline = "0.2.1"
+bspline = "0.2.2"
 clock_ticks = "0.0.6"
 
 [profile.release]
