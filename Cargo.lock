@@ -2,7 +2,7 @@
 name = "tray_rust"
 version = "0.0.1"
 dependencies = [
- "bspline 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "bspline 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "byteorder 0.3.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "clock_ticks 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt 0.6.74 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -40,7 +40,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "bspline"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
