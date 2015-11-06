@@ -1,7 +1,7 @@
 [package]
 name = "tray_rust"
 version = "0.0.1"
-authors = ["Will Usher <willusher.life@gmail.com>"]
+authors = ["Will Usher <will@willusher.io>"]
 
 [[bin]]
 name = "tray_rust"
@@ -14,7 +14,7 @@ rustc-serialize = "0.3.16"
 docopt = "0.6.74"
 image = "0.4.0"
 num_cpus = "0.2.7"
-tobj = "0.0.9"
+tobj = "0.1.0"
 byteorder = "0.3.13"
 serde_json = "0.6.0"
 scoped_threadpool = "0.1.6"
