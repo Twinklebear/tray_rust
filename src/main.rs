@@ -25,11 +25,13 @@ static USAGE: &'static str = "
 Usage: tray_rust <scenefile> [options]
 
 Options:
-  -o <file>     Specify the output file or directory to save the image or frames. Supported formats are
-                PNG, JPG and PPM. Default is 'frame<#>.png'.
-  -n <number>   Specify the number of threads to use for rendering. Defaults to the number of cores
-                on the system.
-  -h, --help    Show this message.
+  -o <file>               Specify the output file or directory to save the image or frames. Supported formats are
+                          PNG, JPG and PPM. Default is 'frame<#>.png'.
+  -n <number>             Specify the number of threads to use for rendering. Defaults to the number of cores
+                          on the system.
+  --start-frame <number>  Specify frame to start rendering at, specifies an inclusive range [start, end]
+  --end-frame <number>    Specify frame to stop rendering at, specifies an inclusive range [start, end]
+  -h, --help              Show this message.
 ";
 
 #[derive(RustcDecodable, Debug)]
@@ -37,6 +39,8 @@ struct Args {
     arg_scenefile: String,
     flag_o: Option<String>,
     flag_n: Option<u32>,
+    flag_start_frame: Option<usize>,
+    flag_end_frame: Option<usize>,
 }
 
 /// Threads are each sent a sender end of the channel that is
@@ -138,15 +142,24 @@ fn main() {
     let mut pool = scoped_threadpool::Pool::new(n);
     let scene_start = clock_ticks::precise_time_s();
 
+    let start_frame = match args.flag_start_frame {
+        Some(x) => x,
+        _ => frame_info.start,
+    };
+    let end_frame = match args.flag_end_frame {
+        Some(x) => x,
+        _ => frame_info.end,
+    };
+
     let time_step = frame_info.time / frame_info.frames as f32;
-    for i in frame_info.start..frame_info.end + 1 {
-        let frame_start = i as f32 * time_step;
-        let frame_end = (i as f32 + 1.0) * time_step;
-        scene.camera.update_shutter(frame_start, frame_end);
+    for i in start_frame..end_frame + 1 {
+        let frame_start_time = i as f32 * time_step;
+        let frame_end_time = (i as f32 + 1.0) * time_step;
+        scene.camera.update_shutter(frame_start_time, frame_end_time);
         // TODO: How often to re-build the BVH?
-        println!("Frame {}: re-building bvh for {} to {}", i, frame_start, frame_end);
-        scene.bvh.rebuild(frame_start, frame_end);
-        println!("Frame {}: rendering for {} to {}", i, frame_start, frame_end);
+        println!("Frame {}: re-building bvh for {} to {}", i, frame_start_time, frame_end_time);
+        scene.bvh.rebuild(frame_start_time, frame_end_time);
+        println!("Frame {}: rendering for {} to {}", i, frame_start_time, frame_end_time);
         let start = clock_ticks::precise_time_s();
         render_parallel(&mut rt, &scene, &mut pool, spp);
         let time = clock_ticks::precise_time_s() - start;
