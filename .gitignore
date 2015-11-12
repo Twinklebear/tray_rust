@@ -6,4 +6,6 @@
 *.obj
 *.mtl
 *.binary
+batch_run/
+*.mp4
 

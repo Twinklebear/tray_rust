@@ -126,16 +126,16 @@ impl Geometry for Triangle {
 
         let d = ray.o - *pa;
         let mut bary = [0.0; 3];
-        bary[0] = linalg::dot(&d, &s[0]) * div;
+        bary[1] = linalg::dot(&d, &s[0]) * div;
         // Check that the first barycentric coordinate is in the triangle bounds
-        if bary[0] < 0.0 || bary[0] > 1.0 {
+        if bary[1] < 0.0 || bary[1] > 1.0 {
             return None;
         }
 
         s[1] = linalg::cross(&d, &e[0]);
-        bary[1] = linalg::dot(&ray.d, &s[1]) * div;
+        bary[2] = linalg::dot(&ray.d, &s[1]) * div;
         // Check the second barycentric coordinate is in the triangle bounds
-        if bary[1] < 0.0 || bary[0] + bary[1] > 1.0 {
+        if bary[2] < 0.0 || bary[1] + bary[2] > 1.0 {
             return None;
         }
 
@@ -144,7 +144,7 @@ impl Geometry for Triangle {
         if t < ray.min_t || t > ray.max_t {
             return None;
         }
-        bary[2] = 1.0 - bary[0] - bary[1];
+        bary[0] = 1.0 - bary[1] - bary[2];
         ray.max_t = t;
         let p = ray.at(t);
 
@@ -152,7 +152,7 @@ impl Geometry for Triangle {
         let na = &self.normals[self.a];
         let nb = &self.normals[self.b];
         let nc = &self.normals[self.c];
-        let n = (bary[2] * *na + bary[0] * *nb + bary[1] * *nc).normalized();
+        let n = (bary[0] * *na + bary[1] * *nb + bary[2] * *nc).normalized();
 
         // Compute parameterization of surface and various derivatives for texturing
         // Triangles are parameterized by the obj texcoords at the vertices
