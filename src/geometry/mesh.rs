@@ -128,14 +128,14 @@ impl Geometry for Triangle {
         let mut bary = [0.0; 3];
         bary[0] = linalg::dot(&d, &s[0]) * div;
         // Check that the first barycentric coordinate is in the triangle bounds
-        if bary[0] < -1.0e-8 || bary[0] > 1.0 {
+        if bary[0] < 0.0 || bary[0] > 1.0 {
             return None;
         }
 
         s[1] = linalg::cross(&d, &e[0]);
         bary[1] = linalg::dot(&ray.d, &s[1]) * div;
         // Check the second barycentric coordinate is in the triangle bounds
-        if bary[1] < -1.0e-8 || bary[0] + bary[1] > 1.0 {
+        if bary[1] < 0.0 || bary[0] + bary[1] > 1.0 {
             return None;
         }
 
