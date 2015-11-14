@@ -182,6 +182,8 @@ fn load_integrator(elem: &Value) -> Box<Integrator + Send + Sync> {
         let min_depth = elem.find("min_depth").expect("The integrator must specify the minimum ray depth")
             .as_u64().expect("min_depth must be a number") as u32;
         Box::new(integrator::Whitted::new(min_depth))
+    } else if ty == "normals_debug" {
+        Box::new(integrator::NormalsDebug)
     } else {
         panic!("Unrecognized integrator type '{}'", ty);
     }

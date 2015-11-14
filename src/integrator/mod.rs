@@ -30,9 +30,11 @@ use mc;
 
 pub use self::whitted::Whitted;
 pub use self::path::Path;
+pub use self::normals_debug::NormalsDebug;
 
 pub mod whitted;
 pub mod path;
+pub mod normals_debug;
 
 /// Trait implemented by the various integration methods that can be used to render
 /// the scene. For scene usage information see whitted and path to get information
