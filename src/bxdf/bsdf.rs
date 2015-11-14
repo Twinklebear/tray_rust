@@ -97,19 +97,25 @@ impl<'a> BSDF<'a> {
         let comp = cmp::min((samples.one_d * n_matching as f32) as usize, n_matching - 1);
         let bxdf = self.matching_at(comp, flags);
         let w_o = self.to_shading(wo_world);
-        let (f, w_i, pdf) = bxdf.sample(&w_o, &samples.two_d);
-        let wi_world = self.from_shading(&w_i);
-
-        if n_matching > 1 {
-            if !bxdf.bxdf_type().contains(&BxDFType::Specular) {
-                (self.eval(wo_world, &wi_world, flags), wi_world,
-                self.pdf(wo_world, &wi_world, flags), bxdf.bxdf_type())
-            } else {
-                (f, wi_world, pdf / n_matching as f32, bxdf.bxdf_type())
-            }
-        } else {
-            (f, wi_world, pdf, bxdf.bxdf_type())
+        let (mut f, w_i, mut pdf) = bxdf.sample(&w_o, &samples.two_d);
+        if pdf == 0.0 {
+            return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0, EnumSet::new());
         }
+
+        let wi_world = self.from_shading(&w_i);
+        // TODO: We re-use our functions but actually do a lot of redundant computation. I'm not
+        // sure that the compiler will eliminate it. Should just copy in the code from pdf and eval
+        if !bxdf.bxdf_type().contains(&BxDFType::Specular) && n_matching > 1 {
+            pdf = self.pdf(wo_world, &wi_world, flags);
+        } 
+        if n_matching > 1 {
+            pdf /= n_matching as f32;
+        }
+
+        if !bxdf.bxdf_type().contains(&BxDFType::Specular) {
+            f = self.eval(wo_world, &wi_world, flags);
+        }
+        (f, wi_world, pdf, bxdf.bxdf_type())
     }
     /// Compute the pdf for sampling the pair of incident and outgoing light directions for
     /// the BxDFs matching the flags set

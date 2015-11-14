@@ -40,14 +40,14 @@ impl BxDF for TorranceSparrow {
         if cos_to == 0.0 || cos_ti == 0.0 {
             return Colorf::black()
         }
-        let w_h = *w_i + *w_o;
-        if w_h.length_sqr() == 0.0 {
+        let mut w_h = *w_i + *w_o;
+        if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
             return Colorf::black();
         }
-        let w_h = w_h.normalized();
+        w_h = w_h.normalized();
         let cos_th = linalg::dot(w_i, &w_h);
-        self.reflectance * self.microfacet.eval(&w_h) * microfacet::geometric_attenuation(w_o, w_i, &w_h)
-            * self.fresnel.fresnel(cos_th) / (4.0 * cos_ti * cos_to)
+        (self.reflectance * self.microfacet.eval(&w_h) * microfacet::geometric_attenuation(w_o, w_i, &w_h)
+            * self.fresnel.fresnel(cos_th)) / (4.0 * cos_ti * cos_to)
     }
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Colorf, Vector, f32) {
         let (w_i, pdf) = self.microfacet.sample(w_o, samples);
