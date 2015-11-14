@@ -15,13 +15,17 @@ pub struct Blinn {
 impl Blinn {
     /// Create the Blinn microfacet distribution with some exponent
     pub fn new(e: f32) -> Blinn {
-        Blinn { exponent: e }
+        if e > 10000.0 || f32::is_nan(e) {
+            Blinn { exponent: 10000.0 }
+        } else {
+            Blinn { exponent: e }
+        }
     }
 }
 
 impl MicrofacetDistribution for Blinn {
     fn eval(&self, w_h: &Vector) -> f32 {
-        (self.exponent + 2.0) * 1.0 / f32::consts::PI * 2.0
+        (self.exponent + 2.0) * (1.0 / (f32::consts::PI * 2.0))
             * f32::powf(f32::abs(bxdf::cos_theta(w_h)), self.exponent)
     }
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Vector, f32) {
