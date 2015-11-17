@@ -107,7 +107,7 @@ impl<'a> BSDF<'a> {
         // sure that the compiler will eliminate it. Should just copy in the code from pdf and eval
         if !bxdf.bxdf_type().contains(&BxDFType::Specular) && n_matching > 1 {
             pdf = self.pdf(wo_world, &wi_world, flags);
-        } 
+        }
         if n_matching > 1 {
             pdf /= n_matching as f32;
         }
