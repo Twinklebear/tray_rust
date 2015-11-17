@@ -44,8 +44,9 @@ impl<'a> BSDF<'a> {
                dg: &DifferentialGeometry<'a>)
                -> BSDF<'a> {
         let n = dg.n.normalized();
-        let bitan = dg.dp_du.normalized();
+        let mut bitan = dg.dp_du.normalized();
         let tan = linalg::cross(&n, &bitan);
+        bitan = linalg::cross(&tan, &n);
         BSDF { p: dg.p, n: n, ng: dg.ng, tan: tan, bitan: bitan, bxdfs: bxdfs, eta: eta }
     }
     /// Return the total number of BxDFs
