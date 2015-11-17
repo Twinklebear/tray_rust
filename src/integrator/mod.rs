@@ -152,7 +152,7 @@ pub trait Integrator {
                     Some(h) => {
                         if let &Instance::Emitter(ref e) = h.instance {
                             if e as *const Light == light as *const Light {
-                                li = e.radiance(&-w_i, &h.dg.p, &h.dg.n, time)
+                                li = e.radiance(&-w_i, &h.dg.p, &h.dg.ng, time)
                             }
                         }
                     },
