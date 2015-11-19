@@ -57,11 +57,11 @@ CPUs. The machine is an early/engineering sample from Intel so your results may 
 Intel for the hardware! Some older images renders are shown as well without timing since they were
 run on a different machine.
 
-[![Model gallery](http://i.imgur.com/Jgji1Y0.jpg)](http://i.imgur.com/Jgji1Y0.jpg)
+[![Model gallery](http://i.imgur.com/X5y8oIq.png)](http://i.imgur.com/X5y8oIq.png)
 
 1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
 
-[![Rust Logo with friends, disk](http://i.imgur.com/Z34BleZ.jpg)](http://i.imgur.com/Z34BleZ.jpg)
+[![Rust Logo with friends, disk](http://i.imgur.com/E1ylrZW.jpg)](http://i.imgur.com/E1ylrZW.jpg)
 
 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 
@@ -69,7 +69,9 @@ run on a different machine.
 
 800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
 
-[![Suzanne Box](http://i.imgur.com/XjrOGJv.jpg)](http://i.imgur.com/XjrOGJv.jpg)
+[![Suzanne Box](http://i.imgur.com/RbCNrxX.jpg)](http://i.imgur.com/RbCNrxX.jpg)
 
 800x600, 4096 samples/pixel. Rendering: 00:11:23.67.
+
+[![Ajax Bust](http://i.imgur.com/2lcANyn.png)](http://i.imgur.com/2lcANyn.png)
 
