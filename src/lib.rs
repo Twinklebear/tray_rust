@@ -9,11 +9,6 @@
 //! and various physically based material models (including measured data from the
 //! [MERL BRDF Database](http://www.merl.com/brdf/)).
 //! 
-//! ## Building
-//! 
-//! Unfortunately the project does currently require Rust nightly as I make use of some unstable features
-//! (eg. Vec::resize). I hope to get things running on stable Rust once these features get stabilized.
-//! 
 //! [![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)
 //! 
 //! ## Running

@@ -7,11 +7,6 @@ The renderer is currently capable of path tracing, supports triangle meshes (MTL
 and various physically based material models (including measured data from the
 [MERL BRDF Database](http://www.merl.com/brdf/)).
 
-Building
----
-Unfortunately the project does currently require Rust nightly or beta as I make use of some features
-that haven't made it into stable rust yet. Once 1.4 is released as stable the project will build on stable Rust.
-
 [![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)
 
 Running
