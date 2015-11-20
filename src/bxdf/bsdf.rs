@@ -44,8 +44,9 @@ impl<'a> BSDF<'a> {
                dg: &DifferentialGeometry<'a>)
                -> BSDF<'a> {
         let n = dg.n.normalized();
-        let bitan = dg.dp_du.normalized();
+        let mut bitan = dg.dp_du.normalized();
         let tan = linalg::cross(&n, &bitan);
+        bitan = linalg::cross(&tan, &n);
         BSDF { p: dg.p, n: n, ng: dg.ng, tan: tan, bitan: bitan, bxdfs: bxdfs, eta: eta }
     }
     /// Return the total number of BxDFs
@@ -107,7 +108,7 @@ impl<'a> BSDF<'a> {
         // sure that the compiler will eliminate it. Should just copy in the code from pdf and eval
         if !bxdf.bxdf_type().contains(&BxDFType::Specular) && n_matching > 1 {
             pdf = self.pdf(wo_world, &wi_world, flags);
-        } 
+        }
         if n_matching > 1 {
             pdf /= n_matching as f32;
         }

@@ -28,14 +28,15 @@ impl<'a> DifferentialGeometry<'a> {
                geom: &'a (Geometry + 'a))
                -> DifferentialGeometry<'a> {
         let n = linalg::cross(dp_du, dp_dv).normalized();
-        DifferentialGeometry { p: *p, n: Normal::new(n.x, n.y, n.z), ng: *ng,
+        DifferentialGeometry { p: *p, n: Normal::new(n.x, n.y, n.z), ng: ng.normalized(),
                                dp_du: *dp_du, dp_dv: *dp_dv, geom: geom }
     }
     /// Setup the differential geometry using the normal passed for the surface normal
     pub fn with_normal(p: &Point, n: &Normal, dp_du: &Vector, dp_dv: &Vector,
                geom: &'a (Geometry + 'a))
                -> DifferentialGeometry<'a> {
-        DifferentialGeometry { p: *p, n: *n, ng: *n,
+        let nn = n.normalized();
+        DifferentialGeometry { p: *p, n: nn, ng: nn,
                                dp_du: *dp_du, dp_dv: *dp_dv, geom: geom }
     }
 }
