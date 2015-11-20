@@ -56,15 +56,15 @@ run on a different machine.
 
 1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
 
-[![Rust Logo with friends, disk](http://i.imgur.com/E1ylrZW.jpg)](http://i.imgur.com/E1ylrZW.jpg)
+[![Rust Logo with friends, disk](http://i.imgur.com/E1ylrZW.png)](http://i.imgur.com/E1ylrZW.png)
 
 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 
-[![Cornell Box](http://i.imgur.com/CUvJwum.jpg)](http://i.imgur.com/CUvJwum.jpg)
+[![Cornell Box](http://i.imgur.com/CUvJwum.png)](http://i.imgur.com/CUvJwum.png)
 
 800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
 
-[![Suzanne Box](http://i.imgur.com/RbCNrxX.jpg)](http://i.imgur.com/RbCNrxX.jpg)
+[![Suzanne Box](http://i.imgur.com/RbCNrxX.png)](http://i.imgur.com/RbCNrxX.png)
 
 800x600, 4096 samples/pixel. Rendering: 00:11:23.67.
 

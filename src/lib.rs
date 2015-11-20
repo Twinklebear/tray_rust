@@ -50,33 +50,38 @@
 //! Intel for the hardware! Some older images renders are shown as well without timing since they were
 //! run on a different machine.
 //!
-//! <a href="http://i.imgur.com/Jgji1Y0.jpg">
-//! <img src="http://i.imgur.com/Jgji1Y0.png" alt="Model gallery"
+//! <a href="http://i.imgur.com/X5y8oIq.png">
+//! <img src="http://i.imgur.com/X5y8oIq.png" alt="Model gallery"
 //!     style="display:block; max-width:100%; height:auto">
 //! </a>
 //! 
 //! 1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.
 //! 
-//! <a href="http://i.imgur.com/Z34BleZ.jpg">
-//! <img src="http://i.imgur.com/Z34BleZ.png" alt="Rust Logo with friends, disk"
+//! <a href="http://i.imgur.com/E1ylrZW.png">
+//! <img src="http://i.imgur.com/E1ylrZW.png" alt="Rust Logo with friends, disk"
 //!     style="display:block; max-width:100%; height:auto">
 //! </a>
 //! 
 //! 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 //! 
-//! <a href="http://i.imgur.com/CUvJwum.jpg">
+//! <a href="http://i.imgur.com/CUvJwum.png">
 //! <img src="http://i.imgur.com/CUvJwum.png" alt="Cornell Box"
 //!     style="display:block; max-width:100%; height:auto; margin:auto">
 //! </a>
 //! 
 //! 800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
 //!
-//! <a href="http://i.imgur.com/XjrOGJv.jpg">
-//! <img src="http://i.imgur.com/XjrOGJv.png" alt="Suzanne Box"
+//! <a href="http://i.imgur.com/RbCNrxX.png">
+//! <img src="http://i.imgur.com/RbCNrxX.png" alt="Suzanne Box"
 //!     style="display:block; max-width:100%; height:auto; margin:auto">
 //! </a>
 //! 
 //! 800x600, 4096 samples/pixel. Rendering: 00:11:23.67.
+//!
+//! <a href="http://i.imgur.com/2lcANyn.png">
+//! <img src="http://i.imgur.com/2lcANyn.png" alt="Ajax Bust"
+//!     style="display:block; max-width:100%; height:auto; margin:auto">
+//! </a>
 //!
 
 extern crate enum_set as enum_set;
