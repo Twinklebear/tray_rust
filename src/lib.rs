@@ -89,6 +89,11 @@ extern crate rand;
 extern crate byteorder;
 extern crate serde_json;
 extern crate bspline;
+extern crate docopt;
+extern crate rustc_serialize;
+extern crate scoped_threadpool;
+extern crate clock_ticks;
+extern crate image;
 
 pub mod linalg;
 pub mod film;
@@ -101,4 +106,5 @@ pub mod material;
 pub mod light;
 pub mod mc;
 pub mod partition;
+pub mod exec;
 

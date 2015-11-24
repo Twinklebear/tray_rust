@@ -14,6 +14,7 @@ pub mod filter;
 pub mod animated_color;
 
 /// Struct to store various parameters for the frame timing
+#[derive(Debug, Copy, Clone)]
 pub struct FrameInfo {
     /// Total number of frames for the scene
     pub frames: usize,
