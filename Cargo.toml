@@ -8,18 +8,18 @@ name = "tray_rust"
 doc = false
 
 [dependencies]
-enum-set = "0.0.5"
-rand = "0.3.11"
+enum-set = "0.0.6"
+rand = "0.3.12"
 rustc-serialize = "0.3.16"
-docopt = "0.6.74"
-image = "0.4.0"
-num_cpus = "0.2.7"
+docopt = "0.6.76"
+image = "0.5.1"
+num_cpus = "0.2.9"
 tobj = "0.1.0"
-byteorder = "0.3.13"
+byteorder = "0.4.2"
 serde_json = "0.6.0"
 scoped_threadpool = "0.1.6"
 bspline = "0.2.2"
-clock_ticks = "0.0.6"
+clock_ticks = "0.1.0"
 
 [profile.release]
 # How to send extra compiler flag for -march=native equivalent in Rust
