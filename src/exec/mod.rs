@@ -15,6 +15,7 @@ pub mod distrib;
 /// on what it should be rendering and where to put the results
 #[derive(Debug, Clone)]
 pub struct Config {
+    // TODO: Maybe this should be Option
     pub out_path: PathBuf,
     pub num_threads: u32,
     pub spp: usize,
