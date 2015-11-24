@@ -64,7 +64,8 @@ fn main() {
         &None => PathBuf::from("./"),
     };
 
-    let (scene, rt, spp, mut frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
+    let (mut scene, mut rt, spp, mut frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
+    let dim = rt.dimensions();
 
     frame_info.start = match args.flag_start_frame {
         Some(x) => x,
@@ -74,8 +75,27 @@ fn main() {
         Some(x) => x,
         _ => frame_info.end,
     };
-    let config = exec::Config::new(out_path, num_threads, frame_info);
-    let mut exec = exec::MultiThreaded::new(&config, scene, rt, spp);
-    exec.render();
+
+    let scene_start = clock_ticks::precise_time_s();
+    let mut config = exec::Config::new(out_path, spp, num_threads, frame_info);
+    let mut exec = exec::MultiThreaded::new(num_threads);
+    for i in frame_info.start..frame_info.end + 1 {
+        config.current_frame = i;
+        exec.render(&mut scene, &mut rt, &config);
+
+        let img = rt.get_render();
+        let out_file = match config.out_path.extension() {
+            Some(_) => config.out_path.clone(),
+            None => config.out_path.join(PathBuf::from(format!("frame{:05}.png", i))),
+        };
+        match image::save_buffer(&out_file.as_path(), &img[..], dim.0 as u32, dim.1 as u32, image::RGB(8)) {
+            Ok(_) => {},
+            Err(e) => println!("Error saving image, {}", e),
+        };
+        rt.clear();
+        println!("Frame {}: rendered to '{}'\n--------------------", i, out_file.display());
+    }
+    let time = clock_ticks::precise_time_s() - scene_start;
+    println!("Rendering entire sequence took {}s", time);
 }
 

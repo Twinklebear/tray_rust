@@ -1,11 +1,9 @@
 //! The multithreaded module provides a multithreaded execution for rendering
 //! the image.
 
-use std::path::PathBuf;
 use std::iter;
 
 use clock_ticks;
-use image;
 use scoped_threadpool::Pool;
 use rand::StdRng;
 
@@ -18,39 +16,35 @@ use scene::Scene;
 use exec::{Config, Exec};
 
 pub struct MultiThreaded {
-   config: Config,
-   scene: Scene,
-   render_target: RenderTarget,
-   spp: usize,
+    pool: Pool,
 }
 
 impl MultiThreaded {
-    pub fn new(config: &Config, scene: Scene, rt: RenderTarget, spp: usize) -> MultiThreaded {
-        MultiThreaded { config: config.clone(),
-                        scene: scene,
-                        render_target: rt,
-                        spp: spp,
-        }
+    pub fn new(num_threads: u32) -> MultiThreaded {
+        MultiThreaded { pool: Pool::new(num_threads) }
     }
     /// Launch a rendering job in parallel across the threads
-    fn render_parallel(&self, pool: &mut Pool) {
-        let dim = self.render_target.dimensions();
+    fn render_parallel(&mut self, scene: &Scene, rt: &RenderTarget, config: &Config) {
+        // TODO: The caller needs control over which blocks the multithreaded exec will
+        // actually render so the distributed renderer can restrict to render just a subset
+        // of the blocks which it has been assigned
+        let dim = rt.dimensions();
         let block_queue = BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8));
-        let light_list: Vec<_> = self.scene.bvh.into_iter().filter_map(|x| {
+        let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
             match x {
                 &Instance::Emitter(ref e) => Some(e),
                 _ => None,
             }
         }).collect();
         assert!(!light_list.is_empty(), "At least one light is required");
-        let n = pool.thread_count();
-        pool.scoped(|scope| {
+        let n = self.pool.thread_count();
+        self.pool.scoped(|scope| {
             for _ in 0..n {
                 let b = &block_queue;
-                let ref r = self.render_target;
+                let ref r = rt;
                 let l = &light_list;
                 scope.execute(move || {
-                    thread_work(self.spp, b, &self.scene, r, l);
+                    thread_work(config.spp, b, scene, r, l);
                 });
             }
         });
@@ -58,44 +52,24 @@ impl MultiThreaded {
 }
 
 impl Exec for MultiThreaded {
-    fn render(&mut self) {
-        let mut pool = Pool::new(self.config.num_threads);
-        println!("Rendering using {} threads\n--------------------", self.config.num_threads);
-        let image_dim = self.render_target.dimensions();
+    fn render(&mut self, scene: &mut Scene, rt: &mut RenderTarget, config: &Config) {
+        println!("Rendering using {} threads\n--------------------", self.pool.thread_count());
+        let time_step = config.frame_info.time / config.frame_info.frames as f32;
+        let frame_start_time = config.current_frame as f32 * time_step;
+        let frame_end_time = (config.current_frame as f32 + 1.0) * time_step;
+        scene.camera.update_shutter(frame_start_time, frame_end_time);
 
-        let scene_start = clock_ticks::precise_time_s();
-        let time_step = self.config.frame_info.time / self.config.frame_info.frames as f32;
-        for i in self.config.frame_info.start..self.config.frame_info.end + 1 {
-            let frame_start_time = i as f32 * time_step;
-            let frame_end_time = (i as f32 + 1.0) * time_step;
-            self.scene.camera.update_shutter(frame_start_time, frame_end_time);
+        // TODO: How often to re-build the BVH?
+        println!("Frame {}: re-building bvh for {} to {}", config.current_frame,
+                 frame_start_time, frame_end_time);
+        scene.bvh.rebuild(frame_start_time, frame_end_time);
 
-            // TODO: How often to re-build the BVH?
-            println!("Frame {}: re-building bvh for {} to {}", i, frame_start_time, frame_end_time);
-            self.scene.bvh.rebuild(frame_start_time, frame_end_time);
-
-            println!("Frame {}: rendering for {} to {}", i, frame_start_time, frame_end_time);
-            let start = clock_ticks::precise_time_s();
-            self.render_parallel(&mut pool);
-            let time = clock_ticks::precise_time_s() - start;
-            println!("Frame {}: rendering took {}s", i, time);
-
-            let img = self.render_target.get_render();
-            let out_file = match self.config.out_path.extension() {
-                Some(_) => self.config.out_path.clone(),
-                None => self.config.out_path.join(PathBuf::from(format!("frame{:05}.png", i))),
-            };
-            match image::save_buffer(&out_file.as_path(), &img[..], image_dim.0 as u32,
-                                     image_dim.1 as u32, image::RGB(8))
-            {
-                Ok(_) => {},
-                Err(e) => println!("Error saving image, {}", e),
-            };
-            self.render_target.clear();
-            println!("Frame {}: rendered to '{}'\n--------------------", i, out_file.display());
-        }
-        let time = clock_ticks::precise_time_s() - scene_start;
-        println!("Rendering entire sequence took {}s", time);
+        println!("Frame {}: rendering for {} to {}", config.current_frame,
+                 frame_start_time, frame_end_time);
+        let start = clock_ticks::precise_time_s();
+        self.render_parallel(scene, rt, config);
+        let time = clock_ticks::precise_time_s() - start;
+        println!("Frame {}: rendering took {}s", config.current_frame, time);
     }
 }
 

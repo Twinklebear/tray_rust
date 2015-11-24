@@ -3,7 +3,8 @@
 
 use std::path::PathBuf;
 
-use film::FrameInfo;
+use film::{FrameInfo, RenderTarget};
+use scene::Scene;
 
 pub use self::multithreaded::MultiThreaded;
 
@@ -15,12 +16,15 @@ pub mod multithreaded;
 pub struct Config {
     pub out_path: PathBuf,
     pub num_threads: u32,
+    pub spp: usize,
     pub frame_info: FrameInfo,
+    pub current_frame: usize,
 }
 
 impl Config {
-    pub fn new(out_path: PathBuf, num_threads: u32, frame_info: FrameInfo) -> Config {
-        Config { out_path: out_path, num_threads: num_threads, frame_info: frame_info }
+    pub fn new(out_path: PathBuf, spp: usize, num_threads: u32, frame_info: FrameInfo) -> Config {
+        Config { out_path: out_path, spp: spp, num_threads: num_threads, frame_info: frame_info,
+                 current_frame: frame_info.start }
     }
 }
 
@@ -33,6 +37,6 @@ pub trait Exec {
     /// TODO: In order to have a cleaner seperation we should pass more parameters
     /// to render. E.g. the scene. Or maybe a callback to a function that gets the
     /// frame's render target and can save it out?
-    fn render(&mut self);
+    fn render(&mut self, scene: &mut Scene, rt: &mut RenderTarget, config: &Config);
 }
 
