@@ -51,7 +51,7 @@ fn get_instructions() -> Instructions {
                 Err(e) => panic!("Failed to read from master, {:?}", e),
                 _ => {},
             }
-            println!("Read from master {:?} content {:?}", sock, read);
+            println!("Read from master {:?} content {}", sock, read);
             Instructions::from_json(read)
         },
         Err(e) => panic!("Error accepting: {:?}", e),

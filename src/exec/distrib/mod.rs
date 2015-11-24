@@ -54,13 +54,17 @@ impl Instructions {
             Some((start, end)) => format!("\"frame_range\": [{}, {}]", start, end),
             None => format!("\"frame_range\": []"),
         };
-        format!("{{
+        // Note: We swap \ for / in file paths since JSON expects unix-style paths, a \xxx is
+        // interpreted as an escape sequence
+        let json = format!("{{
             \"scene\": \"{}\",
             \"master_port\": {},
             \"block_start\": {},
             \"block_count\": {},
             {}
-        }}", self.scene, self.master_port, self.block_start, self.block_count, frame_string)
+        }}", self.scene.replace("\\", "/"), self.master_port, self.block_start, self.block_count, frame_string);
+        println!("Built JSON {}", json);
+        json
     }
 }
 
