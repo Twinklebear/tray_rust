@@ -9,6 +9,7 @@ use scene::Scene;
 pub use self::multithreaded::MultiThreaded;
 
 pub mod multithreaded;
+pub mod distrib;
 
 /// Config passed to set up the execution environment with information
 /// on what it should be rendering and where to put the results
