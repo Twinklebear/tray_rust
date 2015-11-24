@@ -85,29 +85,23 @@ impl RenderTarget {
         if x_range.1 - x_range.0 < 0 || y_range.1 - y_range.0 < 0 {
                 return;
         }
-        println!("Writing too x range {:?}, y range {:?}", x_range, y_range);
         let block_x_range = (x_range.0 / self.lock_size.0, x_range.1 / self.lock_size.0);
         let block_y_range = (y_range.0 / self.lock_size.1, y_range.1 / self.lock_size.1);
-        println!("Block ranges: x = {:?}, y = {:?}", block_x_range, block_y_range);
         // Temporary storage for filtered samples so we can compute the filtered results for
         // the block we're writing too without having to get the lock
         let mut filtered_samples: Vec<_> = iter::repeat(Colorf::broadcast(0.0))
             .take((self.lock_size.0 * self.lock_size.1) as usize).collect();
-        println!("filter width = {:?}", self.filter_pixel_width);
-        println!("Filter table = {:?}", self.filter_table);
 
         let blocks_per_row = self.width as i32 / self.lock_size.0;
         for y in block_y_range.0..block_y_range.1 + 1 {
             for x in block_x_range.0..block_x_range.1 + 1 {
                 let block_x_start = x * self.lock_size.0;
                 let block_y_start = y * self.lock_size.1;
-                println!("Writing to block ({}, {})", x, y);
 
                 let x_write_range = (cmp::max(x_range.0, block_x_start),
                                      cmp::min(x_range.1 + 1, block_x_start + self.lock_size.0));
                 let y_write_range = (cmp::max(y_range.0, block_y_start),
                                      cmp::min(y_range.1 + 1, block_y_start + self.lock_size.1));
-                println!("Write ranges: x = {:?}, y = {:?}", x_write_range, y_write_range);
 
                 let block_samples = samples.iter().filter(|s| {
                         s.x >= (x_write_range.0 - self.filter_pixel_width.0) as f32
@@ -121,34 +115,29 @@ impl RenderTarget {
                 }
 
                 // Compute the filtered samples for the block
-                let mut bsamples_count = 0;
                 for c in block_samples {
-                    bsamples_count += 1;
                     let img_x = c.x - 0.5;
                     let img_y = c.y - 0.5;
-                    println!("Sample at ({}, {})", c.x, c.y);
                     for iy in y_write_range.0..y_write_range.1 {
-                        let fy = f32::abs(iy as f32 - img_y) * self.filter.inv_height()
-                            * FILTER_TABLE_SIZE as f32;
-                        let fy_idx = cmp::min(fy as usize, FILTER_TABLE_SIZE - 1);
+                        let fy = f32::abs(iy as f32 - img_y) * self.filter.inv_height();
+                        // While we know this sample effects some pixels in this block it may not
+                        // necessarily effect this specific pixel, so double check that it's in
+                        // the filter's dimensions.
                         if fy > self.filter.height() {
-                            println!("y-filtered out");
                             continue;
                         }
+                        let fy_idx = cmp::min((fy * FILTER_TABLE_SIZE as f32) as usize, FILTER_TABLE_SIZE - 1);
+
                         for ix in x_write_range.0..x_write_range.1 {
-                            println!("Dist from sample: ({}, {})", ix as f32 - img_x, iy as f32 - img_y);
-                            let fx = f32::abs(ix as f32 - img_x) * self.filter.inv_width()
-                                * FILTER_TABLE_SIZE as f32;
+                            let fx = f32::abs(ix as f32 - img_x) * self.filter.inv_width();
+                            // Check that we're also in the width of the filter
                             if fx > self.filter.width() {
-                                println!("x-filtered out");
                                 continue;
                             }
-                            let fx_idx = cmp::min(fx as usize, FILTER_TABLE_SIZE - 1);
-                            println!("float indices = ({}, {}), filter indices = ({}, {})",
-                                     fx, fy, fx_idx, fy_idx);
+                            let fx_idx = cmp::min((fx * FILTER_TABLE_SIZE as f32) as usize, FILTER_TABLE_SIZE - 1);
+
                             let weight = self.filter_table[fy_idx * FILTER_TABLE_SIZE + fx_idx];
                             let px = ((iy - block_y_start) * self.lock_size.0 + ix - block_x_start) as usize;
-                            println!("Weight at pixel ({}, {}) = {}", ix, iy, weight);
                             // TODO: Can't currently overload the += operator
                             // Coming soon though, see RFC #953 https://github.com/rust-lang/rfcs/pull/953
                             filtered_samples[px].r += weight * c.color.r;
@@ -158,7 +147,6 @@ impl RenderTarget {
                         }
                     }
                 }
-                println!("# samples for this block = {}", bsamples_count);
 
                 // Acquire lock for the block and write the filtered samples
                 let block_idx = (y * blocks_per_row + x) as usize;
@@ -173,7 +161,6 @@ impl RenderTarget {
                         pixels[px].a += c.a;
                     }
                 }
-                println!("---------------------------------");
             }
         }
     }
