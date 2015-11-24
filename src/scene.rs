@@ -133,6 +133,10 @@ fn load_filter(elem: &Value) -> Box<filter::Filter + Send + Sync> {
         let c = elem.find("c").expect("A c parameter is required for the Mitchell-Netravali filter")
             .as_f64().expect("c must be a number") as f32;
         Box::new(filter::MitchellNetravali::new(width, height, b, c)) as Box<filter::Filter + Send + Sync>
+    } else if ty == "gaussian" {
+        let alpha = elem.find("alpha").expect("An alpha parameter is required for the Gaussian filter")
+            .as_f64().expect("alpha must be a number") as f32;
+        Box::new(filter::Gaussian::new(width, height, alpha)) as Box<filter::Filter + Send + Sync>
     } else {
         panic!("Unrecognized filter type {}!", ty);
     }
