@@ -88,7 +88,6 @@ fn thread_work(spp: usize, queue: &BlockQueue, scene: &Scene,
     // to the render target thread after each pixel
     for b in queue.iter() {
         sampler.select_block(b);
-        println!("Rendering block {:?}, region {:?}", b, sampler.get_region());
         let mut pixel_samples = 0;
         while sampler.has_samples() {
             // Get samples for a pixel and render them

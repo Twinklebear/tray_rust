@@ -75,7 +75,7 @@ fn main() {
     };
 
     let scene_start = clock_ticks::precise_time_s();
-    let mut config = exec::Config::new(out_path, spp, num_threads, frame_info, (500, 1));
+    let mut config = exec::Config::new(out_path, spp, num_threads, frame_info, (0, 0));
     let mut exec = exec::MultiThreaded::new(num_threads);
     for i in frame_info.start..frame_info.end + 1 {
         config.current_frame = i;
