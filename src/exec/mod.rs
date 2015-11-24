@@ -19,12 +19,16 @@ pub struct Config {
     pub spp: usize,
     pub frame_info: FrameInfo,
     pub current_frame: usize,
+    /// Which blocks the executor should render, stored
+    /// as (start, count) of the block indices
+    pub select_blocks: (usize, usize)
 }
 
 impl Config {
-    pub fn new(out_path: PathBuf, spp: usize, num_threads: u32, frame_info: FrameInfo) -> Config {
+    pub fn new(out_path: PathBuf, spp: usize, num_threads: u32, frame_info: FrameInfo,
+               select_blocks: (usize, usize)) -> Config {
         Config { out_path: out_path, spp: spp, num_threads: num_threads, frame_info: frame_info,
-                 current_frame: frame_info.start }
+                 current_frame: frame_info.start, select_blocks: select_blocks }
     }
 }
 

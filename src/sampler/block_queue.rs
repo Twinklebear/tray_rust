@@ -25,7 +25,7 @@ pub struct BlockQueueIterator<'a> {
 impl BlockQueue {
     /// Create a block queue for the image with dimensions `img`.
     /// Panics if the image is not evenly broken into blocks of dimension `dim`
-    pub fn new(img: (u32, u32), dim: (u32, u32)) -> BlockQueue {
+    pub fn new(img: (u32, u32), dim: (u32, u32), select_blocks: (usize, usize)) -> BlockQueue {
         if img.0 % dim.0 != 0 || img.1 % dim.1 != 0 {
             panic!("Image with dimension {:?} not evenly divided by blocks of {:?}", img, dim);
         }
@@ -35,6 +35,13 @@ impl BlockQueue {
         let mut blocks: Vec<(u32, u32)> = (0..num_blocks.0 * num_blocks.1)
             .map(|i| (i % num_blocks.0, i / num_blocks.0)).collect();
         blocks.sort_by(|a, b| morton::morton2(a).cmp(&morton::morton2(b)));
+        // If we're only rendering a subset of the blocks then filter our list down
+        if select_blocks.1 > 0 {
+            blocks = blocks.into_iter().skip(select_blocks.0).take(select_blocks.1).collect();
+        }
+        if blocks.is_empty() {
+            println!("Warning: This block queue is empty!");
+        }
         BlockQueue { blocks: blocks, dimensions: dim, next: AtomicUsize::new(0) }
     }
     /// Get the dimensions of an individual block in the queue

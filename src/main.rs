@@ -37,8 +37,6 @@ struct Args {
     flag_end_frame: Option<usize>,
 }
 
-
-
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     let num_threads = match args.flag_n {
@@ -77,7 +75,7 @@ fn main() {
     };
 
     let scene_start = clock_ticks::precise_time_s();
-    let mut config = exec::Config::new(out_path, spp, num_threads, frame_info);
+    let mut config = exec::Config::new(out_path, spp, num_threads, frame_info, (500, 1));
     let mut exec = exec::MultiThreaded::new(num_threads);
     for i in frame_info.start..frame_info.end + 1 {
         config.current_frame = i;
