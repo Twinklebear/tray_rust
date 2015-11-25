@@ -10,8 +10,7 @@ use std::collections::HashMap;
 use bincode::rustc_serialize::decode;
 use image;
 
-use film::RenderTarget;
-use film::filter::{Filter, MitchellNetravali};
+use film::Image;
 use exec::Config;
 use exec::distrib::{worker, Instructions};
 use sampler::BlockQueue;
@@ -23,7 +22,7 @@ pub struct DistributedFrame {
     // The number of workers who have reported results for this
     // frame so far
     pub num_reporting: usize,
-    pub render_target: RenderTarget,
+    pub render: Image,
     pub completed: bool,
 }
 
@@ -40,10 +39,9 @@ impl Master {
     /// Create a new master that will contact the worker nodes passed and
     /// send instructions on what parts of the scene to start rendering
     pub fn start_workers(workers: Vec<String>, config: Config, scene_file: &String,
-                        rt: RenderTarget, frames: Option<(usize, usize)>) -> Master {
-        let dim = rt.dimensions();
+                         img_dim: (usize, usize), frames: Option<(usize, usize)>) -> Master {
         // Figure out how many blocks we have for this image and assign them to our workers
-        let queue = BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8), (0, 0));
+        let queue = BlockQueue::new((img_dim.0 as u32, img_dim.1 as u32), (8, 8), (0, 0));
         let blocks_per_worker = queue.len() / workers.len();
         let blocks_remainder = queue.len() % workers.len();
         println!("Have {} workers, each worker does {} blocks w/ {} remainder",
@@ -75,7 +73,7 @@ impl Master {
                 Err(e) => println!("Failed to contact worker {}: {:?}", host, e),
             }
         }
-        Master { workers: workers, config: config, frames: HashMap::new(), img_dim: rt.dimensions(),
+        Master { workers: workers, config: config, frames: HashMap::new(), img_dim: img_dim,
                  listener: listener }
     }
     /// Listen for frames sent back from workers and add the framebuffers together to
@@ -97,7 +95,7 @@ impl Master {
                     let frame_num = frame.frame as usize;
                     println!("Worker reporting frame {}", frame_num);
                     if let Some(df) = self.frames.get_mut(&frame_num) {
-                        df.render_target.add_pixels(&frame.pixels);
+                        df.render.add_pixels(&frame.pixels);
                         df.num_reporting += 1;
                         println!("We have parts of this frame already");
                     }
@@ -106,10 +104,9 @@ impl Master {
                     if self.frames.get_mut(&frame_num).is_none() {
                         // TODO: I need to seperate the render target from the actual image as the
                         // filter here isn't used in this path and it doesn't make sense to have one
-                        let rt = RenderTarget::new(self.img_dim, (2, 2), Box::new(MitchellNetravali::new(2.0, 2.0, 0.3, 0.3))
-                                                   as Box<Filter + Send + Sync>);
-                        let mut df = DistributedFrame { frame: frame_num, num_reporting: 1, render_target: rt, completed: false };
-                        df.render_target.add_pixels(&frame.pixels);
+                        let render = Image::new(self.img_dim);
+                        let mut df = DistributedFrame { frame: frame_num, num_reporting: 1, render: render, completed: false };
+                        df.render.add_pixels(&frame.pixels);
                         self.frames.insert(df.frame, df);
                         println!("This is a new frame");
                     }
@@ -122,8 +119,8 @@ impl Master {
                                 None => self.config.out_path.join(PathBuf::from(format!("frame{:05}.png", df.frame))),
                             };
                             println!("Frame {}: rendered to '{}'\n--------------------", frame_num, out_file.display());
-                            let img = df.render_target.get_render();
-                            let dim = df.render_target.dimensions();
+                            let img = df.render.get_srgb8();
+                            let dim = df.render.dimensions();
                             match image::save_buffer(&out_file.as_path(), &img[..], dim.0 as u32, dim.1 as u32, image::RGB(8)) {
                                 Ok(_) => {},
                                 Err(e) => println!("Error saving image, {}", e),

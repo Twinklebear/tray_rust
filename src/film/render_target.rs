@@ -1,6 +1,5 @@
 //! Defines the render target for tray, where our image will be written too
 //! during rendering
-//! TODO: Reconstruction filters
 
 use std::vec::Vec;
 use std::{iter, cmp, f32};
@@ -174,29 +173,6 @@ impl RenderTarget {
                 let mut pixels = self.pixels_locked[block_idx].lock().unwrap();
                 for p in pixels.iter_mut() {
                     *p = Colorf::broadcast(0.0);
-                }
-            }
-        }
-    }
-    /// Add the f32 frame to the pixels in the render target
-    /// TODO: Should have a better way for setting the pixels for a framebuffer
-    pub fn add_pixels(&mut self, vals: &Vec<f32>) {
-        let x_blocks = self.width / self.lock_size.0 as usize;
-        let y_blocks = self.height / self.lock_size.1 as usize;
-        for by in 0..y_blocks {
-            for bx in 0..x_blocks {
-                let block_x_start = bx * self.lock_size.0 as usize;
-                let block_y_start = by * self.lock_size.1 as usize;
-                let block_idx = (by * x_blocks + bx) as usize;
-                let mut pixels = self.pixels_locked[block_idx].lock().unwrap();
-                for y in 0..self.lock_size.1 as usize {
-                    for x in 0..self.lock_size.0 as usize {
-                        let mut c = &mut pixels[y * self.lock_size.0 as usize + x];
-                        let px = (y + block_y_start) * self.width * 4 + (x + block_x_start) * 4;
-                        for i in 0..4 {
-                            c[i] += vals[px + i];
-                        }
-                    }
                 }
             }
         }

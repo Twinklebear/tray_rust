@@ -139,7 +139,8 @@ fn master_node(args: Args) {
     };
     let scene_start = clock_ticks::precise_time_s();
     let config = exec::Config::new(out_path, spp, 0, frame_info, (0, 0));
-    let mut master = distrib::Master::start_workers(args.arg_workers, config, &args.arg_scenefile, rt, frame_subset);
+    let mut master = distrib::Master::start_workers(args.arg_workers, config, &args.arg_scenefile,
+                                                    rt.dimensions(), frame_subset);
     master.wait_for_results();
     let time = clock_ticks::precise_time_s() - scene_start;
     println!("Rendering entire sequence took {}s", time);

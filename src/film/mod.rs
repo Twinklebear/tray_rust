@@ -6,12 +6,14 @@ pub use self::render_target::RenderTarget;
 pub use self::camera::Camera;
 pub use self::render_target::ImageSample;
 pub use self::animated_color::{ColorKeyframe, AnimatedColor};
+pub use self::image::Image;
 
 pub mod color;
 pub mod render_target;
 pub mod camera;
 pub mod filter;
 pub mod animated_color;
+pub mod image;
 
 /// Struct to store various parameters for the frame timing
 #[derive(Debug, Copy, Clone)]
