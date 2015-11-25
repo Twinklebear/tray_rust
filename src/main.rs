@@ -139,7 +139,10 @@ fn master_node(args: Args) {
     };
     let scene_start = clock_ticks::precise_time_s();
     let config = exec::Config::new(out_path, spp, 0, frame_info, (0, 0));
-    let master = distrib::Master::start_workers(args.arg_workers, config, &args.arg_scenefile, rt, frame_subset);
+    let mut master = distrib::Master::start_workers(args.arg_workers, config, &args.arg_scenefile, rt, frame_subset);
+    master.wait_for_results();
+    let time = clock_ticks::precise_time_s() - scene_start;
+    println!("Rendering entire sequence took {}s", time);
 }
 
 fn worker_node(args: Args) {
@@ -147,7 +150,18 @@ fn worker_node(args: Args) {
         Some(n) => n,
         None => num_cpus::get() as u32,
     };
-    let worker = distrib::Worker::listen_for_master(num_threads);
+    let mut exec = exec::MultiThreaded::new(num_threads);
+    let mut worker = distrib::Worker::listen_for_master(num_threads);
+    let scene_start = clock_ticks::precise_time_s();
+    for i in worker.config.frame_info.start..worker.config.frame_info.end + 1 {
+        worker.config.current_frame = i;
+        exec.render(&mut worker.scene, &mut worker.render_target, &worker.config);
+        worker.send_results();
+        worker.render_target.clear();
+        println!("Frame {}: rendered\n--------------------", i);
+    }
+    let time = clock_ticks::precise_time_s() - scene_start;
+    println!("Rendering entire sequence took {}s", time);
 }
 
 fn main() {

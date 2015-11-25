@@ -20,6 +20,7 @@ serde_json = "0.6.0"
 scoped_threadpool = "0.1.6"
 bspline = "0.2.2"
 clock_ticks = "0.1.0"
+bincode = "0.4.0"
 
 [profile.release]
 # How to send extra compiler flag for -march=native equivalent in Rust

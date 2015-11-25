@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![feature(ip_addr)]
 
 //! # tray\_rust - A Toy Ray Tracer in Rust
 //! 
@@ -94,6 +95,7 @@ extern crate rustc_serialize;
 extern crate scoped_threadpool;
 extern crate clock_ticks;
 extern crate image;
+extern crate bincode;
 
 pub mod linalg;
 pub mod film;
