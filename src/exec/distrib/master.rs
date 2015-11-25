@@ -182,6 +182,18 @@ impl Handler for Master {
     fn ready(&mut self, event_loop: &mut EventLoop<Master>, token: Token, event: EventSet) {
         let worker = token.as_usize();
         println!("Event from {}: {:?}", worker, event);
+        if event.is_error() {
+            println!("Error connecting too {}", self.workers[worker]);
+            match self.connections[worker].shutdown(Shutdown::Both) {
+                Err(e) => println!("Error shutting down worker {}: {}", worker, e),
+                Ok(_) => {},
+            }
+            // Remove the connection from the event loop
+            match event_loop.deregister(&self.connections[worker]) {
+                Err(e) => println!("Error deregistering worker {}: {}", worker, e),
+                Ok(_) => {},
+            }
+        }
         // A worker is ready to receive instructions from us
         if event.is_writable() {
             let b_start = worker * self.blocks_per_worker;
