@@ -18,8 +18,6 @@ use exec::Config;
 use exec::distrib::{worker, Instructions};
 use sampler::BlockQueue;
 
-pub static PORT: u16 = 63245;
-
 pub struct DistributedFrame {
     pub frame: usize,
     // The number of workers who have reported results for this
@@ -51,15 +49,17 @@ pub struct Master {
     worker_buffers: Vec<WorkerBuffer>,
     config: Config,
     frames: HashMap<usize, DistributedFrame>,
+    selected_frames: Option<(usize, usize)>,
     img_dim: (usize, usize),
+    blocks_per_worker: usize,
+    blocks_remainder: usize,
 }
 
 impl Master {
     /// Create a new master that will contact the worker nodes passed and
     /// send instructions on what parts of the scene to start rendering
-    pub fn start_workers(workers: Vec<String>, config: Config, scene_file: &String,
-                         img_dim: (usize, usize), frames: Option<(usize, usize)>)
-                         -> (Master, EventLoop<Master>) {
+    pub fn start_workers(workers: Vec<String>, config: Config, img_dim: (usize, usize),
+                         frames: Option<(usize, usize)>) -> (Master, EventLoop<Master>) {
         // Figure out how many blocks we have for this image and assign them to our workers
         let queue = BlockQueue::new((img_dim.0 as u32, img_dim.1 as u32), (8, 8), (0, 0));
         let blocks_per_worker = queue.len() / workers.len();
@@ -74,33 +74,11 @@ impl Master {
         // I guess this should also be queue'd up and the writes actually performed asynchronously?
         // Otherwise we need to loop on write_all while waiting for the connection to open
         for (i, host) in workers.iter().enumerate() {
-            let b_start = i * blocks_per_worker;
-            let b_count =
-                if i == workers.len() - 1 {
-                    blocks_per_worker + blocks_remainder
-                } else {
-                    blocks_per_worker
-                };
-            let instr = Instructions::new(scene_file, PORT, frames, b_start, b_count);
-            println!("Sending instructions {:?} too {}", instr, host);
             let addr = (&host[..], worker::PORT).to_socket_addrs().unwrap().next().unwrap();
             println!("Connecting too {:?}", addr);
             match TcpStream::connect(&addr) {
-                Ok(mut stream) => {
+                Ok(stream) => {
                     println!("Connected and writing");
-                    let bytes = instr.to_json().into_bytes();
-                    // Loop until we successfully write the byes
-                    loop {
-                        match stream.write_all(&bytes[..]) {
-                            Err(e) => println!("Failed to send instructions to {}: {:?}", host, e),
-                            Ok(_) => break,
-                        }
-                    }
-                    // We no longer need to write anything, so close the write end
-                    match stream.shutdown(Shutdown::Write) {
-                        Err(e) => panic!(format!("Failed to shutdown write end to worker {}: {}", host, e)),
-                        Ok(_) => {},
-                    }
                     println!("Adding stream to event loop");
                     // Each worker is identified in the event loop by their index in the vec
                     match event_loop.register(&stream, Token(i)) {
@@ -115,7 +93,10 @@ impl Master {
         let worker_buffers: Vec<_> = iter::repeat(WorkerBuffer::new()).take(workers.len()).collect();
         let master = Master { workers: workers, connections: connections,
                               worker_buffers: worker_buffers, config: config,
-                              frames: HashMap::new(), img_dim: img_dim };
+                              frames: HashMap::new(), selected_frames: frames,
+                              img_dim: img_dim,
+                              blocks_per_worker: blocks_per_worker,
+                              blocks_remainder: blocks_remainder };
         (master, event_loop)
     }
     /// Read a result frame from a worker and save it into the list of frames we're collecting from
@@ -181,12 +162,15 @@ impl Master {
                 buf.buf.extend(iter::repeat(0u8).take(buf.expected_size - 8));
             }
         }
-        println!("Reading from worker");
-        match self.connections[worker].read(&mut buf.buf[buf.currently_read..]) {
-            Ok(n) => buf.currently_read += n,
-            Err(e) => println!("Error reading results from worker {}: {}", self.workers[worker], e),
+        // If we've finished reading the size header we can now start reading the frame data
+        if buf.currently_read >= 8 {
+            println!("Reading from worker");
+            match self.connections[worker].read(&mut buf.buf[buf.currently_read..]) {
+                Ok(n) => buf.currently_read += n,
+                Err(e) => println!("Error reading results from worker {}: {}", self.workers[worker], e),
+            }
+            println!("Read {} bytes so far, must read {} in total", buf.currently_read, buf.expected_size);
         }
-        println!("Read {} bytes so far, must read {} in total", buf.currently_read, buf.expected_size);
         buf.currently_read == buf.expected_size
     }
 }
@@ -197,6 +181,31 @@ impl Handler for Master {
 
     fn ready(&mut self, event_loop: &mut EventLoop<Master>, token: Token, event: EventSet) {
         let worker = token.as_usize();
+        println!("Event from {}: {:?}", worker, event);
+        // A worker is ready to receive instructions from us
+        if event.is_writable() {
+            let b_start = worker * self.blocks_per_worker;
+            let b_count =
+                if worker == self.workers.len() - 1 {
+                    self.blocks_per_worker + self.blocks_remainder
+                } else {
+                    self.blocks_per_worker
+                };
+            let instr = Instructions::new(&self.config.scene_file, self.selected_frames, b_start, b_count);
+            println!("Sending instructions {:?} too {}", instr, self.workers[worker]);
+            let bytes = instr.to_json().into_bytes();
+            // Loop until we successfully write the byes
+            match self.connections[worker].write_all(&bytes[..]) {
+                Err(e) => println!("Failed to send instructions to {}: {:?}", self.workers[worker], e),
+                Ok(_) => println!("Instructions sent"),
+            }
+            // We no longer need to write anything, so close the write end
+            match self.connections[worker].shutdown(Shutdown::Write) {
+                Err(e) => panic!(format!("Failed to shutdown write end to worker {}: {}",
+                                         self.workers[worker], e)),
+                Ok(_) => {},
+            }
+        }
         // Some results are available from a worker
         if event.is_readable() {
             println!("Readable event from worker {}", worker);
@@ -214,7 +223,16 @@ impl Handler for Master {
         }
         // If the worker has terminated, shutdown the read end of the connection
         if event.is_hup() {
-            self.connections[worker].shutdown(Shutdown::Read);
+            println!("Worker {} has hung up", worker);
+            match self.connections[worker].shutdown(Shutdown::Both) {
+                Err(e) => println!("Error shutting down worker {}: {}", worker, e),
+                Ok(_) => {},
+            }
+            // Remove the connection from the event loop
+            match event_loop.deregister(&self.connections[worker]) {
+                Err(e) => println!("Error deregistering worker {}: {}", worker, e),
+                Ok(_) => {},
+            }
         }
         // After getting results from the worker we check if we've completed all our frames
         // and exit if so
