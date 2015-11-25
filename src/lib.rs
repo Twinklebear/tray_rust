@@ -95,6 +95,7 @@ extern crate scoped_threadpool;
 extern crate clock_ticks;
 extern crate image;
 extern crate bincode;
+#[cfg(unix)]
 extern crate mio;
 
 pub mod linalg;

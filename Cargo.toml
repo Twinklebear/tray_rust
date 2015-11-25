@@ -21,6 +21,12 @@ scoped_threadpool = "0.1.6"
 bspline = "0.2.2"
 clock_ticks = "0.1.0"
 bincode = "0.4.0"
+
+# We only support mio on linux for now
+[target.i686-unknown-linux-gnu.dependencies]
+mio = "0.4.4"
+
+[target.x86_64-unknown-linux-gnu.dependencies]
 mio = "0.4.4"
 
 [profile.release]

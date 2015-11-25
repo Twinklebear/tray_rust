@@ -12,8 +12,10 @@ use std::io::ErrorKind;
 
 use docopt::Docopt;
 
-use tray_rust::{scene, exec};
-use tray_rust::exec::{Exec, distrib};
+use tray_rust::scene;
+use tray_rust::exec::{self, Exec};
+#[cfg(unix)]
+use tray_rust::exec::distrib;
 
 static USAGE: &'static str = "
 Usage:
@@ -109,6 +111,7 @@ fn single_node_render(args: Args) {
     println!("Rendering entire sequence took {}s", time);
 }
 
+#[cfg(unix)]
 fn master_node(args: Args) {
     let out_path = match &args.flag_o {
         &Some(ref f) => {
@@ -146,6 +149,7 @@ fn master_node(args: Args) {
     println!("Rendering entire sequence took {}s", time);
 }
 
+#[cfg(unix)]
 fn worker_node(args: Args) {
     let num_threads = match args.flag_n {
         Some(n) => n,
@@ -163,6 +167,17 @@ fn worker_node(args: Args) {
     }
     let time = clock_ticks::precise_time_s() - scene_start;
     println!("Rendering entire sequence took {}s", time);
+}
+
+// TODO: Currently distributed rendering is unsupported on Windows as mio doesn't build
+#[cfg(windows)]
+fn master_node(_: Args) {
+    panic!("Sorry, distributed rendering is currently not supported on windows");
+}
+
+#[cfg(windows)]
+fn worker_node(_: Args) {
+    panic!("Sorry, distributed rendering is currently not supported on windows");
 }
 
 fn main() {
