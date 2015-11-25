@@ -3,10 +3,10 @@
 
 use std::path::PathBuf;
 use std::io::prelude::*;
-use std::net::{TcpListener, SocketAddr, TcpStream};
 
 use bincode::SizeLimit;
 use bincode::rustc_serialize::encode;
+use mio::tcp::{TcpListener, TcpStream};
 
 use scene::Scene;
 use film::RenderTarget;
@@ -26,7 +26,7 @@ pub struct Worker {
     pub render_target: RenderTarget,
     pub scene: Scene,
     pub config: Config,
-    master: SocketAddr,
+    master: TcpStream,
 }
 
 impl Worker {
@@ -52,20 +52,15 @@ impl Worker {
     pub fn send_results(&self) {
         println!("Sending results to master, {:?}", self.master);
         let frame = Frame { frame: self.config.current_frame as u64, pixels: self.render_target.get_renderf32() };
-        match TcpStream::connect(self.master) {
-            Ok(mut stream) => {
-                let bytes = encode(&frame, SizeLimit::Infinite).unwrap();
-                match stream.write_all(&bytes[..]) {
-                    Err(e) => println!("Failed to send frame to {:?}: {}", self.master, e),
-                    _ => {},
-                }
-            },
-            Err(e) => println!("Failed to connect to master: {}", e),
+        let bytes = encode(&frame, SizeLimit::Infinite).unwrap();
+        match self.master.write_all(&bytes[..]) {
+            Err(e) => println!("Failed to send frame to {:?}: {}", self.master, e),
+            _ => {},
         }
     }
 }
 
-fn get_instructions() -> (Instructions, SocketAddr) {
+fn get_instructions() -> (Instructions, TcpStream) {
     let listener = TcpListener::bind(("0.0.0.0", PORT)).expect("Worker failed to get port");
     println!("Worker listening for master");
     match listener.accept() {
@@ -78,8 +73,7 @@ fn get_instructions() -> (Instructions, SocketAddr) {
             }
             println!("Read from master {:?} content {}", sock, read);
             let instr = Instructions::from_json(read);
-            let master_port = instr.master_port;
-            (instr, SocketAddr::new(master.ip(), master_port))
+            (instr, stream)
         },
         Err(e) => panic!("Error accepting: {:?}", e),
     }

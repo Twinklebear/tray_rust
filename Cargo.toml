@@ -21,6 +21,7 @@ scoped_threadpool = "0.1.6"
 bspline = "0.2.2"
 clock_ticks = "0.1.0"
 bincode = "0.4.0"
+mio = "0.4.4"
 
 [profile.release]
 # How to send extra compiler flag for -march=native equivalent in Rust
