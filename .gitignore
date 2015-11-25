@@ -8,4 +8,6 @@
 *.binary
 batch_run/
 *.mp4
+worker_output/
+raytracing_compo/
 
