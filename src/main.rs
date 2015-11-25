@@ -89,7 +89,7 @@ fn single_node_render(args: Args) {
         _ => frame_info.end,
     };
     let scene_start = clock_ticks::precise_time_s();
-    let mut config = exec::Config::new(out_path, spp, num_threads, frame_info, (0, 0));
+    let mut config = exec::Config::new(out_path, args.arg_scenefile, spp, num_threads, frame_info, (0, 0));
     let mut exec = exec::MultiThreaded::new(num_threads);
     for i in frame_info.start..frame_info.end + 1 {
         config.current_frame = i;
@@ -141,8 +141,8 @@ fn master_node(args: Args) {
         _ => None,
     };
     let scene_start = clock_ticks::precise_time_s();
-    let config = exec::Config::new(out_path, spp, 0, frame_info, (0, 0));
-    let (mut master, mut event_loop) = distrib::Master::start_workers(args.arg_workers, config, &args.arg_scenefile,
+    let config = exec::Config::new(out_path, args.arg_scenefile, spp, 0, frame_info, (0, 0));
+    let (mut master, mut event_loop) = distrib::Master::start_workers(args.arg_workers, config,
                                                                       rt.dimensions(), frame_subset);
     event_loop.run(&mut master).unwrap();
     let time = clock_ticks::precise_time_s() - scene_start;

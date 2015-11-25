@@ -44,7 +44,8 @@ impl Worker {
             },
             None => {},
         }
-        let config = Config::new(PathBuf::from("/tmp"), spp, num_threads, frame_info,
+        let config = Config::new(PathBuf::from("/tmp"), instructions.scene.clone(), spp,
+                                 num_threads, frame_info,
                                  (instructions.block_start, instructions.block_count));
         Worker { instructions: instructions, render_target: rt, scene: scene,
                  config: config, master: master }

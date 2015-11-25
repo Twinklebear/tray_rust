@@ -18,6 +18,7 @@ pub mod distrib;
 pub struct Config {
     // TODO: Maybe this should be Option
     pub out_path: PathBuf,
+    pub scene_file: String,
     pub num_threads: u32,
     pub spp: usize,
     pub frame_info: FrameInfo,
@@ -28,9 +29,10 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(out_path: PathBuf, spp: usize, num_threads: u32, frame_info: FrameInfo,
-               select_blocks: (usize, usize)) -> Config {
-        Config { out_path: out_path, spp: spp, num_threads: num_threads, frame_info: frame_info,
+    pub fn new(out_path: PathBuf, scene_file: String, spp: usize, num_threads: u32,
+               frame_info: FrameInfo, select_blocks: (usize, usize)) -> Config {
+        Config { out_path: out_path, scene_file: scene_file, spp: spp,
+                 num_threads: num_threads, frame_info: frame_info,
                  current_frame: frame_info.start, select_blocks: select_blocks }
     }
 }
