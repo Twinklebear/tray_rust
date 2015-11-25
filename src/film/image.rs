@@ -23,7 +23,7 @@ impl Image {
                 let mut c = &mut self.pixels[y * self.dim.0 + x];
                 let px = y * self.dim.0 * 4 + x * 4;
                 for i in 0..4 {
-                    c[i] = pixels[px + i];
+                    c[i] += pixels[px + i];
                 }
             }
         }
