@@ -161,7 +161,7 @@ fn worker_node(args: Args) {
         let img = worker.render_target.get_render();
         let out_file = match worker.config.out_path.extension() {
             Some(_) => worker.config.out_path.clone(),
-            None => worker.config.out_path.join(PathBuf::from(format!("/wrk/frame{:05}.png", i))),
+            None => worker.config.out_path.join(PathBuf::from(format!("./wrk/frame{:05}.png", i))),
         };
         match image::save_buffer(&out_file.as_path(), &img[..], dim.0 as u32, dim.1 as u32, image::RGB(8)) {
             Ok(_) => {},
