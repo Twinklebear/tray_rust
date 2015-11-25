@@ -5,6 +5,7 @@
 use std::path::PathBuf;
 use std::io::prelude::*;
 use std::collections::HashMap;
+use std::net::ToSocketAddrs;
 use std::iter;
 
 use bincode::rustc_serialize::decode;
@@ -37,7 +38,7 @@ struct WorkerBuffer {
 
 impl WorkerBuffer {
     pub fn new() -> WorkerBuffer {
-        WorkerBuffer { buf: Vec::new(), expected_size: 0, currently_read: 0 }
+        WorkerBuffer { buf: Vec::new(), expected_size: 8, currently_read: 0 }
     }
 }
 
@@ -70,6 +71,8 @@ impl Master {
         let mut connections = Vec::new();
 
         // Connect to each worker and send instructions on what to render
+        // I guess this should also be queue'd up and the writes actually performed asynchronously?
+        // Otherwise we need to loop on write_all while waiting for the connection to open
         for (i, host) in workers.iter().enumerate() {
             let b_start = i * blocks_per_worker;
             let b_count =
@@ -80,14 +83,18 @@ impl Master {
                 };
             let instr = Instructions::new(scene_file, PORT, frames, b_start, b_count);
             println!("Sending instructions {:?} too {}", instr, host);
-            let addr = format!("{}:{}", host, worker::PORT).parse().unwrap();
+            let addr = (&host[..], worker::PORT).to_socket_addrs().unwrap().next().unwrap();
+            println!("Connecting too {:?}", addr);
             match TcpStream::connect(&addr) {
                 Ok(mut stream) => {
                     println!("Connected and writing");
                     let bytes = instr.to_json().into_bytes();
-                    match stream.write_all(&bytes[..]) {
-                        Err(e) => println!("Failed to send instructions to {}: {:?}", host, e),
-                        _ => {},
+                    // Loop until we successfully write the byes
+                    loop {
+                        match stream.write_all(&bytes[..]) {
+                            Err(e) => println!("Failed to send instructions to {}: {:?}", host, e),
+                            Ok(_) => break,
+                        }
                     }
                     // We no longer need to write anything, so close the write end
                     match stream.shutdown(Shutdown::Write) {
@@ -158,19 +165,21 @@ impl Master {
         if buf.currently_read < 8 {
             // First 8 bytes are a u64 specifying the number of bytes being sent
             buf.buf.extend(iter::repeat(0u8).take(8));
-            while buf.currently_read != 8 {
-                println!("Reading size header...");
-                match self.connections[worker].read(&mut buf.buf[buf.currently_read..]) {
-                    Ok(n) => buf.currently_read += n,
-                    Err(e) => println!("Error reading results from worker {}: {}", self.workers[worker], e),
-                }
-                println!("Read {} bytes so far, must read {} in total", buf.currently_read, 8);
+            println!("Reading size header...");
+            match self.connections[worker].read(&mut buf.buf[buf.currently_read..]) {
+                Ok(n) => buf.currently_read += n,
+                Err(e) => println!("Error reading results from worker {}: {}", self.workers[worker], e),
             }
-            // How many bytes we expect to get from the worker for a frame
-            buf.expected_size = decode(&buf.buf[..]).unwrap();
-            // Extend the Vec so we've got enough room for the remaning bytes, minus the 8 for the
-            // encoded size header
-            buf.buf.extend(iter::repeat(0u8).take(buf.expected_size - 8));
+            println!("Read {} bytes so far, must read {} in total", buf.currently_read, buf.expected_size);
+            if buf.currently_read == buf.expected_size {
+                println!("Got size header");
+                // How many bytes we expect to get from the worker for a frame
+                buf.expected_size = decode(&buf.buf[..]).unwrap();
+                println!("Expecting {} bytes", buf.expected_size);
+                // Extend the Vec so we've got enough room for the remaning bytes, minus the 8 for the
+                // encoded size header
+                buf.buf.extend(iter::repeat(0u8).take(buf.expected_size - 8));
+            }
         }
         println!("Reading from worker");
         match self.connections[worker].read(&mut buf.buf[buf.currently_read..]) {
@@ -187,9 +196,10 @@ impl Handler for Master {
     type Message = ();
 
     fn ready(&mut self, event_loop: &mut EventLoop<Master>, token: Token, event: EventSet) {
-        // Some results are read for reading from a worker
+        let worker = token.as_usize();
+        // Some results are available from a worker
         if event.is_readable() {
-            let worker = token.as_usize();
+            println!("Readable event from worker {}", worker);
             let finished = self.read_worker_buffer(worker);
             if finished {
                 println!("Got all frame data, now parsing");
@@ -198,15 +208,20 @@ impl Handler for Master {
                 self.save_results(frame);
                 // Clean up our read buffer
                 self.worker_buffers[worker].buf.clear();
-                self.worker_buffers[worker].expected_size = 0;
+                self.worker_buffers[worker].expected_size = 8;
                 self.worker_buffers[worker].currently_read = 0;
             }
         }
+        // If the worker has terminated, shutdown the read end of the connection
+        if event.is_hup() {
+            self.connections[worker].shutdown(Shutdown::Read);
+        }
         // After getting results from the worker we check if we've completed all our frames
         // and exit if so
-        if !self.frames.is_empty() && self.frames.values().fold(true, |all, v| all && v.completed) {
-            println!("All frames have been rendered, master exiting");
-            event_loop.shutdown();
+        if self.frames.len() == self.config.frame_info.frames
+            && self.frames.values().fold(true, |all, v| all && v.completed) {
+                println!("All frames have been rendered, master exiting");
+                event_loop.shutdown();
         }
     }
 }
