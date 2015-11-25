@@ -3,10 +3,10 @@
 
 use std::path::PathBuf;
 use std::io::prelude::*;
+use std::net::{TcpListener, TcpStream};
 
 use bincode::SizeLimit;
-use bincode::rustc_serialize::encode;
-use mio::tcp::{TcpListener, TcpStream};
+use bincode::rustc_serialize::{encode, encoded_size};
 
 use scene::Scene;
 use film::RenderTarget;
@@ -17,6 +17,7 @@ pub static PORT: u16 = 63234;
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct Frame {
+    pub encoded_size: u64,
     pub frame: u64,
     pub pixels: Vec<f32>,
 }
@@ -49,10 +50,13 @@ impl Worker {
                  config: config, master: master }
     }
     /// Send our blocks back to the master
-    pub fn send_results(&self) {
+    pub fn send_results(&mut self) {
         println!("Sending results to master, {:?}", self.master);
-        let frame = Frame { frame: self.config.current_frame as u64, pixels: self.render_target.get_renderf32() };
+        let mut frame = Frame { encoded_size: 0, frame: self.config.current_frame as u64,
+                                pixels: self.render_target.get_renderf32() };
+        frame.encoded_size = encoded_size(&frame);
         let bytes = encode(&frame, SizeLimit::Infinite).unwrap();
+        println!("worker sending {} bytes", bytes.len());
         match self.master.write_all(&bytes[..]) {
             Err(e) => println!("Failed to send frame to {:?}: {}", self.master, e),
             _ => {},
@@ -65,7 +69,6 @@ fn get_instructions() -> (Instructions, TcpStream) {
     println!("Worker listening for master");
     match listener.accept() {
         Ok((mut stream, sock)) => {
-            let master = stream.peer_addr().unwrap();
             let mut read = String::new();
             match stream.read_to_string(&mut read) {
                 Err(e) => panic!("Failed to read from master, {:?}", e),
