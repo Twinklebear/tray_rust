@@ -18,13 +18,15 @@ use exec::Config;
 use exec::distrib::{worker, Instructions};
 use sampler::BlockQueue;
 
-pub struct DistributedFrame {
-    pub frame: usize,
-    // The number of workers who have reported results for this
-    // frame so far
-    pub num_reporting: usize,
-    pub render: Image,
-    pub completed: bool,
+enum DistributedFrame {
+    InProgress {
+        frame: usize,
+        // The number of workers who have reported results for this
+        // frame so far
+        num_reporting: usize,
+        render: Image,
+    },
+    Completed,
 }
 
 #[derive(Clone, Debug)]
@@ -107,9 +109,14 @@ impl Master {
         let frame_num = frame.frame as usize;
         println!("Worker reporting frame {}", frame_num);
         if let Some(df) = self.frames.get_mut(&frame_num) {
-            df.render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
-            df.num_reporting += 1;
-            println!("We have parts of this frame already");
+            match df {
+                DistributedFrame::InProgress { frame: _, num_reporting: num_reporting, render: render } => {
+                    render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
+                    num_reporting += 1;
+                    println!("We have parts of this frame already");
+                },
+                DistributedFrame::Completed => println!("Worker reporting on completed frame!?"),
+            }
         }
         // TODO: Better way here? We get stuck because self.frames is counted as borrowed
         // from the if above, making this really awkward.
@@ -117,27 +124,36 @@ impl Master {
             // TODO: I need to seperate the render target from the actual image as the
             // filter here isn't used in this path and it doesn't make sense to have one
             let render = Image::new(self.img_dim);
-            let mut df = DistributedFrame { frame: frame_num, num_reporting: 1, render: render, completed: false };
+            let mut df = DistributedFrame::InProgress { frame: frame_num, num_reporting: 1, render: render};
             df.render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
             self.frames.insert(df.frame, df);
             println!("This is a new frame");
         }
         if let Some(df) = self.frames.get_mut(&frame_num) {
-            if df.num_reporting == self.workers.len() {
-                df.completed = true;
-                println!("We have completed frame {}", frame_num);
-                let out_file = match self.config.out_path.extension() {
-                    Some(_) => self.config.out_path.clone(),
-                    None => self.config.out_path.join(PathBuf::from(format!("frame{:05}.png", df.frame))),
-                };
-                println!("Frame {}: rendered to '{}'\n--------------------", frame_num, out_file.display());
-                let img = df.render.get_srgb8();
-                let dim = df.render.dimensions();
-                match image::save_buffer(&out_file.as_path(), &img[..], dim.0 as u32, dim.1 as u32, image::RGB(8)) {
-                    Ok(_) => {},
-                    Err(e) => println!("Error saving image, {}", e),
-                };
+            match df {
+                DistributedFrame::InProgress { frame: frame, num_reporting: num_reporting, render: render } => {
+                    if df.num_reporting == self.workers.len() {
+                        df.completed = true;
+                        println!("We have completed frame {}", frame_num);
+                        let out_file = match self.config.out_path.extension() {
+                            Some(_) => self.config.out_path.clone(),
+                            None => self.config.out_path.join(
+                                PathBuf::from(format!("frame{:05}.png", df.frame))),
+                        };
+                        println!("Frame {}: rendered to '{}'\n--------------------",
+                                 frame_num, out_file.display());
+                        let img = df.render.get_srgb8();
+                        let dim = df.render.dimensions();
+                        match image::save_buffer(&out_file.as_path(), &img[..], dim.0 as u32,
+                                                 dim.1 as u32, image::RGB(8)) {
+                            Ok(_) => {},
+                            Err(e) => println!("Error saving image, {}", e),
+                        };
+                    }
+                },
+                DistributedFrame::Completed => println!("Can not save out already completed frame"),
             }
+            df = DistributedFrame::Completed;
         }
     }
     fn read_worker_buffer(&mut self, worker: usize) -> bool {
@@ -254,10 +270,16 @@ impl Handler for Master {
         }
         // After getting results from the worker we check if we've completed all our frames
         // and exit if so
-        if self.frames.len() == self.config.frame_info.frames
-            && self.frames.values().fold(true, |all, v| all && v.completed) {
-                println!("All frames have been rendered, master exiting");
-                event_loop.shutdown();
+        let all_complete = self.frames.values().fold(true,
+                                |all, v| {
+                                    match v {
+                                        DistributedFrame::Completed => true && v,
+                                        _ => false,
+                                    }
+                                });
+        if self.frames.len() == self.config.frame_info.frames && all_complete {
+            println!("All frames have been rendered, master exiting");
+            event_loop.shutdown();
         }
     }
 }
