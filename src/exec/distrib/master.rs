@@ -214,6 +214,10 @@ impl Handler for Master {
                 },
                 Ok(_) => println!("Instructions sent"),
             }
+            // Register that we no longer care about writable events on this connection
+            event_loop.reregister(&self.connections[worker], token,
+                                  EventSet::readable() | EventSet::error() | EventSet::hup(),
+                                  PollOpt::level()).expect("Re-registering failed");
             // We no longer need to write anything, so close the write end
             match self.connections[worker].shutdown(Shutdown::Write) {
                 Err(e) => panic!(format!("Failed to shutdown write end to worker {}: {}",
