@@ -242,7 +242,7 @@ impl Handler for Master {
         // If the worker has terminated, shutdown the read end of the connection
         if event.is_hup() {
             println!("Worker {} has hung up", worker);
-            match self.connections[worker].shutdown(Shutdown::Both) {
+            match self.connections[worker].shutdown(Shutdown::Read) {
                 Err(e) => println!("Error shutting down worker {}: {}", worker, e),
                 Ok(_) => {},
             }
