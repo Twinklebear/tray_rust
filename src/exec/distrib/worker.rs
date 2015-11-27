@@ -39,13 +39,8 @@ impl Worker {
     pub fn listen_for_master(num_threads: u32) -> Worker {
         let (instructions, master) = get_instructions();
         let (scene, rt, spp, mut frame_info) = Scene::load_file(&instructions.scene);
-        match instructions.frames {
-            Some((start, end)) => {
-                frame_info.start = start;
-                frame_info.end = end;
-            },
-            None => {},
-        }
+        frame_info.start = instructions.frames.0;
+        frame_info.end = instructions.frames.1;
         let config = Config::new(PathBuf::from("/tmp"), instructions.scene.clone(), spp,
                                  num_threads, frame_info,
                                  (instructions.block_start, instructions.block_count));

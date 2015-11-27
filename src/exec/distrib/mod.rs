@@ -37,7 +37,7 @@ impl Instructions {
         let block_start = json.find("block_start").unwrap().as_u64().unwrap() as usize;
         let block_count = json.find("block_count").unwrap().as_u64().unwrap() as usize;
         let frame_range = json.find("frame_range").unwrap().as_array().unwrap();
-        let frames = (frame_range[0].as_u64().unwrap() as usize, frame_range[1].as_u64().unwrap());
+        let frames = (frame_range[0].as_u64().unwrap() as usize, frame_range[1].as_u64().unwrap() as usize);
         Instructions { scene: scene.to_string(), frames: frames,
                        block_start: block_start, block_count: block_count }
     }

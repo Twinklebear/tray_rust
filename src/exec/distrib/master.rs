@@ -278,7 +278,7 @@ impl Handler for Master {
                                     }
                                 });
         // The frame start/end range is inclusive, so we must add 1 here
-        let num_frames = self.config.frame_info.end - self.config.frame_info.end + 1;
+        let num_frames = self.config.frame_info.end - self.config.frame_info.start + 1;
         println!("Rendering {} frames, all_complete ? {}", num_frames, all_complete);
         // TODO: We can't use frame_info.frames as this is not the `subset` of frames
         // we're rendering
