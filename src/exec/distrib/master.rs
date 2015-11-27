@@ -204,11 +204,14 @@ impl Handler for Master {
                     self.blocks_per_worker
                 };
             let instr = Instructions::new(&self.config.scene_file, self.selected_frames, b_start, b_count);
-            println!("Sending instructions {:?} too {}", instr, self.workers[worker]);
+            println!("Sending instructions {:?} to {}", instr, self.workers[worker]);
             let bytes = instr.to_json().into_bytes();
             // Loop until we successfully write the byes
             match self.connections[worker].write_all(&bytes[..]) {
-                Err(e) => println!("Failed to send instructions to {}: {:?}", self.workers[worker], e),
+                Err(e) => {
+                    println!("Failed to send instructions to {}: {:?}", self.workers[worker], e);
+                    return;
+                },
                 Ok(_) => println!("Instructions sent"),
             }
             // We no longer need to write anything, so close the write end
