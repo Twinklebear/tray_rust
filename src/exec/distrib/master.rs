@@ -18,6 +18,7 @@ use exec::Config;
 use exec::distrib::{worker, Instructions};
 use sampler::BlockQueue;
 
+#[derive(Debug)]
 enum DistributedFrame {
     InProgress {
         frame: usize,
@@ -129,6 +130,7 @@ impl Master {
             println!("This is a new frame");
         }
         if let Some(df) = self.frames.get_mut(&frame_num) {
+            let mut finished = false;
             match df {
                 &mut DistributedFrame::InProgress { frame, num_reporting, ref render } => {
                     if num_reporting == self.workers.len() {
@@ -147,11 +149,16 @@ impl Master {
                             Ok(_) => {},
                             Err(e) => println!("Error saving image, {}", e),
                         };
+                        finished = true;
                     }
                 },
                 &mut DistributedFrame::Completed => println!("Can not save out already completed frame"),
             }
-            *df = DistributedFrame::Completed;
+            // This is also a bit awkward, since we borrow the df in the match
+            // we can't mark it finished in there. TODO: Better design?
+            if finished {
+                *df = DistributedFrame::Completed;
+            }
         }
     }
     fn read_worker_buffer(&mut self, worker: usize) -> bool {
@@ -279,7 +286,8 @@ impl Handler for Master {
                                 });
         // The frame start/end range is inclusive, so we must add 1 here
         let num_frames = self.config.frame_info.end - self.config.frame_info.start + 1;
-        println!("Rendering {} frames, all_complete ? {}", num_frames, all_complete);
+        println!("Rendering {} frames have {}, all_complete? {}",
+                 num_frames, self.frames.len(), all_complete);
         // TODO: We can't use frame_info.frames as this is not the `subset` of frames
         // we're rendering
         if self.frames.len() == num_frames && all_complete {

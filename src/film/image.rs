@@ -5,6 +5,7 @@ use std::iter;
 
 use film::Colorf;
 
+#[derive(Debug)]
 pub struct Image {
     dim: (usize, usize),
     pixels: Vec<Colorf>,
