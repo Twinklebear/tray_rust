@@ -17,13 +17,13 @@ pub mod master;
 #[derive(Debug, Clone)]
 struct Instructions {
     pub scene: String,
-    pub frames: Option<(usize, usize)>,
+    pub frames: (usize, usize),
     pub block_start: usize,
     pub block_count: usize,
 }
 
 impl Instructions {
-    pub fn new(scene: &String, frames: Option<(usize, usize)>, block_start: usize,
+    pub fn new(scene: &String, frames: (usize, usize), block_start: usize,
                block_count: usize) -> Instructions {
         Instructions { scene: scene.clone(), frames: frames,
                        block_start: block_start, block_count: block_count }
@@ -37,30 +37,21 @@ impl Instructions {
         let block_start = json.find("block_start").unwrap().as_u64().unwrap() as usize;
         let block_count = json.find("block_count").unwrap().as_u64().unwrap() as usize;
         let frame_range = json.find("frame_range").unwrap().as_array().unwrap();
-        let frames =
-            if !frame_range.is_empty() {
-                Some((frame_range[0].as_u64().unwrap() as usize, frame_range[0].as_u64().unwrap() as usize))
-            } else {
-                None
-            };
+        let frames = (frame_range[0].as_u64().unwrap() as usize, frame_range[1].as_u64().unwrap());
         Instructions { scene: scene.to_string(), frames: frames,
                        block_start: block_start, block_count: block_count }
     }
     // TODO: This to_json method is temporary while we wait for custom derive
     // to stabilize
     pub fn to_json(&self) -> String {
-        let frame_string = match self.frames {
-            Some((start, end)) => format!("\"frame_range\": [{}, {}]", start, end),
-            None => format!("\"frame_range\": []"),
-        };
         // Note: We swap \ for / in file paths since JSON expects unix-style paths, a \xxx is
         // interpreted as an escape sequence
         let json = format!("{{
             \"scene\": \"{}\",
             \"block_start\": {},
             \"block_count\": {},
-            {}
-        }}", self.scene.replace("\\", "/"), self.block_start, self.block_count, frame_string);
+            \"frame_range\": [{}, {}]
+        }}", self.scene.replace("\\", "/"), self.block_start, self.block_count, self.frames.0, self.frames.1);
         println!("Built JSON {}", json);
         json
     }

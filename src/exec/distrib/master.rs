@@ -51,7 +51,6 @@ pub struct Master {
     worker_buffers: Vec<WorkerBuffer>,
     config: Config,
     frames: HashMap<usize, DistributedFrame>,
-    selected_frames: Option<(usize, usize)>,
     img_dim: (usize, usize),
     blocks_per_worker: usize,
     blocks_remainder: usize,
@@ -60,8 +59,8 @@ pub struct Master {
 impl Master {
     /// Create a new master that will contact the worker nodes passed and
     /// send instructions on what parts of the scene to start rendering
-    pub fn start_workers(workers: Vec<String>, config: Config, img_dim: (usize, usize),
-                         frames: Option<(usize, usize)>) -> (Master, EventLoop<Master>) {
+    pub fn start_workers(workers: Vec<String>, config: Config, img_dim: (usize, usize))
+                         -> (Master, EventLoop<Master>) {
         // Figure out how many blocks we have for this image and assign them to our workers
         let queue = BlockQueue::new((img_dim.0 as u32, img_dim.1 as u32), (8, 8), (0, 0));
         let blocks_per_worker = queue.len() / workers.len();
@@ -95,7 +94,7 @@ impl Master {
         let worker_buffers: Vec<_> = iter::repeat(WorkerBuffer::new()).take(workers.len()).collect();
         let master = Master { workers: workers, connections: connections,
                               worker_buffers: worker_buffers, config: config,
-                              frames: HashMap::new(), selected_frames: frames,
+                              frames: HashMap::new(),
                               img_dim: img_dim,
                               blocks_per_worker: blocks_per_worker,
                               blocks_remainder: blocks_remainder };
@@ -218,7 +217,9 @@ impl Handler for Master {
                 } else {
                     self.blocks_per_worker
                 };
-            let instr = Instructions::new(&self.config.scene_file, self.selected_frames, b_start, b_count);
+            let instr = Instructions::new(&self.config.scene_file,
+                                          (self.config.frame_info.start, self.config.frame_info.end),
+                                          b_start, b_count);
             println!("Sending instructions {:?} to {}", instr, self.workers[worker]);
             let bytes = instr.to_json().into_bytes();
             // Loop until we successfully write the byes
@@ -276,7 +277,12 @@ impl Handler for Master {
                                         _ => false,
                                     }
                                 });
-        if self.frames.len() == self.config.frame_info.frames && all_complete {
+        // The frame start/end range is inclusive, so we must add 1 here
+        let num_frames = self.config.frame_info.end - self.config.frame_info.end + 1;
+        println!("Rendering {} frames, all_complete ? {}", num_frames, all_complete);
+        // TODO: We can't use frame_info.frames as this is not the `subset` of frames
+        // we're rendering
+        if self.frames.len() == num_frames && all_complete {
             println!("All frames have been rendered, master exiting");
             event_loop.shutdown();
         }

@@ -132,18 +132,19 @@ fn master_node(args: Args) {
         &None => PathBuf::from("./"),
     };
 
-    let (_, rt, spp, frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
+    let (_, rt, spp, mut frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
 
-    let frame_subset = match (args.flag_start_frame, args.flag_end_frame) {
-        (Some(x), Some(y)) => Some((x, y)),
-        (Some(x), None) => Some((x, frame_info.end)),
-        (None, Some(x)) => Some((frame_info.start, x)),
-        _ => None,
+    frame_info.start = match args.flag_start_frame {
+        Some(x) => x,
+        _ => frame_info.start,
+    };
+    frame_info.end = match args.flag_end_frame {
+        Some(x) => x,
+        _ => frame_info.end,
     };
     let scene_start = clock_ticks::precise_time_s();
     let config = exec::Config::new(out_path, args.arg_scenefile, spp, 0, frame_info, (0, 0));
-    let (mut master, mut event_loop) = distrib::Master::start_workers(args.arg_workers, config,
-                                                                      rt.dimensions(), frame_subset);
+    let (mut master, mut event_loop) = distrib::Master::start_workers(args.arg_workers, config, rt.dimensions());
     event_loop.run(&mut master).unwrap();
     let time = clock_ticks::precise_time_s() - scene_start;
     println!("Rendering entire sequence took {}s", time);
