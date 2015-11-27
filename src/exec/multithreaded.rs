@@ -30,7 +30,7 @@ impl MultiThreaded {
         // of the blocks which it has been assigned
         let dim = rt.dimensions();
         let block_queue = BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8), config.select_blocks);
-        let light_list: Vec<_> = scene.bvh.into_iter().filter_map(|x| {
+        let light_list: Vec<_> = scene.bvh.iter().filter_map(|x| {
             match x {
                 &Instance::Emitter(ref e) => Some(e),
                 _ => None,

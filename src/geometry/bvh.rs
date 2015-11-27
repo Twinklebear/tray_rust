@@ -2,7 +2,7 @@
 
 use std::f32;
 use std::iter::repeat;
-use std::slice;
+use std::slice::Iter;
 
 use partition::partition;
 use geometry::{BBox, Boundable};
@@ -127,6 +127,9 @@ impl<T: Boundable> BVH<T> {
             }
         }
         result
+    }
+    pub fn iter(&self) -> Iter<T> {
+        self.geometry.iter()
     }
     /// Construct the BVH tree using SAH splitting heuristic to determine split locations
     /// returns the root node of the subtree constructed over the slice of geom info passed
@@ -267,15 +270,6 @@ impl<T: Boundable> BVH<T> {
 impl<T: Boundable> Boundable for BVH<T> {
     fn bounds(&self, _: f32, _: f32) -> BBox {
         self.tree[0].bounds
-    }
-}
-
-impl<'a, T: Boundable> IntoIterator for &'a BVH<T> {
-    type Item = &'a T;
-    type IntoIter = slice::Iter<'a, T>;
-
-    fn into_iter(self) -> slice::Iter<'a, T> {
-        self.geometry.iter()
     }
 }
 
