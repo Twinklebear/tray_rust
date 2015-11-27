@@ -212,7 +212,7 @@ impl RenderTarget {
     /// a list of block positions in pixels and then pixels for the blocks (in a single f32 vec).
     /// The block's pixels are stored in the same order their position appears in the block
     /// positions vec and contain `dim.0 * dim.1 * 4` f32's per block.
-    pub fn get_blocks(&self) -> ((usize, usize), Vec<(usize, usize)>, Vec<f32>) {
+    pub fn get_rendered_blocks(&self) -> ((usize, usize), Vec<(usize, usize)>, Vec<f32>) {
         let block_size = (self.lock_size.0 as usize, self.lock_size.1 as usize);
         let mut blocks = Vec::new();
         let mut render = Vec::new();

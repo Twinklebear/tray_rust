@@ -107,7 +107,7 @@ impl Master {
         let frame_num = frame.frame as usize;
         println!("Worker reporting frame {}", frame_num);
         if let Some(df) = self.frames.get_mut(&frame_num) {
-            df.render.add_pixels(&frame.pixels);
+            df.render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
             df.num_reporting += 1;
             println!("We have parts of this frame already");
         }
@@ -118,7 +118,7 @@ impl Master {
             // filter here isn't used in this path and it doesn't make sense to have one
             let render = Image::new(self.img_dim);
             let mut df = DistributedFrame { frame: frame_num, num_reporting: 1, render: render, completed: false };
-            df.render.add_pixels(&frame.pixels);
+            df.render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
             self.frames.insert(df.frame, df);
             println!("This is a new frame");
         }
@@ -221,8 +221,7 @@ impl Handler for Master {
         // Some results are available from a worker
         if event.is_readable() {
             println!("Readable event from worker {}", worker);
-            let finished = self.read_worker_buffer(worker);
-            if finished {
+            if self.read_worker_buffer(worker) {
                 println!("Got all frame data, now parsing");
                 let frame: worker::Frame = decode(&self.worker_buffers[worker].buf[..]).unwrap();
                 println!("Saving frame results");

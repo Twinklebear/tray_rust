@@ -18,7 +18,9 @@ pub static PORT: u16 = 63234;
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct Frame {
     pub encoded_size: u64,
-    pub frame: u64,
+    pub frame: usize,
+    pub block_size: (usize, usize),
+    pub blocks: Vec<(usize, usize)>,
     pub pixels: Vec<f32>,
 }
 
@@ -53,8 +55,9 @@ impl Worker {
     /// Send our blocks back to the master
     pub fn send_results(&mut self) {
         println!("Sending results to master, {:?}", self.master);
-        let mut frame = Frame { encoded_size: 0, frame: self.config.current_frame as u64,
-                                pixels: self.render_target.get_renderf32() };
+        let (block_size, blocks, pixels) = self.render_target.get_rendered_blocks();
+        let mut frame = Frame { encoded_size: 0, frame: self.config.current_frame,
+                                block_size: block_size, blocks: blocks, pixels: pixels };
         frame.encoded_size = encoded_size(&frame);
         let bytes = encode(&frame, SizeLimit::Infinite).unwrap();
         println!("worker sending {} bytes", bytes.len());
