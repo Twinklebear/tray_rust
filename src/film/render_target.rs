@@ -208,6 +208,37 @@ impl RenderTarget {
         }
         render
     }
+    /// Get the blocks that have had pixels written too them. Returns the size of each block,
+    /// a list of block positions in pixels and then pixels for the blocks (in a single f32 vec).
+    /// The block's pixels are stored in the same order their position appears in the block
+    /// positions vec and contain `dim.0 * dim.1 * 4` f32's per block.
+    pub fn get_blocks(&self) -> ((usize, usize), Vec<(usize, usize)>, Vec<f32>) {
+        let block_size = (self.lock_size.0 as usize, self.lock_size.1 as usize);
+        let mut blocks = Vec::new();
+        let mut render = Vec::new();
+        let x_blocks = self.width / block_size.0;
+        let y_blocks = self.height / block_size.1;
+        for by in 0..y_blocks {
+            for bx in 0..x_blocks {
+                let block_x_start = bx * block_size.0;
+                let block_y_start = by * block_size.1;
+                let block_idx = by * x_blocks + bx;
+                let pixels = self.pixels_locked[block_idx].lock().unwrap();
+                if pixels.iter().fold(true, |acc, px| acc && px.a != 0.0) {
+                    blocks.push((block_x_start, block_y_start));
+                    for y in 0..block_size.1 {
+                        for x in 0..block_size.0 {
+                            let c = &pixels[y * block_size.0 + x];
+                            for i in 0..4 {
+                                render.push(c[i]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        (block_size, blocks, render)
+    }
     /// Get the raw floating point framebuffer
     pub fn get_renderf32(&self) -> Vec<f32> {
         let mut render: Vec<f32> = iter::repeat(0.0).take(self.width * self.height * 4).collect();
