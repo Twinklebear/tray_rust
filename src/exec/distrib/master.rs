@@ -110,12 +110,12 @@ impl Master {
         println!("Worker reporting frame {}", frame_num);
         if let Some(df) = self.frames.get_mut(&frame_num) {
             match df {
-                DistributedFrame::InProgress { frame: _, num_reporting: num_reporting, render: render } => {
+                &mut DistributedFrame::InProgress { frame: _, ref mut num_reporting, ref mut render } => {
                     render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
-                    num_reporting += 1;
+                    *num_reporting += 1;
                     println!("We have parts of this frame already");
                 },
-                DistributedFrame::Completed => println!("Worker reporting on completed frame!?"),
+                &mut DistributedFrame::Completed => println!("Worker reporting on completed frame!?"),
             }
         }
         // TODO: Better way here? We get stuck because self.frames is counted as borrowed
@@ -123,27 +123,26 @@ impl Master {
         if self.frames.get_mut(&frame_num).is_none() {
             // TODO: I need to seperate the render target from the actual image as the
             // filter here isn't used in this path and it doesn't make sense to have one
-            let render = Image::new(self.img_dim);
-            let mut df = DistributedFrame::InProgress { frame: frame_num, num_reporting: 1, render: render};
-            df.render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
-            self.frames.insert(df.frame, df);
+            let mut render = Image::new(self.img_dim);
+            render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
+            let df = DistributedFrame::InProgress { frame: frame_num, num_reporting: 1, render: render};
+            self.frames.insert(frame_num, df);
             println!("This is a new frame");
         }
         if let Some(df) = self.frames.get_mut(&frame_num) {
             match df {
-                DistributedFrame::InProgress { frame: frame, num_reporting: num_reporting, render: render } => {
-                    if df.num_reporting == self.workers.len() {
-                        df.completed = true;
+                &mut DistributedFrame::InProgress { frame, num_reporting, ref render } => {
+                    if num_reporting == self.workers.len() {
                         println!("We have completed frame {}", frame_num);
                         let out_file = match self.config.out_path.extension() {
                             Some(_) => self.config.out_path.clone(),
                             None => self.config.out_path.join(
-                                PathBuf::from(format!("frame{:05}.png", df.frame))),
+                                PathBuf::from(format!("frame{:05}.png", frame))),
                         };
                         println!("Frame {}: rendered to '{}'\n--------------------",
                                  frame_num, out_file.display());
-                        let img = df.render.get_srgb8();
-                        let dim = df.render.dimensions();
+                        let img = render.get_srgb8();
+                        let dim = render.dimensions();
                         match image::save_buffer(&out_file.as_path(), &img[..], dim.0 as u32,
                                                  dim.1 as u32, image::RGB(8)) {
                             Ok(_) => {},
@@ -151,9 +150,9 @@ impl Master {
                         };
                     }
                 },
-                DistributedFrame::Completed => println!("Can not save out already completed frame"),
+                &mut DistributedFrame::Completed => println!("Can not save out already completed frame"),
             }
-            df = DistributedFrame::Completed;
+            *df = DistributedFrame::Completed;
         }
     }
     fn read_worker_buffer(&mut self, worker: usize) -> bool {
@@ -273,7 +272,7 @@ impl Handler for Master {
         let all_complete = self.frames.values().fold(true,
                                 |all, v| {
                                     match v {
-                                        DistributedFrame::Completed => true && v,
+                                        &DistributedFrame::Completed => true && all,
                                         _ => false,
                                     }
                                 });
