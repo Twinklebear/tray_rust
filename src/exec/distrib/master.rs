@@ -83,7 +83,7 @@ impl Master {
                     println!("Connected and writing");
                     println!("Adding stream to event loop");
                     // Each worker is identified in the event loop by their index in the vec
-                    match event_loop.register(&stream, Token(i)) {
+                    match event_loop.register(&stream, Token(i), EventSet::all(), PollOpt::level()){
                         Err(e) => println!("Error registering stream from {}: {}", host, e),
                         Ok(_) => {},
                     }
@@ -231,10 +231,7 @@ impl Handler for Master {
             let bytes = instr.to_json().into_bytes();
             // Loop until we successfully write the byes
             match self.connections[worker].write_all(&bytes[..]) {
-                Err(e) => {
-                    println!("Failed to send instructions to {}: {:?}", self.workers[worker], e);
-                    return;
-                },
+                Err(e) => println!("Failed to send instructions to {}: {:?}", self.workers[worker], e),
                 Ok(_) => println!("Instructions sent"),
             }
             // Register that we no longer care about writable events on this connection
@@ -243,8 +240,7 @@ impl Handler for Master {
                                   PollOpt::level()).expect("Re-registering failed");
             // We no longer need to write anything, so close the write end
             match self.connections[worker].shutdown(Shutdown::Write) {
-                Err(e) => panic!(format!("Failed to shutdown write end to worker {}: {}",
-                                         self.workers[worker], e)),
+                Err(e) => println!("Failed to shutdown write end to worker {}: {}", self.workers[worker], e),
                 Ok(_) => {},
             }
         }

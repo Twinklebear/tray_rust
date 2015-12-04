@@ -9,7 +9,6 @@ use scene::Scene;
 pub use self::multithreaded::MultiThreaded;
 
 pub mod multithreaded;
-#[cfg(unix)]
 pub mod distrib;
 
 /// Config passed to set up the execution environment with information

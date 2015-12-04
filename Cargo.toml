@@ -11,9 +11,9 @@ doc = false
 enum-set = "0.0.6"
 rand = "0.3.12"
 rustc-serialize = "0.3.16"
-docopt = "0.6.76"
-image = "0.5.1"
-num_cpus = "0.2.9"
+docopt = "0.6.78"
+image = "0.5.4"
+num_cpus = "0.2.10"
 tobj = "0.1.0"
 byteorder = "0.4.2"
 serde_json = "0.6.0"
@@ -21,13 +21,7 @@ scoped_threadpool = "0.1.6"
 bspline = "0.2.2"
 clock_ticks = "0.1.0"
 bincode = "0.4.0"
-
-# We only support mio on linux for now
-[target.i686-unknown-linux-gnu.dependencies]
-mio = "0.4.4"
-
-[target.x86_64-unknown-linux-gnu.dependencies]
-mio = "0.4.4"
+mio = "0.5.0"
 
 [profile.release]
 # How to send extra compiler flag for -march=native equivalent in Rust

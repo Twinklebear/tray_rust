@@ -42,7 +42,7 @@ impl Instructions {
                        block_start: block_start, block_count: block_count }
     }
     // TODO: This to_json method is temporary while we wait for custom derive
-    // to stabilize
+    // to stabilize. Shouldn't we just send this as bytes?
     pub fn to_json(&self) -> String {
         // Note: We swap \ for / in file paths since JSON expects unix-style paths, a \xxx is
         // interpreted as an escape sequence
