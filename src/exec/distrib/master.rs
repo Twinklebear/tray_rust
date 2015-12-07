@@ -117,15 +117,14 @@ impl Master {
         let img_dim = self.img_dim;
         println!("Worker reporting frame {}", frame_num);
         let mut df = self.frames.entry(frame_num).or_insert_with(|| {
-                println!("This is a new frame");
-                DistributedFrame::start(frame_num, img_dim)
-            });
+                        println!("This is a new frame");
+                        DistributedFrame::start(frame_num, img_dim)
+                    });
         let mut finished = false;
         match df {
             &mut DistributedFrame::InProgress { frame: _, ref mut num_reporting, ref mut render } => {
                 render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
                 *num_reporting += 1;
-                println!("We have parts of this frame already");
                 if *num_reporting == self.workers.len() {
                     println!("We have completed frame {}", frame_num);
                     let out_file = match self.config.out_path.extension() {
@@ -207,6 +206,19 @@ impl Handler for Master {
                 Ok(_) => {},
             }
         }
+        // If the worker has terminated, shutdown the read end of the connection
+        if event.is_hup() {
+            println!("Worker {} has hung up", worker);
+            match self.connections[worker].shutdown(Shutdown::Both) {
+                Err(e) => println!("Error shutting down worker {}: {}", worker, e),
+                Ok(_) => {},
+            }
+            // Remove the connection from the event loop
+            match event_loop.deregister(&self.connections[worker]) {
+                Err(e) => println!("Error deregistering worker {}: {}", worker, e),
+                Ok(_) => {},
+            }
+        }
         // A worker is ready to receive instructions from us
         if event.is_writable() {
             let b_start = worker * self.blocks_per_worker;
@@ -246,19 +258,6 @@ impl Handler for Master {
                 self.worker_buffers[worker].currently_read = 0;
             }
         }
-        // If the worker has terminated, shutdown the read end of the connection
-        if event.is_hup() {
-            println!("Worker {} has hung up", worker);
-            match self.connections[worker].shutdown(Shutdown::Read) {
-                Err(e) => println!("Error shutting down worker {}: {}", worker, e),
-                Ok(_) => {},
-            }
-            // Remove the connection from the event loop
-            match event_loop.deregister(&self.connections[worker]) {
-                Err(e) => println!("Error deregistering worker {}: {}", worker, e),
-                Ok(_) => {},
-            }
-        }
         // After getting results from the worker we check if we've completed all our frames
         // and exit if so
         let all_complete = self.frames.values().fold(true,
@@ -272,8 +271,6 @@ impl Handler for Master {
         let num_frames = self.config.frame_info.end - self.config.frame_info.start + 1;
         println!("Rendering {} frames have {}, all_complete? {}",
                  num_frames, self.frames.len(), all_complete);
-        // TODO: We can't use frame_info.frames as this is not the `subset` of frames
-        // we're rendering
         if self.frames.len() == num_frames && all_complete {
             println!("All frames have been rendered, master exiting");
             event_loop.shutdown();
