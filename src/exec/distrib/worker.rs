@@ -4,9 +4,10 @@
 use std::path::PathBuf;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
+use std::iter;
 
 use bincode::SizeLimit;
-use bincode::rustc_serialize::{encode, encoded_size};
+use bincode::rustc_serialize::{encode, encoded_size, decode};
 
 use scene::Scene;
 use film::RenderTarget;
@@ -51,6 +52,7 @@ impl Worker {
     pub fn send_results(&mut self) {
         println!("Sending results to master, {:?}", self.master);
         let (block_size, blocks, pixels) = self.render_target.get_rendered_blocks();
+        // TODO: A ctor that computes the encoded size for us would be cleaner and easier
         let mut frame = Frame { encoded_size: 0, frame: self.config.current_frame,
                                 block_size: block_size, blocks: blocks, pixels: pixels };
         frame.encoded_size = encoded_size(&frame);
@@ -68,13 +70,30 @@ fn get_instructions() -> (Instructions, TcpStream) {
     println!("Worker listening for master");
     match listener.accept() {
         Ok((mut stream, sock)) => {
-            let mut read = String::new();
-            match stream.read_to_string(&mut read) {
-                Err(e) => panic!("Failed to read from master, {:?}", e),
-                _ => {},
+            println!("Got connection");
+            let mut buf: Vec<_> = iter::repeat(0u8).take(8).collect();
+            let mut expected_size = 8;
+            let mut currently_read = 0;
+            // Read the size header
+            while currently_read < expected_size {
+                match stream.read(&mut buf[currently_read..]) {
+                    Ok(n) => currently_read += n,
+                    Err(e) => panic!("Failed to read from master, {:?}", e),
+                }
             }
-            println!("Read from master {:?} content {}", sock, read);
-            let instr = Instructions::from_json(read);
+            // How many bytes we expect to get from the worker for a frame
+            expected_size = decode(&buf[..]).unwrap();
+            println!("Read size header of {} bytes, now reading remainder", expected_size);
+            buf.extend(iter::repeat(0u8).take(expected_size - 8));
+            // Now read the rest
+            while currently_read < expected_size {
+                match stream.read(&mut buf[currently_read..]) {
+                    Ok(n) => currently_read += n,
+                    Err(e) => panic!("Failed to read from master, {:?}", e),
+                }
+            }
+            let instr: Instructions = decode(&buf[..]).unwrap();
+            println!("Read from master {:?} instructions {:?}", sock, instr);
             (instr, stream)
         },
         Err(e) => panic!("Error accepting: {:?}", e),

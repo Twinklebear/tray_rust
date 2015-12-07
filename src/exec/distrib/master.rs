@@ -8,7 +8,8 @@ use std::collections::HashMap;
 use std::net::ToSocketAddrs;
 use std::iter;
 
-use bincode::rustc_serialize::decode;
+use bincode::SizeLimit;
+use bincode::rustc_serialize::{encode, decode};
 use image;
 use mio::tcp::{TcpStream, Shutdown};
 use mio::*;
@@ -228,7 +229,8 @@ impl Handler for Master {
                                           (self.config.frame_info.start, self.config.frame_info.end),
                                           b_start, b_count);
             println!("Sending instructions {:?} to {}", instr, self.workers[worker]);
-            let bytes = instr.to_json().into_bytes();
+            let bytes = encode(&instr, SizeLimit::Infinite).unwrap();
+            println!("Encoded instructions size: {}", instr.encoded_size);
             // Loop until we successfully write the byes
             match self.connections[worker].write_all(&bytes[..]) {
                 Err(e) => println!("Failed to send instructions to {}: {:?}", self.workers[worker], e),
@@ -238,11 +240,6 @@ impl Handler for Master {
             event_loop.reregister(&self.connections[worker], token,
                                   EventSet::readable() | EventSet::error() | EventSet::hup(),
                                   PollOpt::level()).expect("Re-registering failed");
-            // We no longer need to write anything, so close the write end
-            match self.connections[worker].shutdown(Shutdown::Write) {
-                Err(e) => println!("Failed to shutdown write end to worker {}: {}", self.workers[worker], e),
-                Ok(_) => {},
-            }
         }
         // Some results are available from a worker
         if event.is_readable() {

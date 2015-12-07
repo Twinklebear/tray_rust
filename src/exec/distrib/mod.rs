@@ -6,7 +6,7 @@
 //!
 //! **Note:** At this time I do nothing for distributed fault handling.
 
-use serde_json::{self, Value};
+use bincode::rustc_serialize::encoded_size;
 
 pub use self::worker::Worker;
 pub use self::master::Master;
@@ -14,8 +14,9 @@ pub use self::master::Master;
 pub mod worker;
 pub mod master;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, RustcEncodable, RustcDecodable)]
 struct Instructions {
+    pub encoded_size: u64,
     pub scene: String,
     pub frames: (usize, usize),
     pub block_start: usize,
@@ -25,35 +26,10 @@ struct Instructions {
 impl Instructions {
     pub fn new(scene: &String, frames: (usize, usize), block_start: usize,
                block_count: usize) -> Instructions {
-        Instructions { scene: scene.clone(), frames: frames,
-                       block_start: block_start, block_count: block_count }
-    }
-    // TODO: This method is also temporary while we wait for custom derive
-    // Or could we just use bincode?
-    pub fn from_json(data: String) -> Instructions {
-        let json: Value = serde_json::from_str(&data[..]).expect("Invalid Instructions JSON string");
-        println!("instructions = {:?}", json);
-        let scene = json.find("scene").unwrap().as_string().unwrap();
-        let block_start = json.find("block_start").unwrap().as_u64().unwrap() as usize;
-        let block_count = json.find("block_count").unwrap().as_u64().unwrap() as usize;
-        let frame_range = json.find("frame_range").unwrap().as_array().unwrap();
-        let frames = (frame_range[0].as_u64().unwrap() as usize, frame_range[1].as_u64().unwrap() as usize);
-        Instructions { scene: scene.to_string(), frames: frames,
-                       block_start: block_start, block_count: block_count }
-    }
-    // TODO: This to_json method is temporary while we wait for custom derive
-    // to stabilize. Shouldn't we just send this as bytes?
-    pub fn to_json(&self) -> String {
-        // Note: We swap \ for / in file paths since JSON expects unix-style paths, a \xxx is
-        // interpreted as an escape sequence
-        let json = format!("{{
-            \"scene\": \"{}\",
-            \"block_start\": {},
-            \"block_count\": {},
-            \"frame_range\": [{}, {}]
-        }}", self.scene.replace("\\", "/"), self.block_start, self.block_count, self.frames.0, self.frames.1);
-        println!("Built JSON {}", json);
-        json
+        let mut instr = Instructions { encoded_size: 0, scene: scene.clone(), frames: frames,
+                       block_start: block_start, block_count: block_count };
+        instr.encoded_size = encoded_size(&instr);
+        instr
     }
 }
 
