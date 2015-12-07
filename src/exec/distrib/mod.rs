@@ -4,7 +4,9 @@
 //! The master module provides the Master which instructs the Workers and collects
 //! their results.
 //!
-//! **Note:** At this time I do nothing for distributed fault handling.
+//! **Note:** At this time I do nothing for distributed fault handling or work
+//! stealing. If a node crashes during rendering it's results will be lost and the
+//! master will hang forever waiting to hear back from the crashed node.
 
 use bincode::rustc_serialize::encoded_size;
 
