@@ -45,7 +45,7 @@ pub trait Sampler {
     /// determine if more samples should be taken. Returns true if these samples
     /// are ok to use, false if more need to be taken. The default implementation
     /// just returns true.
-    fn report_results(&mut self, samples: &[ImageSample]) -> bool { true }
+    fn report_results(&mut self, _samples: &[ImageSample]) -> bool { true }
 }
 
 /// Provides a simple way to pass around a 3 component sample consisting of one 2D and
