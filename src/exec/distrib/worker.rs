@@ -25,6 +25,16 @@ pub struct Frame {
     pub pixels: Vec<f32>,
 }
 
+impl Frame {
+    pub fn new(frame: usize, block_size: (usize, usize), blocks: Vec<(usize, usize)>,
+               pixels: Vec<f32>) -> Frame {
+        let mut frame = Frame { encoded_size: 0, frame: frame, block_size: block_size,
+                            blocks: blocks, pixels: pixels };
+        frame.encoded_size = encoded_size(&frame);
+        frame
+    }
+}
+
 pub struct Worker {
     instructions: Instructions,
     pub render_target: RenderTarget,
@@ -52,10 +62,7 @@ impl Worker {
     pub fn send_results(&mut self) {
         println!("Sending results to master, {:?}", self.master);
         let (block_size, blocks, pixels) = self.render_target.get_rendered_blocks();
-        // TODO: A ctor that computes the encoded size for us would be cleaner and easier
-        let mut frame = Frame { encoded_size: 0, frame: self.config.current_frame,
-                                block_size: block_size, blocks: blocks, pixels: pixels };
-        frame.encoded_size = encoded_size(&frame);
+        let frame = Frame::new(self.config.current_frame, block_size, blocks, pixels);
         let bytes = encode(&frame, SizeLimit::Infinite).unwrap();
         println!("worker sending {} bytes", bytes.len());
         match self.master.write_all(&bytes[..]) {
