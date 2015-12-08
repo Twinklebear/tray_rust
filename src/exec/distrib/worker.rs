@@ -7,39 +7,27 @@ use std::net::{TcpListener, TcpStream};
 use std::iter;
 
 use bincode::SizeLimit;
-use bincode::rustc_serialize::{encode, encoded_size, decode};
+use bincode::rustc_serialize::{encode, decode};
 
 use scene::Scene;
 use film::RenderTarget;
 use exec::Config;
-use exec::distrib::Instructions;
+use exec::distrib::{Instructions, Frame};
 
+/// Port that the workers listen for the master on
 pub static PORT: u16 = 63234;
 
-#[derive(RustcEncodable, RustcDecodable)]
-pub struct Frame {
-    pub encoded_size: u64,
-    pub frame: usize,
-    pub block_size: (usize, usize),
-    pub blocks: Vec<(usize, usize)>,
-    pub pixels: Vec<f32>,
-}
-
-impl Frame {
-    pub fn new(frame: usize, block_size: (usize, usize), blocks: Vec<(usize, usize)>,
-               pixels: Vec<f32>) -> Frame {
-        let mut frame = Frame { encoded_size: 0, frame: frame, block_size: block_size,
-                            blocks: blocks, pixels: pixels };
-        frame.encoded_size = encoded_size(&frame);
-        frame
-    }
-}
-
+/// A worker process for distributed rendering. Accepts instructions from
+/// the master process telling it what to render, after each frame is finished
+/// results are sent back to the master and the next frame is started. Once all
+/// frames are finished the worker exits
 pub struct Worker {
     instructions: Instructions,
+    /// Render target the worker will write the current frame too
     pub render_target: RenderTarget,
     pub scene: Scene,
     pub config: Config,
+    /// Our connection to the master
     master: TcpStream,
 }
 
@@ -60,11 +48,9 @@ impl Worker {
     }
     /// Send our blocks back to the master
     pub fn send_results(&mut self) {
-        println!("Sending results to master, {:?}", self.master);
         let (block_size, blocks, pixels) = self.render_target.get_rendered_blocks();
         let frame = Frame::new(self.config.current_frame, block_size, blocks, pixels);
         let bytes = encode(&frame, SizeLimit::Infinite).unwrap();
-        println!("worker sending {} bytes", bytes.len());
         match self.master.write_all(&bytes[..]) {
             Err(e) => println!("Failed to send frame to {:?}: {}", self.master, e),
             _ => {},
@@ -74,10 +60,8 @@ impl Worker {
 
 fn get_instructions() -> (Instructions, TcpStream) {
     let listener = TcpListener::bind(("0.0.0.0", PORT)).expect("Worker failed to get port");
-    println!("Worker listening for master");
     match listener.accept() {
-        Ok((mut stream, sock)) => {
-            println!("Got connection");
+        Ok((mut stream, _)) => {
             let mut buf: Vec<_> = iter::repeat(0u8).take(8).collect();
             let mut expected_size = 8;
             let mut currently_read = 0;
@@ -90,7 +74,6 @@ fn get_instructions() -> (Instructions, TcpStream) {
             }
             // How many bytes we expect to get from the worker for a frame
             expected_size = decode(&buf[..]).unwrap();
-            println!("Read size header of {} bytes, now reading remainder", expected_size);
             buf.extend(iter::repeat(0u8).take(expected_size - 8));
             // Now read the rest
             while currently_read < expected_size {
@@ -100,7 +83,7 @@ fn get_instructions() -> (Instructions, TcpStream) {
                 }
             }
             let instr: Instructions = decode(&buf[..]).unwrap();
-            println!("Read from master {:?} instructions {:?}", sock, instr);
+            println!("Received instructions: {:?}", instr);
             (instr, stream)
         },
         Err(e) => panic!("Error accepting: {:?}", e),

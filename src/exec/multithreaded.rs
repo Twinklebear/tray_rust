@@ -15,19 +15,19 @@ use integrator::Integrator;
 use scene::Scene;
 use exec::{Config, Exec};
 
+/// The MultiThreaded execution uses a configurable number of threads in
+/// a threadpool to render each frame
 pub struct MultiThreaded {
     pool: Pool,
 }
 
 impl MultiThreaded {
+    /// Create a new multithreaded renderer which will use `num_threads` to render the image
     pub fn new(num_threads: u32) -> MultiThreaded {
         MultiThreaded { pool: Pool::new(num_threads) }
     }
-    /// Launch a rendering job in parallel across the threads
+    /// Launch a rendering job in parallel across the threads and wait for it to finish
     fn render_parallel(&mut self, scene: &Scene, rt: &RenderTarget, config: &Config) {
-        // TODO: The caller needs control over which blocks the multithreaded exec will
-        // actually render so the distributed renderer can restrict to render just a subset
-        // of the blocks which it has been assigned
         let dim = rt.dimensions();
         let block_queue = BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8), config.select_blocks);
         let light_list: Vec<_> = scene.bvh.iter().filter_map(|x| {
@@ -113,3 +113,4 @@ fn thread_work(spp: usize, queue: &BlockQueue, scene: &Scene,
         block_samples.clear();
     }
 }
+

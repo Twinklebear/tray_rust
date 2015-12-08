@@ -142,7 +142,9 @@ fn master_node(args: Args) {
     };
     let scene_start = clock_ticks::precise_time_s();
     let config = exec::Config::new(out_path, args.arg_scenefile, spp, 0, frame_info, (0, 0));
+    // Connect to all the workers and prepare to send/receive data from/to them
     let (mut master, mut event_loop) = distrib::Master::start_workers(args.arg_workers, config, rt.dimensions());
+    // Start the event loop to wait for and read results from each worker. No
     event_loop.run(&mut master).unwrap();
     let time = clock_ticks::precise_time_s() - scene_start;
     println!("Rendering entire sequence took {}s", time);
@@ -154,6 +156,7 @@ fn worker_node(args: Args) {
         None => num_cpus::get() as u32,
     };
     let mut exec = exec::MultiThreaded::new(num_threads);
+    // Get our instructions of what to render from the master
     let mut worker = distrib::Worker::listen_for_master(num_threads);
     let scene_start = clock_ticks::precise_time_s();
     for i in worker.config.frame_info.start..worker.config.frame_info.end + 1 {
@@ -161,7 +164,7 @@ fn worker_node(args: Args) {
         exec.render(&mut worker.scene, &mut worker.render_target, &worker.config);
         worker.send_results();
         worker.render_target.clear();
-        println!("Frame {}: rendered\n--------------------", i);
+        println!("--------------------");
     }
     let time = clock_ticks::precise_time_s() - scene_start;
     println!("Rendering entire sequence took {}s", time);
@@ -169,10 +172,7 @@ fn worker_node(args: Args) {
 
 fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
-    println!("Got args {:?}", args);
-
     if Some(true) == args.flag_master {
-        // TODO: no workers in the list should be handled by Docopt right?
         master_node(args);
     } else if Some(true) == args.flag_worker {
         worker_node(args);

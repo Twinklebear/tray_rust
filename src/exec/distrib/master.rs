@@ -16,12 +16,16 @@ use mio::*;
 
 use film::Image;
 use exec::Config;
-use exec::distrib::{worker, Instructions};
+use exec::distrib::{worker, Instructions, Frame};
 use sampler::BlockQueue;
 
+/// Stores distributed rendering status. The frame is either InProgress and contains
+/// partially rendered results from the workers who've reported the frame or is Completed
+/// and has been saved out to disk.
 #[derive(Debug)]
 enum DistributedFrame {
     InProgress {
+        // Which frame number this is
         frame: usize,
         // The number of workers who have reported results for this
         // frame so far
@@ -37,6 +41,9 @@ impl DistributedFrame {
     }
 }
 
+/// Buffer for collecting results from a worker asynchronously. The buffer is filled
+/// as we get readable events from the workers until it reaches the expected size.
+/// After this the Frame is decoded and accumulated in the appropriate DistributedFrame
 #[derive(Clone, Debug)]
 struct WorkerBuffer {
     pub buf: Vec<u8>,
@@ -50,17 +57,24 @@ impl WorkerBuffer {
     }
 }
 
+/// The Master organizes the set of Worker processes and instructions them what parts
+/// of the scene to render. As workers report results the master collects them and
+/// saves out the PNG once all workers have reported the frame.
 pub struct Master {
-    // Hostnames of the workers to send work too
+    /// Hostnames of the workers to send work too
     workers: Vec<String>,
     connections: Vec<TcpStream>,
-    // Temporary buffers to store worker results in as they're
-    // read in over TCP
+    /// Temporary buffers to store worker results in as they're
+    /// read in over TCP
     worker_buffers: Vec<WorkerBuffer>,
     config: Config,
+    /// List of the frames we're collecting or have completed
     frames: HashMap<usize, DistributedFrame>,
     img_dim: (usize, usize),
+    /// Number of 8x8 blocks we're assigning per worker
     blocks_per_worker: usize,
+    /// Remainder of blocks that will be tacked on to the last
+    /// worker's assignment
     blocks_remainder: usize,
 }
 
@@ -73,8 +87,6 @@ impl Master {
         let queue = BlockQueue::new((img_dim.0 as u32, img_dim.1 as u32), (8, 8), (0, 0));
         let blocks_per_worker = queue.len() / workers.len();
         let blocks_remainder = queue.len() % workers.len();
-        println!("Have {} workers, each worker does {} blocks w/ {} remainder",
-                 workers.len(), blocks_per_worker, blocks_remainder);
 
         let mut event_loop = EventLoop::<Master>::new().unwrap();
         let mut connections = Vec::new();
@@ -84,11 +96,8 @@ impl Master {
         // Otherwise we need to loop on write_all while waiting for the connection to open
         for (i, host) in workers.iter().enumerate() {
             let addr = (&host[..], worker::PORT).to_socket_addrs().unwrap().next().unwrap();
-            println!("Connecting too {:?}", addr);
             match TcpStream::connect(&addr) {
                 Ok(stream) => {
-                    println!("Connected and writing");
-                    println!("Adding stream to event loop");
                     // Each worker is identified in the event loop by their index in the vec
                     match event_loop.register(&stream, Token(i), EventSet::all(), PollOpt::level()){
                         Err(e) => println!("Error registering stream from {}: {}", host, e),
@@ -111,29 +120,26 @@ impl Master {
     /// Read a result frame from a worker and save it into the list of frames we're collecting from
     /// all workers. Will save out the final render if all workers have reported results for this
     /// frame.
-    fn save_results(&mut self, frame: worker::Frame) {
-        // Find the frame this worker is referring to and add its results
+    fn save_results(&mut self, frame: Frame) {
         let frame_num = frame.frame as usize;
         let img_dim = self.img_dim;
-        println!("Worker reporting frame {}", frame_num);
-        let mut df = self.frames.entry(frame_num).or_insert_with(|| {
-                        println!("This is a new frame");
-                        DistributedFrame::start(frame_num, img_dim)
-                    });
+        // Find the frame being reported and create it if we haven't received parts of this frame yet
+        let mut df = self.frames.entry(frame_num).or_insert_with(
+                        || DistributedFrame::start(frame_num, img_dim));
+
         let mut finished = false;
         match df {
             &mut DistributedFrame::InProgress { frame: _, ref mut num_reporting, ref mut render } => {
+                // Collect results from the worker and see if we've finished the frame and can save
+                // it out
                 render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
                 *num_reporting += 1;
                 if *num_reporting == self.workers.len() {
-                    println!("We have completed frame {}", frame_num);
                     let out_file = match self.config.out_path.extension() {
                         Some(_) => self.config.out_path.clone(),
                         None => self.config.out_path.join(
                             PathBuf::from(format!("frame{:05}.png", frame_num))),
                     };
-                    println!("Frame {}: rendered to '{}'\n--------------------",
-                             frame_num, out_file.display());
                     let img = render.get_srgb8();
                     let dim = render.dimensions();
                     match image::save_buffer(&out_file.as_path(), &img[..], dim.0 as u32,
@@ -141,34 +147,33 @@ impl Master {
                         Ok(_) => {},
                         Err(e) => println!("Error saving image, {}", e),
                     };
+                    println!("Frame {}: rendered to '{}'\n--------------------",
+                             frame_num, out_file.display());
                     finished = true;
                 }
             },
-            &mut DistributedFrame::Completed => println!("Worker reporting on completed frame!?"),
+            &mut DistributedFrame::Completed => println!("Worker reporting on completed frame {}?", frame_num),
         }
-        // This is also a bit awkward, since we borrow the df in the match
-        // we can't mark it finished in there
+        // This is a bit awkward, since we borrow df in the match we can't mark it finished in there
         if finished {
             *df = DistributedFrame::Completed;
         }
     }
+    /// Read results from a worker and accumulate this data in its worker buffer. Returns true if
+    /// we've read the data being sent and can decode the buffer
     fn read_worker_buffer(&mut self, worker: usize) -> bool {
         let mut buf = &mut self.worker_buffers[worker];
         // If we haven't read the size of data being sent, read that now
         if buf.currently_read < 8 {
             // First 8 bytes are a u64 specifying the number of bytes being sent
             buf.buf.extend(iter::repeat(0u8).take(8));
-            println!("Reading size header...");
             match self.connections[worker].read(&mut buf.buf[buf.currently_read..]) {
                 Ok(n) => buf.currently_read += n,
                 Err(e) => println!("Error reading results from worker {}: {}", self.workers[worker], e),
             }
-            println!("Read {} bytes so far, must read {} in total", buf.currently_read, buf.expected_size);
             if buf.currently_read == buf.expected_size {
-                println!("Got size header");
                 // How many bytes we expect to get from the worker for a frame
                 buf.expected_size = decode(&buf.buf[..]).unwrap();
-                println!("Expecting {} bytes", buf.expected_size);
                 // Extend the Vec so we've got enough room for the remaning bytes, minus the 8 for the
                 // encoded size header
                 buf.buf.extend(iter::repeat(0u8).take(buf.expected_size - 8));
@@ -176,12 +181,10 @@ impl Master {
         }
         // If we've finished reading the size header we can now start reading the frame data
         if buf.currently_read >= 8 {
-            println!("Reading from worker");
             match self.connections[worker].read(&mut buf.buf[buf.currently_read..]) {
                 Ok(n) => buf.currently_read += n,
                 Err(e) => println!("Error reading results from worker {}: {}", self.workers[worker], e),
             }
-            println!("Read {} bytes so far, must read {} in total", buf.currently_read, buf.expected_size);
         }
         buf.currently_read == buf.expected_size
     }
@@ -193,7 +196,6 @@ impl Handler for Master {
 
     fn ready(&mut self, event_loop: &mut EventLoop<Master>, token: Token, event: EventSet) {
         let worker = token.as_usize();
-        println!("Event from {}: {:?}", worker, event);
         if event.is_error() {
             println!("Error connecting too {}", self.workers[worker]);
             match self.connections[worker].shutdown(Shutdown::Both) {
@@ -208,7 +210,6 @@ impl Handler for Master {
         }
         // If the worker has terminated, shutdown the read end of the connection
         if event.is_hup() {
-            println!("Worker {} has hung up", worker);
             match self.connections[worker].shutdown(Shutdown::Both) {
                 Err(e) => println!("Error shutting down worker {}: {}", worker, e),
                 Ok(_) => {},
@@ -231,13 +232,11 @@ impl Handler for Master {
             let instr = Instructions::new(&self.config.scene_file,
                                           (self.config.frame_info.start, self.config.frame_info.end),
                                           b_start, b_count);
-            println!("Sending instructions {:?} to {}", instr, self.workers[worker]);
+            // Encode and send our instructions to the worker
             let bytes = encode(&instr, SizeLimit::Infinite).unwrap();
-            println!("Encoded instructions size: {}", instr.encoded_size);
-            // Loop until we successfully write the byes
             match self.connections[worker].write_all(&bytes[..]) {
                 Err(e) => println!("Failed to send instructions to {}: {:?}", self.workers[worker], e),
-                Ok(_) => println!("Instructions sent"),
+                Ok(_) => {},
             }
             // Register that we no longer care about writable events on this connection
             event_loop.reregister(&self.connections[worker], token,
@@ -246,13 +245,12 @@ impl Handler for Master {
         }
         // Some results are available from a worker
         if event.is_readable() {
-            println!("Readable event from worker {}", worker);
+            // Read results from the worker, if we've accumulated all the data being sent
+            // decode and accumulate the frame
             if self.read_worker_buffer(worker) {
-                println!("Got all frame data, now parsing");
-                let frame: worker::Frame = decode(&self.worker_buffers[worker].buf[..]).unwrap();
-                println!("Saving frame results");
+                let frame: Frame = decode(&self.worker_buffers[worker].buf[..]).unwrap();
                 self.save_results(frame);
-                // Clean up our read buffer
+                // Clean up the worker buffer for the next frame
                 self.worker_buffers[worker].buf.clear();
                 self.worker_buffers[worker].expected_size = 8;
                 self.worker_buffers[worker].currently_read = 0;
@@ -269,10 +267,7 @@ impl Handler for Master {
                                 });
         // The frame start/end range is inclusive, so we must add 1 here
         let num_frames = self.config.frame_info.end - self.config.frame_info.start + 1;
-        println!("Rendering {} frames have {}, all_complete? {}",
-                 num_frames, self.frames.len(), all_complete);
         if self.frames.len() == num_frames && all_complete {
-            println!("All frames have been rendered, master exiting");
             event_loop.shutdown();
         }
     }
