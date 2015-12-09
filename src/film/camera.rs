@@ -33,6 +33,9 @@ pub struct Camera {
     shutter_open: f32,
     /// Shutter close time for this frame
     shutter_close: f32,
+    /// Percentage of the shutter that is open to light. For example .5 is
+    /// a standard 180 degree shutter
+    shutter_size: f32,
 }
 
 impl Camera {
@@ -41,8 +44,7 @@ impl Camera {
     /// are needed to construct the raster -> camera transform
     /// `animation` is used to move the camera ote that this is specified in camera space
     /// where the camera is at the origin looking down the -z axis
-    pub fn new(cam_world: AnimatedTransform, fov: f32, dims: (usize, usize), shutter_open: f32,
-               shutter_close: f32) -> Camera {
+    pub fn new(cam_world: AnimatedTransform, fov: f32, dims: (usize, usize), shutter_size: f32) -> Camera {
         let aspect_ratio = (dims.0 as f32) / (dims.1 as f32);
         let screen =
             if aspect_ratio > 1.0 {
@@ -56,13 +58,14 @@ impl Camera {
         let raster_screen = screen_raster.inverse();
         let cam_screen = Transform::perspective(fov, 1.0, 1000.0);
         Camera { cam_world: cam_world, raster_cam: cam_screen.inverse() * raster_screen,
-                 shutter_open: shutter_open, shutter_close: shutter_close
+                 shutter_open: 0.0, shutter_close: 0.0, shutter_size: shutter_size
         }
     }
-    /// Update the camera's shutter open/close time
-    pub fn update_shutter(&mut self, open: f32, close: f32) {
-        self.shutter_open = open;
-        self.shutter_close = close;
+    /// Update the camera's shutter open/close time for this new frame
+    pub fn update_frame(&mut self, start: f32, end: f32) {
+        self.shutter_open = start;
+        self.shutter_close = start + self.shutter_size * (end - start);
+        println!("Shutter open from {} to {}", self.shutter_open, self.shutter_close);
     }
     /// Generate a ray from the camera through the pixel `px`
     pub fn generate_ray(&self, px: &(f32, f32), time: f32) -> Ray {

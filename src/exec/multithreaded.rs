@@ -57,7 +57,7 @@ impl Exec for MultiThreaded {
         let time_step = config.frame_info.time / config.frame_info.frames as f32;
         let frame_start_time = config.current_frame as f32 * time_step;
         let frame_end_time = (config.current_frame as f32 + 1.0) * time_step;
-        scene.camera.update_shutter(frame_start_time, frame_end_time);
+        scene.camera.update_frame(frame_start_time, frame_end_time);
 
         // TODO: How often to re-build the BVH?
         println!("Frame {}: re-building bvh for {} to {}", config.current_frame,

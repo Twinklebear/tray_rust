@@ -148,6 +148,10 @@ fn load_filter(elem: &Value) -> Box<filter::Filter + Send + Sync> {
 fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
     let fov = elem.find("fov").expect("The camera must specify a field of view").as_f64()
         .expect("fov must be a float") as f32;
+    let shutter_size = match elem.find("shutter_size") {
+        Some(s) => s.as_f64().expect("Shutter size should be a float from 0 to 1") as f32,
+        None => 0.5,
+    };
     let transform = match elem.find("keyframes") {
         Some(t) => load_keyframes(t).expect("Invalid keyframes specified"),
         None => {
@@ -167,7 +171,7 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
             AnimatedTransform::unanimated(&t)
         },
     };
-    let camera = Camera::new(transform, fov, dim, 0.0, 0.0);
+    let camera = Camera::new(transform, fov, dim, shutter_size);
     camera
 }
 
