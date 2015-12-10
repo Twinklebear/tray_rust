@@ -53,7 +53,7 @@
 //! Render times are formatted as hh:mm:ss and were measured using 144 threads on a machine with four
 //! [Xeon E7-8890 v3](http://ark.intel.com/products/84685/Intel-Xeon-Processor-E7-8890-v3-45M-Cache-2_50-GHz)
 //! CPUs. The machine is an early/engineering sample from Intel so your results may differ, but massive thanks to
-//! Intel for the hardware! Some older images renders are shown as well without timing since they were
+//! Intel for the hardware! Some older renders are shown as well without timing since they were
 //! run on a different machine.
 //!
 //! <a href="http://i.imgur.com/X5y8oIq.png">
