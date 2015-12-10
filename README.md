@@ -2,27 +2,32 @@ tray\_rust - A Toy Ray Tracer in Rust
 ===
 tray\_rust is a toy physically based ray tracer built off of the techniques
 discussed in [Physically Based Rendering](http://pbrt.org/). It began life as a port of
-[tray](https://github.com/Twinklebear/tray) to [Rust](http://www.rust-lang.org) to check out the language.
+[tray](https://github.com/Twinklebear/tray) to [Rust](http://www.rust-lang.org) to check out the language
+but has surpassed it in a few ways.
 The renderer is currently capable of path tracing, supports triangle meshes (MTL support coming soon),
 and various physically based material models (including measured data from the
-[MERL BRDF Database](http://www.merl.com/brdf/)).
+[MERL BRDF Database](http://www.merl.com/brdf/)). tray\_rust also supports rigid body animation along
+B-spline paths and distributed rendering.
 
 [![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)
 
 Running
 ---
-Currently the scene data is hardcoded in `src/scene.rs`, in the future I plan to add support for some
-kind of JSON based scene file format. I strongly recommend running the release build as the debug version
-will be very very slow. Running and passing `--help` or `-h` will print out some options, currently
-the image resolution and samples per pixel are also hardcoded, though these are in `src/main.rs`.
+Running and passing `--help` or `-h` will print out options you can pass to the renderer which are documented in the help.
+For the more complicated use cases I hope to do some write ups and guides on how to use them (e.g. distributed rendering,
+animation) but this may take a while. I strongly recommend running the release build as the debug version will be very slow.
+
+Building Your Own Scenes
+---
+Start at the documentation for the [scene module](http://www.willusher.io/tray_rust/tray_rust/scene/index.html),
+there are also a few example [scenes](scenes/) included but not all the models are provided. From a clean `git clone` you
+should be able to run [cornell\_box.json](scenes/cornell_box.json) and [smallpt.json](scenes/smallpt.json). I plan to add some
+more simple scenes that show usage of other features like animation to provide examples. The rigid body animation
+feature is relatively new though so I haven't had time to document it properly yet.
 
 Documentation
 ---
 Documentation can be found on the [project site](http://www.willusher.io/tray_rust/tray_rust/).
-
-Building Your Own Scenes
----
-Start at the documentation for the [scene module](http://www.willusher.io/tray_rust/tray_rust/scene/index.html).
 
 TODO
 ---
