@@ -60,6 +60,7 @@ impl Worker {
 
 fn get_instructions() -> (Instructions, TcpStream) {
     let listener = TcpListener::bind(("0.0.0.0", PORT)).expect("Worker failed to get port");
+    println!("Worker listening for master on {}", PORT);
     match listener.accept() {
         Ok((mut stream, _)) => {
             let mut buf: Vec<_> = iter::repeat(0u8).take(8).collect();
