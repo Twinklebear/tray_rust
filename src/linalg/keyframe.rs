@@ -1,9 +1,8 @@
 //! Provides a keyframe transformation which is a transform associated
 //! with a specific point in time
 
-use std::f32;
-
 use bspline;
+use la;
 
 use linalg::{self, quaternion, Vector, Matrix4, Quaternion, Transform};
 
@@ -31,34 +30,33 @@ impl Keyframe {
     /// Decompose the transformation into its component translation, rotation and
     /// scaling operations.
     fn decompose(transform: &Transform) -> (Vector, Quaternion, Matrix4) {
-        let mut m = transform.mat;
-        // Extract the translation component and remove it from the matrix
+        let m = transform.mat;
         let translation = Vector::new(*m.at(0, 3), *m.at(1, 3), *m.at(2, 3));
-        for i in 0..3 {
-            *m.at_mut(i, 3) = 0.0;
-            *m.at_mut(3, i) = 0.0;
+        // Robust matrix decomposition, based on Mitsuba:
+        // We use SVD to extract rotation and scaling matrices that properly account for flip
+        let la_mat = la::Matrix::<f64>::new(3, 3, vec![*m.at(0, 0) as f64, *m.at(0, 1) as f64, *m.at(0, 2) as f64,
+                                                       *m.at(1, 0) as f64, *m.at(1, 1) as f64, *m.at(1, 2) as f64,
+                                                       *m.at(2, 0) as f64, *m.at(2, 1) as f64, *m.at(2, 2) as f64]);
+        // TODO: More explanation of the math going on here, why do we choose these matrices fo
+        // q and p. q is the basis transform of the matrix without scaling, while p is the scaling
+        // translated from the basis into R^3. Is this explanation correct?
+        let svd = la::SVD::<f64>::new(&la_mat);
+        let mut q = svd.get_u() * svd.get_v().t();
+        let mut p = svd.get_v() * svd.get_s() * svd.get_v().t();
+        if q.det() < 0.0 {
+            q = -q;
+            p = -p;
         }
-        *m.at_mut(3, 3) = 1.0;
-        // Extract rotation component using polar decomposition by computing
-        // M_{i + 1} = 1/2 (M_i + (M_i^T)^-1) to convergence
-        let mut rot_mat = m;
-        for _ in 0..100 {
-            let m_inv_trans = rot_mat.transpose().inverse();
-            let r_next: Matrix4 = rot_mat.iter().zip(m_inv_trans.iter())
-                .map(|(&a, &b)| 0.5 * (a + b)).collect();
-            let mut norm = 0.0;
-            for i in 0..3 {
-                let n = f32::abs(*rot_mat.at(i, 0) - *r_next.at(i, 0))
-                    + f32::abs(*rot_mat.at(i, 1) - *r_next.at(i, 1))
-                    + f32::abs(*rot_mat.at(i, 2) - *r_next.at(i, 2));
-                norm = f32::max(norm, n);
-            }
-            rot_mat = r_next;
-            if norm <= 0.0001 {
-                break;
-            }
-        }
-        (translation, Quaternion::from_matrix(&rot_mat), rot_mat.inverse() * m)
+        let rotation = Quaternion::from_matrix(
+                            &Matrix4::new([q.get(0, 0) as f32, q.get(0, 1) as f32, q.get(0, 2) as f32, 0.0,
+                                           q.get(1, 0) as f32, q.get(1, 1) as f32, q.get(1, 2) as f32, 0.0,
+                                           q.get(2, 0) as f32, q.get(2, 1) as f32, q.get(2, 2) as f32, 0.0,
+                                           0.0, 0.0, 0.0, 1.0]));
+        let mut scaling = Matrix4::identity();
+        *scaling.at_mut(0, 0) = p.get(0, 0) as f32;
+        *scaling.at_mut(1, 1) = p.get(1, 1) as f32;
+        *scaling.at_mut(2, 2) = p.get(2, 2) as f32;
+        (translation, rotation, scaling)
     }
     /// Return the transformation stored for this keyframe
     pub fn transform(&self) -> Transform {

@@ -102,6 +102,7 @@ extern crate clock_ticks;
 extern crate image;
 extern crate bincode;
 extern crate mio;
+extern crate la;
 
 pub mod linalg;
 pub mod film;
