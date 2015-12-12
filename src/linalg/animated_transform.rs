@@ -19,7 +19,6 @@ pub struct AnimatedTransform {
 
 impl AnimatedTransform {
     /// Create an animated transformation blending between the passed keyframes
-    /// TODO: Fast paths for static and linear path animations?
     pub fn with_keyframes(mut keyframes: Vec<Keyframe>, knots: Vec<f32>) -> AnimatedTransform {
         // so we know what degree and so on.
         // Step through and make sure all rotations take the shortest path
@@ -36,10 +35,8 @@ impl AnimatedTransform {
         let key = Keyframe::new(&transform);
         AnimatedTransform { keyframes: vec![BSpline::new(0, vec![key], vec![0.0, 1.0])] }
     }
-    /// Compute the transformation matrix for the animation at some time point.
-    /// The transform is found by interpolating the two keyframes nearest to the
-    /// time point being evaluated. **TODO** a binary search of some kind to find
-    /// the two keyframes to blend would be much better.
+    /// Compute the transformation matrix for the animation at some time point using B-Spline
+    /// interpolation.
     pub fn transform(&self, time: f32) -> Transform {
         let mut transform = Transform::identity();
         // Step through the transform stack, applying each animation transform at this
