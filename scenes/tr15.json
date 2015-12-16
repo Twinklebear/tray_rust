@@ -1,0 +1,3015 @@
+{
+	"film": {
+		"width": 1920,
+		"height": 1080,
+		"samples": 2048,
+		"frames": 600,
+		"start_frame": 0,
+		"end_frame": 599,
+		"scene_time": 25,
+		"filter" : {
+			"type": "mitchell_netravali",
+			"width": 2,
+			"height": 2,
+			"b": 0.333333333333333333,
+			"c": 0.333333333333333333
+		}
+	},
+	"camera": {
+		"fov": 40,
+		"keyframes": {
+			"control_points": [
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 15
+						},
+						{
+							"type": "translate",
+							"translation": [0, 12, -26]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 15
+						},
+						{
+							"type": "translate",
+							"translation": [0, 12, -26]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 9
+						},
+						{
+							"type": "translate",
+							"translation": [0, 14, -30]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 9
+						},
+						{
+							"type": "translate",
+							"translation": [0, 14, -30]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 8
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 25
+						},
+						{
+							"type": "translate",
+							"translation": [-19, 14, -20]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 8
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 35
+						},
+						{
+							"type": "translate",
+							"translation": [-13, 14, -20]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 8
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 45
+						},
+						{
+							"type": "translate",
+							"translation": [-3, 16, -20]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 5
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 70
+						},
+						{
+							"type": "translate",
+							"translation": [5, 16, -18]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 1
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 75
+						},
+						{
+							"type": "translate",
+							"translation": [10, 16, -18]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 1
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 75
+						},
+						{
+							"type": "translate",
+							"translation": [10, 16, -18]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 8
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 54
+						},
+						{
+							"type": "translate",
+							"translation": [-46, 18, -38]
+						}
+					]
+				},
+				{
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 8
+						},
+						{
+							"type": "rotate_y",
+							"rotation": 54
+						},
+						{
+							"type": "translate",
+							"translation": [-46, 18, -38]
+						}
+					]
+				}
+			],
+			"knots": [4.5, 4.5, 4.5, 4.5, 7, 10, 11, 13, 15, 16, 16.5, 22, 25, 25, 25, 25]
+		}
+	},
+	"integrator": {
+		"type": "pathtracer",
+		"min_depth": 5,
+		"max_depth": 10
+	},
+	"materials": [
+		{
+			"type": "matte",
+			"name": "white_wall",
+			"diffuse": [0.740063, 0.742313, 0.733934],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "red_wall",
+			"diffuse": [0.366046, 0.0371827, 0.0416385],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "green_wall",
+			"diffuse": [0.162928, 0.408903, 0.0833759],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "blue_sky",
+			"diffuse": [0.549019, 0.745098, 0.839215],
+			"roughness": 1.0
+		},
+		{
+			"type": "matte",
+			"name": "pantone_yellow",
+			"diffuse": [0.996078, 0.874509, 0],
+			"roughness": 0.5
+		},
+		{
+			"type": "matte",
+			"name": "sienna_matte",
+			"diffuse": [0.62745, 0.32156, 0.17647],
+			"roughness": 0.9
+		},
+		{
+			"type": "matte",
+			"name": "forest_green_matte",
+			"diffuse": [0.13333, 0.54509, 0.13333],
+			"roughness": 0.5
+		},
+		{
+			"type": "plastic",
+			"name": "white_plastic",
+			"diffuse": [0.740063, 0.742313, 0.733934, 0.8],
+			"gloss": [0.740063, 0.742313, 0.733934, 0.8],
+			"roughness": 0.04
+		},
+		{
+			"type": "plastic",
+			"name": "green_plastic",
+			"diffuse": [0.162928, 0.408903, 0.0833759],
+			"gloss": [0.740063, 0.842313, 0.683934],
+			"roughness": 0.7
+		},
+		{
+			"type": "plastic",
+			"name": "u_logo_plastic",
+			"diffuse": [0.8, 0.0, 0.0],
+			"gloss": [0.6, 0.2, 0.2],
+			"roughness": 0.5
+		},
+		{
+			"type": "plastic",
+			"name": "u_logo_plastic_shiny",
+			"diffuse": [0.8, 0.05, 0.05],
+			"gloss": [0.4, 0.2, 0.2],
+			"roughness": 0.002
+		},
+		{
+			"type": "plastic",
+			"name": "pantone_yellow_plastic",
+			"diffuse": [0.996078, 0.874509, 0],
+			"gloss": [0.996078, 0.874509, 0.2, 0.7],
+			"roughness": 0.6
+		},
+		{
+			"type": "glass",
+			"name": "glass",
+			"reflect": [1.0, 1.0, 0.7, 0.8],
+			"transmit": [1.0, 1.0, 0.7, 1.2],
+			"eta": 1.52
+		},
+		{
+			"type": "metal",
+			"name": "silver_metal",
+			"refractive_index": [0.155265, 0.116723, 0.138381],
+			"absorption_coefficient": [4.82835, 3.12225, 2.14696],
+			"roughness": 0.00001
+		},
+		{
+			"type": "metal",
+			"name": "rough_silver_metal",
+			"refractive_index": [0.155265, 0.116723, 0.138381],
+			"absorption_coefficient": [4.82835, 3.12225, 2.14696],
+			"roughness": 0.001
+		},
+		{
+			"name": "oxidized_steel",
+			"type": "merl",
+			"file": "brdfs/black-oxidized-steel.binary"
+		},
+		{
+			"name": "silver_paint",
+			"type": "merl",
+			"file": "brdfs/silver-paint.binary"
+		},
+		{
+			"name": "gold_metallic_paint",
+			"type": "merl",
+			"file": "brdfs/gold-metallic-paint.binary"
+		},
+		{
+			"name": "blue_acrylic",
+			"type": "merl",
+			"file": "brdfs/blue-acrylic.binary"
+		},
+		{
+			"name": "brass",
+			"type": "merl",
+			"file": "brdfs/brass.binary"
+		}
+	],
+	"objects": [
+		{
+			"type": "group",
+			"name": "walls",
+			"keyframes": {
+				"control_points": [
+					{
+						"transform": []
+					},
+					{
+						"transform": []
+					},
+					{
+						"transform": [
+							{
+								"type": "translate",
+								"translation": [0, -8, 0]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "translate",
+								"translation": [0, -8, 0]
+							}
+						]
+					}
+				],
+				"knots": [2.5, 2.5, 2.5, 2.5, 6.0, 6.0, 6.0, 6.0]
+			},
+			"objects": [
+				{
+					"name": "back_wall",
+					"type": "receiver",
+					"material": "white_wall",
+					"geometry": {
+						"type": "plane"
+					},
+					"keyframes": {
+						"control_points": [
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 30
+									},
+									{
+										"type": "rotate_z",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_x",
+										"rotation": -23
+									},
+									{
+										"type": "scale",
+										"scaling": [0.4, 1, 1]
+									},
+									{
+										"type": "translate",
+										"translation": [0, 0, 15]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 30
+									},
+									{
+										"type": "rotate_z",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_x",
+										"rotation": -23
+									},
+									{
+										"type": "scale",
+										"scaling": [0.4, 1, 1]
+									},
+									{
+										"type": "translate",
+										"translation": [0, 0, 15]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 21
+									},
+									{
+										"type": "scale",
+										"scaling": [0.4, 1, 1]
+									},
+									{
+										"type": "translate",
+										"translation": [0, -16, 15]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 21
+									},
+									{
+										"type": "scale",
+										"scaling": [0.4, 1, 1]
+									},
+									{
+										"type": "translate",
+										"translation": [0, -16, 15]
+									}
+								]
+							}
+						],
+						"knots": [2.5, 2.5, 2.5, 2.5, 6.0, 6.0, 6.0, 6.0]
+					}
+				},
+				{
+					"name": "left_wall",
+					"type": "receiver",
+					"material": "red_wall",
+					"geometry": {
+						"type": "plane"
+					},
+					"keyframes": {
+						"control_points": [
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 30
+									},
+									{
+										"type": "rotate_y",
+										"rotation": 90.0
+									},
+									{
+										"type": "rotate_x",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_z",
+										"rotation": -23
+									},
+									{
+										"type": "scale",
+										"scaling": [1, 1, 0.4]
+									},
+									{
+										"type": "translate",
+										"translation": [-15, 0, 0]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 30
+									},
+									{
+										"type": "rotate_y",
+										"rotation": 90.0
+									},
+									{
+										"type": "rotate_x",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_z",
+										"rotation": -23
+									},
+									{
+										"type": "scale",
+										"scaling": [1, 1, 0.4]
+									},
+									{
+										"type": "translate",
+										"translation": [-15, 0, 0]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 30
+									},
+									{
+										"type": "rotate_y",
+										"rotation": 90.0
+									},
+									{
+										"type": "rotate_x",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_z",
+										"rotation": 80
+									},
+									{
+										"type": "scale",
+										"scaling": [1, 1, 0.4]
+									},
+									{
+										"type": "translate",
+										"translation": [-15, 0, 0]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 20
+									},
+									{
+										"type": "rotate_y",
+										"rotation": 90.0
+									},
+									{
+										"type": "rotate_x",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_z",
+										"rotation": 80
+									},
+									{
+										"type": "scale",
+										"scaling": [1, 1, 0.4]
+									},
+									{
+										"type": "translate",
+										"translation": [-15, 0, 0]
+									}
+								]
+							}
+						],
+						"knots": [2.5, 2.5, 2.5, 2.5, 6.0, 6.0, 6.0, 6.0]
+					}
+				},
+				{
+					"name": "right_wall",
+					"type": "receiver",
+					"material": "green_wall",
+					"geometry": {
+						"type": "plane"
+					},
+					"keyframes": {
+						"control_points": [
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 30
+									},
+									{
+										"type": "rotate_y",
+										"rotation": -90.0
+									},
+									{
+										"type": "rotate_x",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_z",
+										"rotation": 23
+									},
+									{
+										"type": "scale",
+										"scaling": [1, 1, 0.4]
+									},
+									{
+										"type": "translate",
+										"translation": [15, 0, 0]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 30
+									},
+									{
+										"type": "rotate_y",
+										"rotation": -90.0
+									},
+									{
+										"type": "rotate_x",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_z",
+										"rotation": 23
+									},
+									{
+										"type": "scale",
+										"scaling": [1, 1, 0.4]
+									},
+									{
+										"type": "translate",
+										"translation": [15, 0, 0]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 30
+									},
+									{
+										"type": "rotate_y",
+										"rotation": -90.0
+									},
+									{
+										"type": "rotate_x",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_z",
+										"rotation": -80
+									},
+									{
+										"type": "scale",
+										"scaling": [1, 1, 0.4]
+									},
+									{
+										"type": "translate",
+										"translation": [15, 0, 0]
+									}
+								]
+							},
+							{
+								"transform": [
+									{
+										"type": "scale",
+										"scaling": 20
+									},
+									{
+										"type": "rotate_y",
+										"rotation": -90.0
+									},
+									{
+										"type": "rotate_x",
+										"rotation": 45
+									},
+									{
+										"type": "rotate_z",
+										"rotation": -80
+									},
+									{
+										"type": "scale",
+										"scaling": [1, 1, 0.4]
+									},
+									{
+										"type": "translate",
+										"translation": [15, 0, 0]
+									}
+								]
+							}
+						],
+						"knots": [2.5, 2.5, 2.5, 2.5, 6.0, 6.0, 6.0, 6.0]
+					}
+				}
+			]
+		},
+		{
+			"name": "floor",
+			"type": "receiver",
+			"material": "white_plastic",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 180
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				}
+			]
+		},
+		{
+			"name": "far_backdrop",
+			"type": "receiver",
+			"material": "blue_sky",
+			"geometry": {
+				"type": "plane"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 180
+				},
+				{
+					"type": "translate",
+					"translation": [0, 0, 80]
+				}
+			]
+		},
+		{
+			"name": "sky_dome",
+			"type": "receiver",
+			"material": "blue_sky",
+			"geometry": {
+				"type": "sphere",
+				"radius": 1
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 200
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "light_cone1",
+			"keyframes": {
+				"control_points": [
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": 15
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 50
+							},
+							{
+								"type": "translate",
+								"translation": [8, 12, 2]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": 20
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 25
+							},
+							{
+								"type": "translate",
+								"translation": [5, 12, 5]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": 30
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -25
+							},
+							{
+								"type": "translate",
+								"translation": [-7, 13, 3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": 40
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -110
+							},
+							{
+								"type": "translate",
+								"translation": [-6, 12, -5]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": 70
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -200
+							},
+							{
+								"type": "translate",
+								"translation": [9, 15, -4]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": 110
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -180
+							},
+							{
+								"type": "translate",
+								"translation": [14, 3, -4]
+							}
+						]
+					}
+				],
+				"knots": [0, 0, 0, 0, 3, 6, 9, 9, 9, 9]
+			},
+			"objects": [
+				{
+					"name": "cone_light",
+					"type": "emitter",
+					"material": "white_wall",
+					"emitter": "area",
+					"emission": [
+						{
+							"time": 0,
+							"color": [1, 0.772549, 0.560784, 90]
+						},
+						{
+							"time": 0.5,
+							"color": [0.952941, 0.952941, 0.082352, 140]
+						},
+						{
+							"time": 0.75,
+							"color": [0.05098, 0.83529, 0.988235, 150]
+						},
+						{
+							"time": 1.1,
+							"color": [0.756862, 0.992156, 0.2, 140]
+						},
+						{
+							"time": 1.8,
+							"color": [1, 0.6, 0.2, 150]
+						},
+						{
+							"time": 2.1,
+							"color": [0.756862, 0.992156, 0.2, 160]
+						},
+						{
+							"time": 2.8,
+							"color": [0.988235, 0.352941, 0.72156, 150]
+						},
+						{
+							"time": 3,
+							"color": [0.952941, 0.952941, 0.082352, 160]
+						},
+						{
+							"time": 3.5,
+							"color": [0.05098, 0.83529, 0.988235, 150]
+						},
+						{
+							"time": 3.8,
+							"color": [0.756862, 0.992156, 0.2, 170]
+						},
+						{
+							"time": 4,
+							"color": [1, 0.6, 0.2, 190]
+						},
+						{
+							"time": 4.25,
+							"color": [0.756862, 0.992156, 0.2, 180]
+						},
+						{
+							"time": 4.6,
+							"color": [0.988235, 0.352941, 0.72156, 170]
+						},
+						{
+							"time": 5,
+							"color": [0.756862, 0.992156, 0.2, 190]
+						},
+						{
+							"time": 5.5,
+							"color": [0.952941, 0.952941, 0.082352, 170]
+						},
+						{
+							"time": 5.75,
+							"color": [0.05098, 0.83529, 0.988235, 170]
+						},
+						{
+							"time": 6,
+							"color": [0.952941, 0.952941, 0.082352, 160]
+						},
+						{
+							"time": 6.4,
+							"color": [0.05098, 0.83529, 0.988235, 180]
+						},
+						{
+							"time": 6.8,
+							"color": [0.756862, 0.992156, 0.2, 180]
+						},
+						{
+							"time": 7,
+							"color": [1, 0.772549, 0.560784, 190]
+						}
+					],
+					"geometry": {
+						"type": "disk",
+						"radius": 0.83,
+						"inner_radius": 0
+					},
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 90
+						},
+						{
+							"type": "translate",
+							"translation": [0, -0.4, 0]
+						}
+					]
+				},
+				{
+					"name": "cone",
+					"type": "receiver",
+					"material": "pantone_yellow",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/cone.obj",
+						"model": "Cone"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": [1.2, 1, 1.2]
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "light_cone2",
+			"keyframes": {
+				"control_points": [
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -15
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -50
+							},
+							{
+								"type": "translate",
+								"translation": [-8, 10, 0]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -30
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -20
+							},
+							{
+								"type": "translate",
+								"translation": [-10, 6, -7]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -80
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 0
+							},
+							{
+								"type": "translate",
+								"translation": [-5, 5, -7]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -140
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 15
+							},
+							{
+								"type": "translate",
+								"translation": [-2, 1.25, -9]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -140
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 15
+							},
+							{
+								"type": "translate",
+								"translation": [-2, 1.25, -9]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -110
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 40
+							},
+							{
+								"type": "translate",
+								"translation": [-7, 4.25, -9]
+							}
+						]
+					}
+				],
+				"knots": [0, 0, 0, 0, 2.5, 3.5, 8, 8, 8, 8]
+			},
+			"objects": [
+				{
+					"name": "cone_light",
+					"type": "emitter",
+					"material": "white_wall",
+					"emitter": "area",
+					"emission": [
+						{
+							"time": 0,
+							"color": [1, 0.772549, 0.560784, 90]
+						},
+						{
+							"time": 0.2,
+							"color": [0.05098, 0.83529, 0.988235, 140]
+						},
+						{
+							"time": 0.5,
+							"color": [0.756862, 0.992156, 0.2, 150]
+						},
+						{
+							"time": 0.8,
+							"color": [0.952941, 0.952941, 0.082352, 160]
+						},
+						{
+							"time": 1.1,
+							"color": [0.988235, 0.352941, 0.72156, 180]
+						},
+						{
+							"time": 1.5,
+							"color": [1, 0.6, 0.2, 170]
+						},
+						{
+							"time": 1.8,
+							"color": [0.756862, 0.992156, 0.2, 155]
+						},
+						{
+							"time": 2.3,
+							"color": [0.05098, 0.83529, 0.988235, 160]
+						},
+						{
+							"time": 2.5,
+							"color": [0.952941, 0.952941, 0.082352, 160]
+						},
+						{
+							"time": 2.8,
+							"color": [0.756862, 0.992156, 0.2, 170]
+						},
+						{
+							"time": 3,
+							"color": [0.952941, 0.952941, 0.082352, 160]
+						},
+						{
+							"time": 3.4,
+							"color": [0.988235, 0.352941, 0.72156, 180]
+						},
+						{
+							"time": 3.9,
+							"color": [1, 0.6, 0.2, 180]
+						},
+						{
+							"time": 4.2,
+							"color": [0.756862, 0.992156, 0.2, 170]
+						},
+						{
+							"time": 4.5,
+							"color": [0.952941, 0.952941, 0.082352, 170]
+						},
+						{
+							"time": 4.8,
+							"color": [1, 0.6, 0.2, 180]
+						},
+						{
+							"time": 5.3,
+							"color": [0.988235, 0.352941, 0.72156, 180]
+						},
+						{
+							"time": 5.8,
+							"color": [0.756862, 0.992156, 0.2, 180]
+						},
+						{
+							"time": 6.1,
+							"color": [0.05098, 0.83529, 0.988235, 170]
+						},
+						{
+							"time": 6.4,
+							"color": [0.952941, 0.952941, 0.082352, 180]
+						},
+						{
+							"time": 6.8,
+							"color": [1, 0.6, 0.2, 180]
+						},
+						{
+							"time": 7,
+							"color": [1, 0.772549, 0.560784, 190]
+						}
+					],
+					"geometry": {
+						"type": "disk",
+						"radius": 0.83,
+						"inner_radius": 0
+					},
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 90
+						},
+						{
+							"type": "translate",
+							"translation": [0, -0.4, 0]
+						}
+					]
+				},
+				{
+					"name": "cone",
+					"type": "receiver",
+					"material": "pantone_yellow",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/cone.obj",
+						"model": "Cone"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": [1.2, 1, 1.2]
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "light_cone3",
+			"keyframes": {
+				"control_points": [
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -120
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 60
+							},
+							{
+								"type": "translate",
+								"translation": [-9, 1.5, -7]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -120
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 60
+							},
+							{
+								"type": "translate",
+								"translation": [-7, 1.5, -12]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -120
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -20
+							},
+							{
+								"type": "translate",
+								"translation": [3, 3.5, -12]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -120
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -40
+							},
+							{
+								"type": "translate",
+								"translation": [8, 3.5, -6]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -110
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -40
+							},
+							{
+								"type": "translate",
+								"translation": [9, 3, -8]
+							}
+						]
+					}
+				],
+				"knots": [0, 0, 0, 0, 4, 8, 8, 8, 8]
+			},
+			"objects": [
+				{
+					"name": "cone_light",
+					"type": "emitter",
+					"material": "white_wall",
+					"emitter": "area",
+					"emission": [
+						{
+							"time": 0,
+							"color": [1, 0.772549, 0.560784, 90]
+						},
+						{
+							"time": 0.1,
+							"color": [0.05098, 0.83529, 0.988235, 180]
+						},
+						{
+							"time": 0.3,
+							"color": [0.988235, 0.352941, 0.72156, 150]
+						},
+						{
+							"time": 0.6,
+							"color": [0.756862, 0.992156, 0.2, 130]
+						},
+						{
+							"time": 1,
+							"color": [1, 0.6, 0.2, 170]
+						},
+						{
+							"time": 1.4,
+							"color": [0.952941, 0.952941, 0.082352, 110]
+						},
+						{
+							"time": 1.7,
+							"color": [0.756862, 0.992156, 0.2, 140]
+						},
+						{
+							"time": 2,
+							"color": [0.05098, 0.83529, 0.988235, 150]
+						},
+						{
+							"time": 2.3,
+							"color": [0.952941, 0.952941, 0.082352, 140]
+						},
+						{
+							"time": 2.5,
+							"color": [0.05098, 0.83529, 0.988235, 180]
+						},
+						{
+							"time": 2.9,
+							"color": [0.952941, 0.952941, 0.082352, 110]
+						},
+						{
+							"time": 3.2,
+							"color": [1, 0.6, 0.2, 170]
+						},
+						{
+							"time": 3.5,
+							"color": [0.05098, 0.83529, 0.988235, 150]
+						},
+						{
+							"time": 3.8,
+							"color": [0.988235, 0.352941, 0.72156, 190]
+						},
+						{
+							"time": 4.1,
+							"color": [0.756862, 0.992156, 0.2, 200]
+						},
+						{
+							"time": 4.5,
+							"color": [0.952941, 0.952941, 0.082352, 180]
+						},
+						{
+							"time": 4.9,
+							"color": [0.05098, 0.83529, 0.988235, 170]
+						},
+						{
+							"time": 5.2,
+							"color": [1, 0.6, 0.2, 170]
+						},
+						{
+							"time": 5.6,
+							"color": [0.756862, 0.992156, 0.2, 190]
+						},
+						{
+							"time": 6,
+							"color": [1, 0.6, 0.2, 170]
+						},
+						{
+							"time": 6.4,
+							"color": [0.05098, 0.83529, 0.988235, 180]
+						},
+						{
+							"time": 6.8,
+							"color": [0.988235, 0.352941, 0.72156, 190]
+						},
+						{
+							"time": 7,
+							"color": [1, 0.772549, 0.560784, 180]
+						}
+					],
+					"geometry": {
+						"type": "disk",
+						"radius": 0.83,
+						"inner_radius": 0
+					},
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 90
+						},
+						{
+							"type": "translate",
+							"translation": [0, -0.4, 0]
+						}
+					]
+				},
+				{
+					"name": "cone",
+					"type": "receiver",
+					"material": "pantone_yellow",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/cone.obj",
+						"model": "Cone"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": [1.2, 1, 1.2]
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "light_cone4",
+			"keyframes": {
+				"control_points": [
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -130
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -60
+							},
+							{
+								"type": "translate",
+								"translation": [9, 1.5, -8]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -134
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -60
+							},
+							{
+								"type": "translate",
+								"translation": [14, 3, -4]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -125
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -130
+							},
+							{
+								"type": "translate",
+								"translation": [14, 2.5, 4]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -120
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -130
+							},
+							{
+								"type": "translate",
+								"translation": [6.5, 1.5, 9]
+							}
+						]
+					}
+				],
+				"knots": [0, 0, 0, 0, 8, 8, 8, 8]
+			},
+			"objects": [
+				{
+					"name": "cone_light",
+					"type": "emitter",
+					"material": "white_wall",
+					"emitter": "area",
+					"emission": [
+						{
+							"time": 0,
+							"color": [1, 0.772549, 0.560784, 90]
+						},
+						{
+							"time": 0.1,
+							"color": [0.05098, 0.83529, 0.988235, 180]
+						},
+						{
+							"time": 0.3,
+							"color": [0.988235, 0.352941, 0.72156, 150]
+						},
+						{
+							"time": 0.6,
+							"color": [0.756862, 0.992156, 0.2, 130]
+						},
+						{
+							"time": 1,
+							"color": [1, 0.6, 0.2, 170]
+						},
+						{
+							"time": 1.4,
+							"color": [0.952941, 0.952941, 0.082352, 110]
+						},
+						{
+							"time": 1.7,
+							"color": [0.756862, 0.992156, 0.2, 140]
+						},
+						{
+							"time": 2,
+							"color": [0.05098, 0.83529, 0.988235, 150]
+						},
+						{
+							"time": 2.3,
+							"color": [0.952941, 0.952941, 0.082352, 140]
+						},
+						{
+							"time": 2.5,
+							"color": [0.05098, 0.83529, 0.988235, 180]
+						},
+						{
+							"time": 2.9,
+							"color": [0.952941, 0.952941, 0.082352, 110]
+						},
+						{
+							"time": 3.2,
+							"color": [1, 0.6, 0.2, 170]
+						},
+						{
+							"time": 3.5,
+							"color": [0.05098, 0.83529, 0.988235, 150]
+						},
+						{
+							"time": 3.8,
+							"color": [0.988235, 0.352941, 0.72156, 190]
+						},
+						{
+							"time": 4.1,
+							"color": [0.756862, 0.992156, 0.2, 180]
+						},
+						{
+							"time": 4.5,
+							"color": [0.952941, 0.952941, 0.082352, 170]
+						},
+						{
+							"time": 4.9,
+							"color": [0.05098, 0.83529, 0.988235, 180]
+						},
+						{
+							"time": 5.2,
+							"color": [1, 0.6, 0.2, 170]
+						},
+						{
+							"time": 5.6,
+							"color": [0.756862, 0.992156, 0.2, 190]
+						},
+						{
+							"time": 6,
+							"color": [1, 0.6, 0.2, 180]
+						},
+						{
+							"time": 6.4,
+							"color": [0.05098, 0.83529, 0.988235, 150]
+						},
+						{
+							"time": 6.8,
+							"color": [0.988235, 0.352941, 0.72156, 190]
+						},
+						{
+							"time": 7,
+							"color": [1, 0.772549, 0.560784, 180]
+						}
+					],
+					"geometry": {
+						"type": "disk",
+						"radius": 0.83,
+						"inner_radius": 0
+					},
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 90
+						},
+						{
+							"type": "translate",
+							"translation": [0, -0.4, 0]
+						}
+					]
+				},
+				{
+					"name": "cone",
+					"type": "receiver",
+					"material": "pantone_yellow",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/cone.obj",
+						"model": "Cone"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": [1.2, 1, 1.2]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "large_light1",
+			"type": "emitter",
+			"material": "white_wall",
+			"emitter": "area",
+			"emission": [
+				{
+					"time": 0,
+					"color": [1, 0.772549, 0.560784, 0]
+				},
+				{
+					"time": 3.5,
+					"color": [1, 0.772549, 0.560784, 0]
+				},
+				{
+					"time": 5,
+					"color": [1, 0.772549, 0.560784, 110]
+				},
+				{
+					"time": 7,
+					"color": [0.88, 0.772549, 0.560784, 150]
+				}
+			],
+			"geometry": {
+				"type": "disk",
+				"radius": 5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_y",
+					"rotation": 30
+				},
+				{
+					"type": "rotate_z",
+					"rotation": -40
+				},
+				{
+					"type": "translate",
+					"translation": [-12, 45, -15]
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "red_teapot",
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 5
+				}
+			],
+			"objects": [
+				{
+					"name": "base",
+					"type": "receiver",
+					"material": "rough_silver_metal",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/teapot2.obj",
+						"model": "Base"
+					},
+					"transform": []
+				},
+				{
+					"name": "top",
+					"type": "receiver",
+					"material": "rough_silver_metal",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/teapot2.obj",
+						"model": "Top"
+					},
+					"transform": []
+				}
+			]
+		},
+		{
+			"name": "u_logo",
+			"type": "receiver",
+			"material": "u_logo_plastic",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/u_logo.obj",
+				"model": "U_Logo"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 15
+				},
+				{
+					"type": "translate",
+					"translation": [0, 0, 20]
+				}
+			]
+		},
+		{
+			"name": "buddha",
+			"type": "receiver",
+			"material": "gold_metallic_paint",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/buddha.obj",
+				"model": "buddha"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 17.0
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -35
+				},
+				{
+					"type": "translate",
+					"translation": [-17, 7.55, 19]
+				}
+			]
+		},
+		{
+			"name": "buddha_highlight",
+			"type": "emitter",
+			"material": "white_wall",
+			"emitter": "area",
+			"emission": [
+				{
+					"time": 0,
+					"color": [1, 0.772549, 0.560784, 0]
+				},
+				{
+					"time": 4,
+					"color": [1, 0.772549, 0.560784, 0]
+				},
+				{
+					"time": 5.5,
+					"color": [1, 0.772549, 0.560784, 120]
+				}
+			],
+			"geometry": {
+				"type": "disk",
+				"radius": 2,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_y",
+					"rotation": -30
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 80
+				},
+				{
+					"type": "translate",
+					"translation": [-14, 31.5, 13]
+				}
+			]
+		},
+		{
+			"name": "dragon",
+			"type": "receiver",
+			"material": "blue_acrylic",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/dragon.obj",
+				"model": "dragon"
+			},
+			"keyframes": {
+				"control_points": [
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 13
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 55
+							},
+							{
+								"type": "translate",
+								"translation": [18, 3.7, 19]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 13
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 55
+							},
+							{
+								"type": "translate",
+								"translation": [18, 3.7, 19]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 13
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 35
+							},
+							{
+								"type": "translate",
+								"translation": [18, 3.7, 19]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 13
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 20
+							},
+							{
+								"type": "translate",
+								"translation": [19, 3.7, 19]
+							}
+						]
+					}
+				],
+				"knots": [11.5, 11.5, 11.5, 11.5, 14, 14, 14, 14]
+			}
+		},
+		{
+			"type": "group",
+			"name": "kenny_nl_pine",
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 4.5
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 17
+				},
+				{
+					"type": "translate",
+					"translation": [-28, 2, 24]
+				}
+			],
+			"objects": [
+				{
+					"name": "leaves",
+					"type": "receiver",
+					"material": "glass",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/Tree_01.obj",
+						"model": "Leaves"
+					},
+					"transform": []
+				},
+				{
+					"name": "trunk",
+					"type": "receiver",
+					"material": "red_wall",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/Tree_01.obj",
+						"model": "Trunk"
+					},
+					"transform": []
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "kenny_nl_pine2",
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 5
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 3
+				},
+				{
+					"type": "translate",
+					"translation": [-16.8, 2, 34]
+				}
+			],
+			"objects": [
+				{
+					"name": "leaves",
+					"type": "receiver",
+					"material": "green_plastic",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/Tree_02.obj",
+						"model": "Leaves"
+					},
+					"transform": []
+				},
+				{
+					"name": "trunk",
+					"type": "receiver",
+					"material": "blue_acrylic",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/Tree_02.obj",
+						"model": "Trunk"
+					},
+					"transform": []
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "kenny_nl_pine3",
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 4.5
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 70
+				},
+				{
+					"type": "translate",
+					"translation": [17.4, 2, 35]
+				}
+			],
+			"objects": [
+				{
+					"name": "leaves",
+					"type": "receiver",
+					"material": "green_plastic",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/Tree_02.obj",
+						"model": "Leaves"
+					},
+					"transform": []
+				},
+				{
+					"name": "trunk",
+					"type": "receiver",
+					"material": "blue_acrylic",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/Tree_02.obj",
+						"model": "Trunk"
+					},
+					"transform": []
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "kenny_nl_pine4",
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 4.5
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -23
+				},
+				{
+					"type": "translate",
+					"translation": [28, 2, 28]
+				}
+			],
+			"objects": [
+				{
+					"name": "leaves",
+					"type": "receiver",
+					"material": "glass",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/Tree_01.obj",
+						"model": "Leaves"
+					},
+					"transform": []
+				},
+				{
+					"name": "trunk",
+					"type": "receiver",
+					"material": "red_wall",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/Tree_01.obj",
+						"model": "Trunk"
+					},
+					"transform": []
+				}
+			]
+		},
+		{
+			"name": "lucy_logo_section_light",
+			"type": "emitter",
+			"material": "white_wall",
+			"emitter": "area",
+			"emission": [
+				{
+					"time": 6,
+					"color": [1, 0.772549, 0.560784, 0]
+				},
+				{
+					"time": 9,
+					"color": [1, 0.92549, 0.54509, 140]
+				}
+			],
+			"geometry": {
+				"type": "disk",
+				"radius": 5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				},
+				{
+					"type": "rotate_z",
+					"rotation": 35
+				},
+				{
+					"type": "translate",
+					"translation": [50, 44, 2]
+				}
+			]
+		},
+		{
+			"name": "left_backlight",
+			"type": "emitter",
+			"material": "white_wall",
+			"emitter": "area",
+			"emission": [
+				{
+					"time": 6,
+					"color": [1, 0.772549, 0.560784, 0]
+				},
+				{
+					"time": 9,
+					"color": [1, 0.92549, 0.54509, 140]
+				}
+			],
+			"geometry": {
+				"type": "disk",
+				"radius": 5,
+				"inner_radius": 0.0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				},
+				{
+					"type": "rotate_z",
+					"rotation": -35
+				},
+				{
+					"type": "translate",
+					"translation": [-50, 44, 2]
+				}
+			]
+		},
+		{
+			"name": "rust_logo",
+			"type": "receiver",
+			"material": "oxidized_steel",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/rust_logo.obj",
+				"model": "rust_logo"
+			},
+			"keyframes": {
+				"control_points": [
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -90
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -270
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -450
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -630
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -809
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -830
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -800
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -810
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -810
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -900
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -990
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 14
+							},
+							{
+								"type": "rotate_x",
+								"rotation": 90
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -1080
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 72
+							},
+							{
+								"type": "translate",
+								"translation": [56, 14, -3]
+							}
+						]
+					}
+				],
+				"knots": [12, 12, 12, 12, 14, 16, 16.5, 16.8, 17, 18, 22, 23, 25, 25, 25, 25]
+			}
+		},
+		{
+			"name": "lucy",
+			"type": "receiver",
+			"material": "silver_paint",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/lucy.obj",
+				"model": "lucy"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 14
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -72
+				},
+				{
+					"type": "translate",
+					"translation": [60, 13.1, -22]
+				}
+			]
+		},
+		{
+			"name": "teapot2",
+			"type": "receiver",
+			"material": "pantone_yellow_plastic",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/teapot.obj",
+				"model": "Teapot"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 3
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 110
+				},
+				{
+					"type": "translate",
+					"translation": [52, 0, 17]
+				}
+			]
+		},
+		{
+			"name": "ajax",
+			"type": "receiver",
+			"material": "brass",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/ajax.obj",
+				"model": "Ajax"
+			},
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 5
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -75
+				},
+				{
+					"type": "translate",
+					"translation": [42, 0, 27.2]
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "ajax_light_cone1",
+						"transform": [
+							{
+								"type": "rotate_x",
+								"rotation": -150
+							},
+							{
+								"type": "rotate_y",
+								"rotation": 34
+							},
+							{
+								"type": "translate",
+								"translation": [32, 1.5, 14]
+							}
+						],
+			"objects": [
+				{
+					"name": "cone_light",
+					"type": "emitter",
+					"material": "white_wall",
+					"emitter": "area",
+					"emission": [
+						{
+							"time": 5,
+							"color": [1, 0.772549, 0.560784, 0]
+						},
+						{
+							"time": 7,
+							"color": [1, 0.772549, 0.760784, 350]
+						}
+					],
+					"geometry": {
+						"type": "disk",
+						"radius": 0.83,
+						"inner_radius": 0
+					},
+					"transform": [
+						{
+							"type": "rotate_x",
+							"rotation": 90
+						},
+						{
+							"type": "translate",
+							"translation": [0, -0.4, 0]
+						}
+					]
+				},
+				{
+					"name": "cone",
+					"type": "receiver",
+					"material": "pantone_yellow",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/cone.obj",
+						"model": "Cone"
+					},
+					"transform": [
+						{
+							"type": "scale",
+							"scaling": [1.2, 1, 1.2]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "ajax_upper_light",
+			"type": "emitter",
+			"material": "white_wall",
+			"emitter": "area",
+			"emission": [
+				{
+					"time": 5,
+					"color": [1, 0.772549, 0.560784, 0]
+				},
+				{
+					"time": 7,
+					"color": [1, 0.772549, 0.760784, 160]
+				}
+			],
+			"geometry": {
+				"type": "disk",
+				"radius": 4,
+				"inner_radius": 0
+			},
+			"transform": [
+				{
+					"type": "rotate_x",
+					"rotation": 90
+				},
+				{
+					"type": "translate",
+					"translation": [0, -0.4, 0]
+				},
+				{
+					"type": "rotate_x",
+					"rotation": -30
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 30
+				},
+				{
+					"type": "translate",
+					"translation": [33, 40, 14]
+				}
+			]
+		},
+		{
+			"name": "cow",
+			"type": "receiver",
+			"material": "glass",
+			"geometry": {
+				"type": "mesh",
+				"file": "models/cow.obj",
+				"model": "Cow"
+			},
+			"keyframes": {
+				"control_points": [
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 10
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -120
+							},
+							{
+								"type": "translate",
+								"translation": [36, 5.3, -40]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 10
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -120
+							},
+							{
+								"type": "translate",
+								"translation": [36, 5.3, -40]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 10
+							},
+							{
+								"type": "rotate_z",
+								"rotation": 30
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -120
+							},
+							{
+								"type": "translate",
+								"translation": [30, 6, -30]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 10
+							},
+							{
+								"type": "rotate_z",
+								"rotation": -30
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -120
+							},
+							{
+								"type": "translate",
+								"translation": [28, 6, -20]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 10
+							},
+							{
+								"type": "rotate_z",
+								"rotation": 20
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -120
+							},
+							{
+								"type": "translate",
+								"translation": [26, 6, -30]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 10
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -120
+							},
+							{
+								"type": "translate",
+								"translation": [24, 5.3, -10]
+							}
+						]
+					},
+					{
+						"transform": [
+							{
+								"type": "scale",
+								"scaling": 10
+							},
+							{
+								"type": "rotate_y",
+								"rotation": -120
+							},
+							{
+								"type": "translate",
+								"translation": [24, 5.3, -10]
+							}
+						]
+					}
+				],
+				"knots": [18, 18, 18, 18, 19.5, 21, 23, 24.5, 24.5, 24.5, 24.5]
+			}
+		},
+		{
+			"type": "group",
+			"name": "kenny_pine_ornaments",
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 7
+				},
+				{
+					"type": "rotate_y",
+					"rotation": -28
+				},
+				{
+					"type": "translate",
+					"translation": [27, 0, 35]
+				}
+			],
+			"objects": [
+				{
+					"name": "leaves",
+					"type": "receiver",
+					"material": "forest_green_matte",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Leaves"
+					},
+					"transform": []
+				},
+				{
+					"name": "trunk",
+					"type": "receiver",
+					"material": "sienna_matte",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Trunk"
+					},
+					"transform": []
+				},
+				{
+					"name": "tinsel",
+					"type": "receiver",
+					"material": "silver_metal",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Tinsel"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere1",
+					"type": "receiver",
+					"material": "pantone_yellow",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere1"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere2",
+					"type": "receiver",
+					"material": "silver_metal",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere2"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere3",
+					"type": "receiver",
+					"material": "u_logo_plastic_shiny",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere3"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere4",
+					"type": "receiver",
+					"material": "glass",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere4"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere5",
+					"type": "receiver",
+					"material": "silver_paint",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere5"
+					},
+					"transform": []
+				},
+				{
+					"name": "bunny",
+					"type": "receiver",
+					"material": "gold_metallic_paint",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Bunny"
+					},
+					"transform": []
+				},
+				{
+					"name": "suzanne",
+					"type": "receiver",
+					"material": "pantone_yellow_plastic",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Suzanne"
+					},
+					"transform": []
+				}
+			]
+		},
+		{
+			"type": "group",
+			"name": "kenny_pine_ornaments2",
+			"transform": [
+				{
+					"type": "scale",
+					"scaling": 9
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 140
+				},
+				{
+					"type": "translate",
+					"translation": [73, 0, 30]
+				}
+			],
+			"objects": [
+				{
+					"name": "leaves",
+					"type": "receiver",
+					"material": "forest_green_matte",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Leaves"
+					},
+					"transform": []
+				},
+				{
+					"name": "trunk",
+					"type": "receiver",
+					"material": "sienna_matte",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Trunk"
+					},
+					"transform": []
+				},
+				{
+					"name": "tinsel",
+					"type": "receiver",
+					"material": "silver_metal",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Tinsel"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere1",
+					"type": "receiver",
+					"material": "pantone_yellow",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere1"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere2",
+					"type": "receiver",
+					"material": "silver_metal",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere2"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere3",
+					"type": "receiver",
+					"material": "u_logo_plastic_shiny",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere3"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere4",
+					"type": "receiver",
+					"material": "glass",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere4"
+					},
+					"transform": []
+				},
+				{
+					"name": "sphere5",
+					"type": "receiver",
+					"material": "silver_paint",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Sphere5"
+					},
+					"transform": []
+				},
+				{
+					"name": "bunny",
+					"type": "receiver",
+					"material": "gold_metallic_paint",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Bunny"
+					},
+					"transform": []
+				},
+				{
+					"name": "suzanne",
+					"type": "receiver",
+					"material": "silver_paint",
+					"geometry": {
+						"type": "mesh",
+						"file": "models/kenny_nl/tree_1_ornamented.obj",
+						"model": "Suzanne"
+					},
+					"transform": []
+				}
+			]
+		}
+	]
+}
+
