@@ -60,9 +60,10 @@ impl Exec for MultiThreaded {
         scene.camera.update_frame(frame_start_time, frame_end_time);
 
         // TODO: How often to re-build the BVH?
+        let shutter_time = scene.camera.shutter_time();
         println!("Frame {}: re-building bvh for {} to {}", config.current_frame,
-                 frame_start_time, frame_end_time);
-        scene.bvh.rebuild(frame_start_time, frame_end_time);
+                 shutter_time.0, shutter_time.1);
+        scene.bvh.rebuild(shutter_time.0, shutter_time.1);
 
         println!("Frame {}: rendering for {} to {}", config.current_frame,
                  frame_start_time, frame_end_time);

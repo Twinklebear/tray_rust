@@ -67,6 +67,10 @@ impl Camera {
         self.shutter_close = start + self.shutter_size * (end - start);
         println!("Shutter open from {} to {}", self.shutter_open, self.shutter_close);
     }
+    /// Get the time that the shutter opens and closes at
+    pub fn shutter_time(&self) -> (f32, f32) {
+        (self.shutter_open, self.shutter_close)
+    }
     /// Generate a ray from the camera through the pixel `px`
     pub fn generate_ray(&self, px: &(f32, f32), time: f32) -> Ray {
         // Take the raster space position -> camera space
