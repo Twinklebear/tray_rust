@@ -564,6 +564,22 @@ fn load_transform(elem: &Value) -> Option<Transform> {
                 .expect("Invalid vector specified for rotation axis");
 
             transform = Transform::rotate(&axis, r) * transform;
+        } else if ty == "matrix" {
+            // User has specified a pre-computed matrix for the transform
+            let mat = t.find("matrix").expect("The rows of the matrix are required for matrix transform")
+                .as_array().expect("The rows should be an array");
+            let mut rows = Vec::with_capacity(16);
+            for r in mat {
+                let row = r.as_array().expect("Each row of the matrix transform must be an array, specifying the row");
+                if row.len() != 4 {
+                    panic!("Each row of the transformation matrix must contain 4 elements");
+                }
+                for e in row {
+                    rows.push(e.as_f64().expect("Each element of a matrix row must be a float") as f32);
+                }
+            }
+
+            transform = Transform::from_mat(&rows.iter().collect()) * transform;
         } else {
             println!("Unrecognized transform type '{}'", ty);
             return None;

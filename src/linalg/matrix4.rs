@@ -199,6 +199,20 @@ impl FromIterator<f32> for Matrix4 {
     }
 }
 
+impl<'a> FromIterator<&'a f32> for Matrix4 {
+    /// Create the matrix using the values from the iterator. The iterator should return
+    /// the rows of the matrix one after another. The first 16 values returned will
+    /// be used to set the matrix elements. If fewer than 16 values are returned the
+    /// remaining entries will be 0
+    fn from_iter<T: IntoIterator<Item = &'a f32>>(it: T) -> Matrix4 {
+        let mut m = Matrix4::zero();
+        for (r, x) in m.mat.iter_mut().zip(it.into_iter()) {
+            *r = *x;
+        }
+        m
+    }
+}
+
 impl Add for Matrix4 {
     type Output = Matrix4;
     /// Add two matrices together
