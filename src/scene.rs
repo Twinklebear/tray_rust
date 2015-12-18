@@ -33,7 +33,7 @@ use serde_json::{self, Value};
 
 use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
 use film::{filter, Camera, Colorf, RenderTarget, FrameInfo, AnimatedColor, ColorKeyframe};
-use geometry::{Sphere, Plane, Instance, Intersection, BVH, Mesh, Disk,
+use geometry::{Sphere, Instance, Intersection, BVH, Mesh, Disk, Rectangle,
                BoundableGeom, SampleableGeom};
 use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal};
 use integrator::{self, Integrator};
@@ -377,7 +377,14 @@ fn load_geometry(path: &Path, meshes: &mut HashMap<String, HashMap<String, Arc<M
             .expect("inner radius must be a number") as f32;
         Arc::new(Disk::new(r, ir))
     } else if ty == "plane" {
-        Arc::new(Plane)
+        // We just treat plane as a special case of Rectangle now
+        Arc::new(Rectangle::new(2.0, 2.0))
+    } else if ty == "rectangle" {
+        let width = elem.find("width").expect("A width is required for a rectangle").as_f64()
+            .expect("width must be a number") as f32;
+        let height = elem.find("height").expect("A height is required for a rectangle").as_f64()
+            .expect("height must be a number") as f32;
+        Arc::new(Rectangle::new(width, height))
     } else if ty == "mesh" {
         let mut file = Path::new(elem.find("file").expect("An OBJ file is required for meshes")
             .as_string().expect("OBJ filename must be a string")).to_path_buf();
@@ -416,6 +423,12 @@ fn load_sampleable_geometry(elem: &Value) -> Arc<SampleableGeom + Send + Sync> {
         let ir = elem.find("inner_radius").expect("An inner radius is required for a disk").as_f64()
             .expect("inner radius must be a number") as f32;
         Arc::new(Disk::new(r, ir))
+    } else if ty == "rectangle" {
+        let width = elem.find("width").expect("A width is required for a rectangle").as_f64()
+            .expect("width must be a number") as f32;
+        let height = elem.find("height").expect("A height is required for a rectangle").as_f64()
+            .expect("height must be a number") as f32;
+        Arc::new(Rectangle::new(width, height))
     } else {
         panic!("Geometry of type '{}' is not sampleable and can't be used for area light geometry", ty);
     }

@@ -5,7 +5,7 @@
 //! transformations to apply to the instance of geometry.
 //!
 //! ```json
-//! "geomtry": {
+//! "geometry": {
 //!     "type": "plane"
 //! }
 //! ```
