@@ -16,8 +16,13 @@
 //!         "name": "my_light",
 //!         "type": "emitter",
 //!         "emitter": "point",
-//!         "position": [0.0, 0.0, 22.0]
-//!         "emission": [1, 1, 1, 100]
+//!         "emission": [1, 1, 1, 100],
+//!         "transform": [
+//!             {
+//!                 "type": "translate",
+//!                 "translation": [0, 0, 22]
+//!             }
+//!         ]
 //!     },
 //!     ...
 //! ]
@@ -56,7 +61,7 @@ use std::sync::Arc;
 
 use geometry::{Boundable, BBox, SampleableGeom, DifferentialGeometry};
 use material::Material;
-use linalg::{self, Transform, AnimatedTransform, Point, Ray, Vector, Normal};
+use linalg::{self, AnimatedTransform, Point, Ray, Vector, Normal};
 use film::{AnimatedColor, Colorf};
 use light::{Light, OcclusionTester};
 
@@ -99,11 +104,12 @@ impl Emitter {
                   transform: transform,
                   tag: tag.to_string() }
     }
-    /// Create a new point light. TODO: Should we just take a transform here as well?
-    pub fn point(pos: Point, emission: AnimatedColor, tag: String) -> Emitter {
+    /// Create a point light at the origin that is transformed by `transform` to its location
+    /// in the world
+    pub fn point(transform: AnimatedTransform, emission: AnimatedColor, tag: String) -> Emitter {
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
-                  transform: AnimatedTransform::unanimated(&Transform::translate(&(pos - Point::broadcast(0.0)))),
+                  transform: transform,
                   tag: tag.to_string() }
     }
     /// Test the ray for intersection against this insance of geometry.
@@ -179,7 +185,7 @@ impl Light for Emitter {
         }
     }
     fn delta_light(&self) -> bool {
-        match &self.emitter { 
+        match &self.emitter {
             &EmitterType::Point => true,
             _ => false,
         }

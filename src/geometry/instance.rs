@@ -65,7 +65,7 @@ use std::sync::Arc;
 use geometry::{Intersection, Boundable, BBox, BoundableGeom, Receiver, Emitter,
                SampleableGeom};
 use material::Material;
-use linalg::{Point, Ray, AnimatedTransform};
+use linalg::{Ray, AnimatedTransform};
 use film::AnimatedColor;
 
 /// Defines an instance of some geometry with its own transform and material
@@ -85,8 +85,10 @@ impl Instance {
                emission: AnimatedColor, transform: AnimatedTransform, tag: String) -> Instance {
         Instance::Emitter(Emitter::area(geom, material, emission, transform, tag))
     }
-    pub fn point_light(pos: Point, emission: AnimatedColor, tag: String) ->  Instance {
-        Instance::Emitter(Emitter::point(pos, emission, tag))
+    /// Create a point light at the origin that is transformed by `transform` to its location
+    /// in the world
+    pub fn point_light(transform: AnimatedTransform, emission: AnimatedColor, tag: String) ->  Instance {
+        Instance::Emitter(Emitter::point(transform, emission, tag))
     }
     /// Test the ray for intersection against this insance of geometry.
     /// returns Some(Intersection) if an intersection was found and None if not.

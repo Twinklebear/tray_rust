@@ -315,13 +315,11 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
         if ty == "emitter" {
             let emit_ty = o.find("emitter").expect("An emitter type is required for emitters")
                 .as_string().expect("Emitter type must be a string");
-            let emission = load_animated_color(o.find("emission").expect("An emission color is required for emitters"))
-                .expect("Emitter emission must be a color");
+            let emission = load_animated_color(o.find("emission")
+                    .expect("An emission color is required for emitters"))
+                    .expect("Emitter emission must be a color");
             if emit_ty == "point" {
-                let pos = load_point(o.find("position").expect("A position is required for point lights"))
-                    .expect("Invalid position point specified for point light");
-
-                instances.push(Instance::point_light(pos, emission, name));
+                instances.push(Instance::point_light(transform, emission, name));
             } else if emit_ty == "area" {
                 let mat_name = o.find("material").expect("A material is required for an object")
                     .as_string().expect("Object material name must be a string");
