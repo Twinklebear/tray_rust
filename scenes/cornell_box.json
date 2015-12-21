@@ -182,9 +182,9 @@
 			"emitter": "area",
 			"emission": [1, 0.772549, 0.560784, 40],
 			"geometry": {
-				"type": "disk",
-				"radius": 3.5,
-				"inner_radius": 0.0
+				"type": "rectangle",
+				"width": 6,
+				"height": 6
 			},
 			"transform": [
 				{
