@@ -19,7 +19,7 @@ pub struct AnimatedTransform {
 
 impl AnimatedTransform {
     /// Create an animated transformation blending between the passed keyframes
-    pub fn with_keyframes(mut keyframes: Vec<Keyframe>, knots: Vec<f32>) -> AnimatedTransform {
+    pub fn with_keyframes(mut keyframes: Vec<Keyframe>, knots: Vec<f32>, degree: usize) -> AnimatedTransform {
         // so we know what degree and so on.
         // Step through and make sure all rotations take the shortest path
         for i in 1..keyframes.len() {
@@ -29,7 +29,7 @@ impl AnimatedTransform {
                 keyframes[i].rotation = -keyframes[i].rotation;
             }
         }
-        AnimatedTransform { keyframes: vec![BSpline::new(3, keyframes, knots)] }
+        AnimatedTransform { keyframes: vec![BSpline::new(degree, keyframes, knots)] }
     }
     pub fn unanimated(transform: &Transform) -> AnimatedTransform {
         let key = Keyframe::new(&transform);

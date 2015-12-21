@@ -602,10 +602,11 @@ fn load_transform(elem: &Value) -> Option<Transform> {
 /// Load a list of keyframes specified by the element. Will panic on invalidly
 /// specified keyframes or transforms and log the error
 fn load_keyframes(elem: &Value) -> Option<AnimatedTransform> {
-    let points = match elem.find("control_points").expect("Control points are required for bspline keyframes").as_array() {
-        Some(a) => a,
-        None => return None,
-    };
+    let points = match elem.find("control_points")
+        .expect("Control points are required for bspline keyframes").as_array() {
+            Some(a) => a,
+            None => return None,
+        };
     let knots_json = match elem.find("knots").expect("knots are required for bspline keyframes").as_array() {
         Some(a) => a,
         None => return None,
@@ -620,6 +621,10 @@ fn load_keyframes(elem: &Value) -> Option<AnimatedTransform> {
     for k in knots_json {
         knots.push(k.as_f64().expect("Knots must be numbers") as f32);
     }
-    Some(AnimatedTransform::with_keyframes(keyframes, knots))
+    let degree = match elem.find("degree") {
+        Some(d) => d.as_u64().expect("Curve degree must be a positive integer") as usize,
+        None => 3,
+    };
+    Some(AnimatedTransform::with_keyframes(keyframes, knots, degree))
 }
 
