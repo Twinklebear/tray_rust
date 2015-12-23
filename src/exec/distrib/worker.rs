@@ -52,7 +52,7 @@ impl Worker {
         let frame = Frame::new(self.config.current_frame, block_size, blocks, pixels);
         let bytes = encode(&frame, SizeLimit::Infinite).unwrap();
         match self.master.write_all(&bytes[..]) {
-            Err(e) => println!("Failed to send frame to {:?}: {}", self.master, e),
+            Err(e) => panic!("Failed to send frame to {:?}: {}", self.master, e),
             _ => {},
         }
     }
