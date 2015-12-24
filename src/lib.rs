@@ -19,6 +19,13 @@
 //! animation) but this may take a while. I strongly recommend running the release build as the debug version will be very slow.
 //! 
 //! ## Building Your Own Scenes
+//! 
+//! To position and animate objects, the camera and so on the
+//! [Blender plugin](https://github.com/Twinklebear/tray_rust_blender) is the easiest to use. However the plugin
+//! is still in development and missing some features like setting materials, changing light properties and such so
+//! you'll still currently need to do those by hand in the exported JSON file. For materials take a look at
+//! the [materials documentation](http://www.willusher.io/tray_rust/tray_rust/material/index.html) for lights
+//! you'll likely just want to change the emission color which is an RGB color plus a strength term.
 //!
 //! Start at the documentation for the [scene module](http://www.willusher.io/tray_rust/tray_rust/scene/index.html),
 //! there are also a few example [scenes](https://github.com/Twinklebear/tray_rust/tree/master/scenes) included but not all
