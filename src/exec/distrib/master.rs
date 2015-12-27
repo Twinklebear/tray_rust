@@ -91,9 +91,7 @@ impl Master {
         let mut event_loop = EventLoop::<Master>::new().unwrap();
         let mut connections = Vec::new();
 
-        // Connect to each worker and send instructions on what to render
-        // I guess this should also be queue'd up and the writes actually performed asynchronously?
-        // Otherwise we need to loop on write_all while waiting for the connection to open
+        // Connect to each worker and add them to the event loop
         for (i, host) in workers.iter().enumerate() {
             let addr = (&host[..], worker::PORT).to_socket_addrs().unwrap().next().unwrap();
             match TcpStream::connect(&addr) {
