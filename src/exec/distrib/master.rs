@@ -25,8 +25,6 @@ use sampler::BlockQueue;
 #[derive(Debug)]
 enum DistributedFrame {
     InProgress {
-        // Which frame number this is
-        frame: usize,
         // The number of workers who have reported results for this
         // frame so far
         num_reporting: usize,
@@ -36,8 +34,8 @@ enum DistributedFrame {
 }
 
 impl DistributedFrame {
-    pub fn start(frame_num: usize, img_dim: (usize, usize)) -> DistributedFrame {
-        DistributedFrame::InProgress { frame: frame_num, num_reporting: 0, render: Image::new(img_dim) }
+    pub fn start(img_dim: (usize, usize)) -> DistributedFrame {
+        DistributedFrame::InProgress { num_reporting: 0, render: Image::new(img_dim) }
     }
 }
 
@@ -122,12 +120,11 @@ impl Master {
         let frame_num = frame.frame as usize;
         let img_dim = self.img_dim;
         // Find the frame being reported and create it if we haven't received parts of this frame yet
-        let mut df = self.frames.entry(frame_num).or_insert_with(
-                        || DistributedFrame::start(frame_num, img_dim));
+        let mut df = self.frames.entry(frame_num).or_insert_with(|| DistributedFrame::start(img_dim));
 
         let mut finished = false;
         match df {
-            &mut DistributedFrame::InProgress { frame: _, ref mut num_reporting, ref mut render } => {
+            &mut DistributedFrame::InProgress { ref mut num_reporting, ref mut render } => {
                 // Collect results from the worker and see if we've finished the frame and can save
                 // it out
                 render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
