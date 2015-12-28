@@ -192,16 +192,9 @@ impl Handler for Master {
     fn ready(&mut self, event_loop: &mut EventLoop<Master>, token: Token, event: EventSet) {
         let worker = token.as_usize();
         if event.is_error() {
-            println!("Error connecting too {}", self.workers[worker]);
-            match self.connections[worker].shutdown(Shutdown::Both) {
-                Err(e) => println!("Error shutting down worker {}: {}", worker, e),
-                Ok(_) => {},
-            }
-            // Remove the connection from the event loop
-            match event_loop.deregister(&self.connections[worker]) {
-                Err(e) => println!("Error deregistering worker {}: {}", worker, e),
-                Ok(_) => {},
-            }
+            // We don't do distributed error handling so should abort if we fail to
+            // connect for now
+            panic!("Error connecting to {}", self.workers[worker]);
         }
         // If the worker has terminated, shutdown the read end of the connection
         if event.is_hup() {
