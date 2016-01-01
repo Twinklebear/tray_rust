@@ -157,7 +157,7 @@ impl Master {
     /// Read results from a worker and accumulate this data in its worker buffer. Returns true if
     /// we've read the data being sent and can decode the buffer
     fn read_worker_buffer(&mut self, worker: usize) -> bool {
-        let mut buf = &mut self.worker_buffers[worker];
+        let buf = &mut self.worker_buffers[worker];
         // If we haven't read the size of data being sent, read that now
         if buf.currently_read < 8 {
             // First 8 bytes are a u64 specifying the number of bytes being sent
