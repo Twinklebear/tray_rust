@@ -1,12 +1,42 @@
 //! The distrib module provides methods for executing the rendering in a
-//! distributed environment across multiple nodes. The worker module provides
-//! the Worker which does the actual job of rendering a subsection of the image.
-//! The master module provides the Master which instructs the Workers and collects
-//! their results.
+//! distributed environment across multiple machies. The worker module provides
+//! the Worker which does the actual job of rendering a subregion of the image.
+//! The master module provides the Master which instructs the Workers what to render
+//! and collects their results to save out the final image.
 //!
-//! **Note:** At this time I do nothing for distributed fault handling or work
-//! stealing. If a node crashes during rendering it's results will be lost and the
-//! master will hang forever waiting to hear back from the crashed node.
+//! # Usage
+//!
+//! The worker process takes very few arguments, just a flag indicating it's a worker
+//! and optionally the number of threads to use with `-n`.
+//!
+//! ```
+//! ./tray_rust --worker
+//! ```
+//!
+//! The worker processes will listen on a hard-coded port for the master to send them instructions
+//! about what parts of the image they should render. This is `exec::distrib::worker::PORT` which
+//! you can change and re-compile if the default of 63234 conflicts with other applications.
+//!
+//! The master process can be run on the same machine as a worker since it doesn't take
+//! up too much CPU time. To run the master you'll pass it the scene file, a list of the
+//! worker hostnames or IP addresses and optionally an output path and start/end frame numbers.
+//! You can also run tray\_rust with the `-h` or `--help` flag to see a list of options.
+//!
+//! ```
+//! ./tray_rust cornell_box.json --master worker1 worker2 192.168.32.129
+//! ```
+//!
+//! The master will send the workers the location of the scene file which is assumed to
+//! be on some shared filesystem or otherwise available at the same path on all the workers.
+//!
+//! # Running on GCE or EC2
+//!
+//! You can run on any network of home machines but you can also run on virtual machines from
+//! Google or Amazon if you want to rent a mini cluster. On GCE or EC2 you'll want machines in the
+//! same region for faster communication and will then pass the local IPs of the workers to
+//! the master. For example on GCE you're given a virtual local network, you would use
+//! these IP addresses instead of the public IPs of the worker nodes.
+//!
 
 use bincode::rustc_serialize::encoded_size;
 
