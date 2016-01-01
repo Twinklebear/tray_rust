@@ -83,7 +83,7 @@ fn get_instructions() -> (Instructions, TcpStream) {
                     Err(e) => panic!("Failed to read from master, {:?}", e),
                 }
             }
-            let instr: Instructions = decode(&buf[..]).unwrap();
+            let instr = decode(&buf[..]).unwrap();
             println!("Received instructions: {:?}", instr);
             (instr, stream)
         },

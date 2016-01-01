@@ -236,7 +236,7 @@ impl Handler for Master {
             // Read results from the worker, if we've accumulated all the data being sent
             // decode and accumulate the frame
             if self.read_worker_buffer(worker) {
-                let frame: Frame = decode(&self.worker_buffers[worker].buf[..]).unwrap();
+                let frame = decode(&self.worker_buffers[worker].buf[..]).unwrap();
                 self.save_results(frame);
                 // Clean up the worker buffer for the next frame
                 self.worker_buffers[worker].buf.clear();
