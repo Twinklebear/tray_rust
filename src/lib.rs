@@ -63,6 +63,8 @@
 //! Intel for the hardware! Some older renders are shown as well without timing since they were
 //! run on a different machine.
 //!
+//! Some more sample renders can be found [here](http://imgur.com/a/3qNBc).
+//!
 //! <a href="http://i.imgur.com/X5y8oIq.png">
 //! <img src="http://i.imgur.com/X5y8oIq.png" alt="Model gallery"
 //!     style="display:block; max-width:100%; height:auto">
@@ -77,25 +79,6 @@
 //! 
 //! 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.
 //! 
-//! <a href="http://i.imgur.com/CUvJwum.png">
-//! <img src="http://i.imgur.com/CUvJwum.png" alt="Cornell Box"
-//!     style="display:block; max-width:100%; height:auto; margin:auto">
-//! </a>
-//! 
-//! 800x600, 4096 samples/pixel. Rendering: 00:10:05.409.
-//!
-//! <a href="http://i.imgur.com/RbCNrxX.png">
-//! <img src="http://i.imgur.com/RbCNrxX.png" alt="Suzanne Box"
-//!     style="display:block; max-width:100%; height:auto; margin:auto">
-//! </a>
-//! 
-//! 800x600, 4096 samples/pixel. Rendering: 00:11:23.67.
-//!
-//! <a href="http://i.imgur.com/2lcANyn.png">
-//! <img src="http://i.imgur.com/2lcANyn.png" alt="Ajax Bust"
-//!     style="display:block; max-width:100%; height:auto; margin:auto">
-//! </a>
-//!
 
 extern crate enum_set as enum_set;
 extern crate rand;
