@@ -96,12 +96,12 @@ impl Master {
                 Ok(stream) => {
                     // Each worker is identified in the event loop by their index in the vec
                     match event_loop.register(&stream, Token(i), EventSet::all(), PollOpt::level()){
-                        Err(e) => println!("Error registering stream from {}: {}", host, e),
+                        Err(e) => panic!("Error registering stream from {}: {}", host, e),
                         Ok(_) => {},
                     }
                     connections.push(stream);
                 },
-                Err(e) => println!("Failed to contact worker {}: {:?}", host, e),
+                Err(e) => panic!("Failed to contact worker {}: {:?}", host, e),
             }
         }
         let worker_buffers: Vec<_> = iter::repeat(WorkerBuffer::new()).take(workers.len()).collect();
