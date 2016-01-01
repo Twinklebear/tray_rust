@@ -9,7 +9,7 @@
 //! The worker process takes very few arguments, just a flag indicating it's a worker
 //! and optionally the number of threads to use with `-n`.
 //!
-//! ```
+//! ```text
 //! ./tray_rust --worker
 //! ```
 //!
@@ -22,7 +22,7 @@
 //! worker hostnames or IP addresses and optionally an output path and start/end frame numbers.
 //! You can also run tray\_rust with the `-h` or `--help` flag to see a list of options.
 //!
-//! ```
+//! ```text
 //! ./tray_rust cornell_box.json --master worker1 worker2 192.168.32.129
 //! ```
 //!
