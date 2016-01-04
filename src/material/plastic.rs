@@ -45,7 +45,7 @@ impl Plastic {
             bxdfs.push(Box::new(Lambertian::new(diffuse)) as Box<BxDF + Send + Sync>);
         }
         if !gloss.is_black() {
-            let fresnel = Box::new(Dielectric::new(1.5, 1.0)) as Box<Fresnel + Send + Sync>;
+            let fresnel = Box::new(Dielectric::new(1.0, 1.5)) as Box<Fresnel + Send + Sync>;
             let microfacet = Box::new(Blinn::new(1.0 / roughness)) as Box<MicrofacetDistribution + Send + Sync>;
             bxdfs.push(Box::new(TorranceSparrow::new(gloss, fresnel, microfacet)) as Box<BxDF + Send + Sync>);
         }
