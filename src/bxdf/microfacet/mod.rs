@@ -11,6 +11,7 @@ pub use self::blinn::Blinn;
 pub mod blinn;
 
 /// Trait implemented by all microfacet distributions
+/// TODO: This is the normal distribution function of the microfacets
 pub trait MicrofacetDistribution {
     /// Compute the probability density that microfacets are
     /// oriented with normal  `w_h` for this distribution
@@ -26,6 +27,8 @@ pub trait MicrofacetDistribution {
 /// Compute the geometric attenuation term for the distribution for
 /// the pair of outgoing and incident light vectors for microfacets
 /// with normal `w_h`
+/// TODO: This is the masking shadowing function of the microfacets, this is the
+/// Cook-Torrance V-cavities masking-shadowing
 pub fn geometric_attenuation(w_o: &Vector, w_i: &Vector, w_h: &Vector) -> f32 {
     let n_dot_h = f32::abs(bxdf::cos_theta(w_h));
     let n_dot_o = f32::abs(bxdf::cos_theta(w_o));

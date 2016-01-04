@@ -8,6 +8,7 @@ use linalg::{self, Vector};
 use bxdf::microfacet::MicrofacetDistribution;
 
 /// Struct providing the Blinn microfacet distribution
+/// TODO: This is the normalized Blinn microfacet normal distribution function
 pub struct Blinn {
     exponent: f32,
 }
@@ -44,7 +45,7 @@ impl MicrofacetDistribution for Blinn {
             (w_i, 0.0)
         } else {
             let pdf_val = ((self.exponent + 1.0) * f32::powf(cos_theta, self.exponent))
-                        / (f32::consts::PI * 2.0 * 4.0 * d);
+                        / (f32::consts::PI * 8.0 * d);
             (w_i, pdf_val)
         }
     }
@@ -56,7 +57,7 @@ impl MicrofacetDistribution for Blinn {
             0.0
         } else {
             ((self.exponent + 1.0) * f32::powf(cos_theta, self.exponent))
-                / (f32::consts::PI * 2.0 * 4.0 * d)
+                / (f32::consts::PI * 8.0 * d)
         }
     }
 }
