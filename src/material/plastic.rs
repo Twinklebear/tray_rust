@@ -27,7 +27,7 @@ use std::vec::Vec;
 use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, TorranceSparrow, Lambertian};
-use bxdf::microfacet::{MicrofacetDistribution, Blinn};
+use bxdf::microfacet::{MicrofacetDistribution, Beckmann};
 use bxdf::fresnel::{Fresnel, Dielectric};
 use material::Material;
 
@@ -46,7 +46,7 @@ impl Plastic {
         }
         if !gloss.is_black() {
             let fresnel = Box::new(Dielectric::new(1.0, 1.5)) as Box<Fresnel + Send + Sync>;
-            let microfacet = Box::new(Blinn::new(1.0 / roughness)) as Box<MicrofacetDistribution + Send + Sync>;
+            let microfacet = Box::new(Beckmann::new(roughness)) as Box<MicrofacetDistribution + Send + Sync>;
             bxdfs.push(Box::new(TorranceSparrow::new(gloss, fresnel, microfacet)) as Box<BxDF + Send + Sync>);
         }
         Plastic { bxdfs: bxdfs }

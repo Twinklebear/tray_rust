@@ -49,11 +49,11 @@
 			"roughness": 1.0
 		},
 		{
-			"type": "metal",
+			"type": "plastic",
 			"name": "metal",
-			"refractive_index": [0.155265, 0.116723, 0.138381],
-			"absorption_coefficient": [4.82835, 3.12225, 2.14696],
-			"roughness": 0.1
+			"gloss": [0.8, 0.8, 0.8],
+			"diffuse": [0.8, 0.2, 0.2],
+			"roughness": 0.2
 		},
 		{
 			"type": "glass",
@@ -193,30 +193,11 @@
 			"transform": [
 				{
 					"type": "scale",
-					"scaling": 5.0
+					"scaling": 6
 				},
 				{
 					"type": "translate",
-					"translation": [-6.0, 5.0, 8.0]
-				}
-			]
-		},
-		{
-			"name": "glass_sphere",
-			"type": "receiver",
-			"material": "glass",
-			"geometry": {
-				"type": "sphere",
-				"radius": 1.0
-			},
-			"transform": [
-				{
-					"type": "scale",
-					"scaling": 5.0
-				},
-				{
-					"type": "translate",
-					"translation": [6.0, 5.0, -2.0]
+					"translation": [0, 6, 3]
 				}
 			]
 		},
