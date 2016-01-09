@@ -15,11 +15,11 @@ fn dielectric(cos_i: f32, cos_t: f32, eta_i: f32, eta_t: f32) -> Colorf {
 /// Compute the Fresnel term for a conductor given the incident angle and the material properties
 fn conductor(cos_i: f32, eta: &Colorf, k: &Colorf) -> Colorf {
 	let a = (*eta * *eta + *k * *k) * cos_i * cos_i;
-    let white = Colorf::broadcast(1.0);
-	let r_par = (a - *eta * cos_i * 2.0 + white) / (a + *eta * cos_i * 2.0 + white);
+    let col = Colorf::broadcast(1.0);
+	let r_par = (a - *eta * cos_i * 2.0 + col) / (a + *eta * cos_i * 2.0 + col);
 	let b = *eta * *eta + *k * *k;
-    let cos_col = Colorf::broadcast(cos_i * cos_i);
-	let r_perp = (b - *eta * cos_i * 2.0 + cos_col) / (b + *eta * cos_i * 2.0 + cos_col);
+    let col = Colorf::broadcast(cos_i * cos_i);
+	let r_perp = (b - *eta * cos_i * 2.0 + col) / (b + *eta * cos_i * 2.0 + col);
 	//These are actually r_par^2 and r_perp^2, so don't square here
 	(r_par + r_perp) * 0.5
 }
