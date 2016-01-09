@@ -7,8 +7,8 @@ use bxdf;
 use linalg::{self, Vector};
 use bxdf::microfacet::MicrofacetDistribution;
 
-/// Struct providing the Blinn microfacet distribution
-/// TODO: This is the normalized Blinn microfacet normal distribution function
+/// Struct providing the normalized Blinn microfacet distribution with
+/// a Cook-Torrance V-cavity shadowing-masking term
 pub struct Blinn {
     exponent: f32,
 }
@@ -25,7 +25,7 @@ impl Blinn {
 }
 
 impl MicrofacetDistribution for Blinn {
-    fn eval(&self, w_h: &Vector) -> f32 {
+    fn normal_distribution(&self, w_h: &Vector) -> f32 {
         (self.exponent + 2.0) * (1.0 / (f32::consts::PI * 2.0))
             * f32::powf(f32::abs(bxdf::cos_theta(w_h)), self.exponent)
     }
@@ -59,6 +59,14 @@ impl MicrofacetDistribution for Blinn {
             ((self.exponent + 1.0) * f32::powf(cos_theta, self.exponent))
                 / (f32::consts::PI * 8.0 * d)
         }
+    }
+    /// Cook-Torrance V-cavities shadowing-masking
+    fn shadowing_masking(&self, w_o: &Vector, w_i: &Vector, w_h: &Vector) -> f32 {
+        let n_dot_h = f32::abs(bxdf::cos_theta(w_h));
+        let n_dot_o = f32::abs(bxdf::cos_theta(w_o));
+        let n_dot_i = f32::abs(bxdf::cos_theta(w_i));
+        let o_dot_h = f32::abs(linalg::dot(w_o, w_h));
+        f32::min(1.0, f32::min(2.0 * n_dot_h * n_dot_o / o_dot_h, 2.0 * n_dot_h * n_dot_i / o_dot_h))
     }
 }
 
