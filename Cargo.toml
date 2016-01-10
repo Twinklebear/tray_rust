@@ -9,10 +9,10 @@ doc = false
 
 [dependencies]
 enum-set = "0.0.6"
-rand = "0.3.12"
+rand = "0.3.13"
 rustc-serialize = "0.3.16"
 docopt = "0.6.78"
-image = "0.6.0"
+image = "0.6.1"
 num_cpus = "0.2.10"
 tobj = "0.1.0"
 byteorder = "0.4.2"
