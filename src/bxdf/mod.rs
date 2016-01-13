@@ -126,7 +126,14 @@ pub fn sin_theta_sqr(v: &Vector) -> f32 { f32::max(0.0, 1.0 - v.z * v.z) }
 /// Compute the value of sine theta for a vector in shading space
 pub fn sin_theta(v: &Vector) -> f32 { f32::sqrt(sin_theta_sqr(v)) }
 /// Compute the value of tan theta for a vector in shading space
-pub fn tan_theta(v: &Vector) -> f32 { sin_theta(v) / cos_theta(v) }
+pub fn tan_theta(v: &Vector) -> f32 {
+    let sin_theta_2 = sin_theta_sqr(v);
+    if sin_theta_2 <= 0.0 {
+        0.0
+    } else {
+        f32::sqrt(sin_theta_2) / cos_theta(v)
+    }
+}
 /// Compute the value of arctan theta for a vector in shading space
 pub fn arctan_theta(v: &Vector) -> f32 { cos_theta(v) / sin_theta(v) }
 /// Compute the value of cosine phi for a vector in shading space
