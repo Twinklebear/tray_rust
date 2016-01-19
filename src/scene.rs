@@ -99,12 +99,12 @@ impl Scene {
     pub fn update_frame(&mut self, frame: usize, start: f32, end: f32) {
         if self.active_camera != self.cameras.len() - 1 && self.cameras[self.active_camera + 1].active_at == frame {
             self.active_camera += 1;
-            println!("Changing camera to {}", self.active_camera);
+            println!("Changing to camera {}", self.active_camera);
         }
         self.cameras[self.active_camera].update_frame(start, end);
         // TODO: How often to re-build the BVH?
         let shutter_time = self.cameras[self.active_camera].shutter_time();
-        println!("Scene Frame {}: re-building bvh for {} to {}", frame, shutter_time.0, shutter_time.1);
+        println!("Frame {}: re-building bvh for {} to {}", frame, shutter_time.0, shutter_time.1);
         self.bvh.rebuild(shutter_time.0, shutter_time.1);
     }
     /// Get the active camera for the current frame
