@@ -23,7 +23,7 @@
 use linalg::{Transform, Vector, Point, Ray, AnimatedTransform};
 
 /// Our camera for the ray tracer, has a transformation to position it in world space
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Camera {
     /// Transformation from camera to world space
     cam_world: AnimatedTransform,
@@ -36,6 +36,8 @@ pub struct Camera {
     /// Percentage of the shutter that is open to light. For example .5 is
     /// a standard 180 degree shutter
     shutter_size: f32,
+    /// The frame this camera becomes active on
+    pub active_at: usize,
 }
 
 impl Camera {
@@ -44,7 +46,8 @@ impl Camera {
     /// are needed to construct the raster -> camera transform
     /// `animation` is used to move the camera ote that this is specified in camera space
     /// where the camera is at the origin looking down the -z axis
-    pub fn new(cam_world: AnimatedTransform, fov: f32, dims: (usize, usize), shutter_size: f32) -> Camera {
+    pub fn new(cam_world: AnimatedTransform, fov: f32, dims: (usize, usize), shutter_size: f32, active_at: usize)
+        -> Camera {
         let aspect_ratio = (dims.0 as f32) / (dims.1 as f32);
         let screen =
             if aspect_ratio > 1.0 {
@@ -58,7 +61,8 @@ impl Camera {
         let raster_screen = screen_raster.inverse();
         let cam_screen = Transform::perspective(fov, 1.0, 1000.0);
         Camera { cam_world: cam_world, raster_cam: cam_screen.inverse() * raster_screen,
-                 shutter_open: 0.0, shutter_close: 0.0, shutter_size: shutter_size
+                 shutter_open: 0.0, shutter_close: 0.0, shutter_size: shutter_size,
+                 active_at: active_at
         }
     }
     /// Update the camera's shutter open/close time for this new frame

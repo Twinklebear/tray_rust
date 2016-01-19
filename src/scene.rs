@@ -41,7 +41,8 @@ use integrator::{self, Integrator};
 /// The scene containing the objects and camera configuration we'd like to render,
 /// shared immutably among the ray tracing threads
 pub struct Scene {
-    pub camera: Camera,
+    pub cameras: Vec<Camera>,
+    active_camera: usize,
     pub bvh: BVH<Instance>,
     pub integrator: Box<Integrator + Send + Sync>,
 }
@@ -69,7 +70,7 @@ impl Scene {
         };
 
         let (rt, spp, frame_info) = load_film(data.find("film").expect("The scene must specify a film to write to"));
-        let camera = load_camera(data.find("camera").expect("The scene must specify a camera"), rt.dimensions());
+        let cameras = load_cameras(&data, rt.dimensions());
         let integrator = load_integrator(data.find("integrator")
                                          .expect("The scene must specify the integrator to render with"));
         let materials = load_materials(&path, data.find("materials")
@@ -81,7 +82,8 @@ impl Scene {
 
         assert!(!instances.is_empty(), "Aborting: the scene does not have any objects!");
         let scene = Scene {
-            camera: camera,
+            cameras: cameras,
+            active_camera: 0,
             // TODO: Read time parameters from the scene file, update BVH every few frames
             bvh: BVH::new(4, instances, 0.0, frame_info.time),
             integrator: integrator,
@@ -92,6 +94,22 @@ impl Scene {
     /// Returns Some(Intersection) if an intersection was found and None if not.
     pub fn intersect(&self, ray: &mut Ray) -> Option<Intersection> {
         self.bvh.intersect(ray, |r, i| i.intersect(r))
+    }
+    /// Advance the time the scene is currently displaying to the time range passed
+    pub fn update_frame(&mut self, frame: usize, start: f32, end: f32) {
+        if self.active_camera != self.cameras.len() - 1 && self.cameras[self.active_camera + 1].active_at == frame {
+            self.active_camera += 1;
+            println!("Changing camera to {}", self.active_camera);
+        }
+        self.cameras[self.active_camera].update_frame(start, end);
+        // TODO: How often to re-build the BVH?
+        let shutter_time = self.cameras[self.active_camera].shutter_time();
+        println!("Scene Frame {}: re-building bvh for {} to {}", frame, shutter_time.0, shutter_time.1);
+        self.bvh.rebuild(shutter_time.0, shutter_time.1);
+    }
+    /// Get the active camera for the current frame
+    pub fn active_camera(&self) -> &Camera {
+        &self.cameras[self.active_camera]
     }
 }
 
@@ -142,6 +160,24 @@ fn load_filter(elem: &Value) -> Box<filter::Filter + Send + Sync> {
     }
 }
 
+/// Load the cameras or single camera specified for this scene
+fn load_cameras(elem: &Value, dim: (usize, usize)) -> Vec<Camera> {
+    match elem.find("cameras") {
+        Some(c) => {
+            let cameras_json = match c.as_array() {
+                Some(ca) => ca,
+                None => panic!("cameras listing must be an array of cameras"),
+            };
+            let mut cameras = Vec::new();
+            for cam in cameras_json {
+                cameras.push(load_camera(cam, dim));
+            }
+            cameras.sort_by(|a, b| a.active_at.cmp(&b.active_at));
+            cameras
+        },
+        None => vec![load_camera(elem.find("camera").expect("Error: A camera is required!"), dim)]
+    }
+}
 /// Load the camera described by the JSON value passed.
 /// Returns the camera along with the number of samples to take per pixel
 /// and the scene dimensions. Panics if the camera is incorrectly specified
@@ -151,6 +187,10 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
     let shutter_size = match elem.find("shutter_size") {
         Some(s) => s.as_f64().expect("Shutter size should be a float from 0 to 1") as f32,
         None => 0.5,
+    };
+    let active_at = match elem.find("active_at") {
+        Some(s) => s.as_u64().expect("The camera activation frame 'active_at' must be an unsigned int") as usize,
+        None => 0,
     };
     let transform = match elem.find("keyframes") {
         Some(t) => load_keyframes(t).expect("Invalid keyframes specified"),
@@ -171,7 +211,7 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
             AnimatedTransform::unanimated(&t)
         },
     };
-    let camera = Camera::new(transform, fov, dim, shutter_size);
+    let camera = Camera::new(transform, fov, dim, shutter_size, active_at);
     camera
 }
 
