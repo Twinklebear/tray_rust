@@ -16,6 +16,8 @@ pub trait MicrofacetDistribution {
     fn normal_distribution(&self, w_h: &Vector) -> f32;
     /// Sample the distribution for some outgoing light direction `w_o`.
     /// returns the incident direction and the PDF for this pair of vectors
+    /// TODO: This should not return the reflected direction, it should return the sampled
+    /// microfacet normal! It should also not return the PDF
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Vector, f32);
     /// Compute the PDF of sampling some pair of incoming and outgoing
     /// directions for light reflecting/refracting off the microfacets

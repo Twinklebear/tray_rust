@@ -51,10 +51,15 @@
 		{
 			"type": "metal",
 			"name": "metal",
-			"gloss": [0.8, 0.8, 0.8],
-			"diffuse": [0.8, 0.2, 0.2],
 			"refractive_index": [0.155265, 0.116723, 0.138381],
 			"absorption_coefficient": [4.82835, 3.12225, 2.14696],
+			"roughness": 0.2
+		},
+		{
+			"type": "plastic",
+			"name": "plastic",
+			"gloss": [0.8, 0.8, 0.8],
+			"diffuse": [0.8, 0.2, 0.2],
 			"roughness": 0.2
 		},
 		{
@@ -185,7 +190,7 @@
 			]
 		},
 		{
-			"name": "metal_sphere",
+			"name": "the_sphere",
 			"type": "receiver",
 			"material": "metal",
 			"geometry": {

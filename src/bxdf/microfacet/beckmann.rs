@@ -52,10 +52,21 @@ impl MicrofacetDistribution for Beckmann {
             0.0
         }
     }
+    // TODO: This should not return the reflected direction, it should return the sampled
+    // microfacet normal! It should also not return the PDF
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Vector, f32) {
-        let theta = f32::atan(f32::sqrt(-f32::powf(self.width, 2.0) * f32::ln(1.0 - samples.0)));
+        let log_sample = match f32::ln(1.0 - samples.0) {
+            x if f32::is_infinite(x) => { println!("it was inf!"); 0.0 },
+            x => x,
+        };
+        let tan_theta_sqr = -f32::powf(self.width, 2.0) * log_sample;
         let phi = 2.0 * f32::consts::PI * samples.1;
-        let w_h = linalg::spherical_dir(f32::sin(theta), f32::cos(theta), phi);
+        let cos_theta = 1.0 / f32::sqrt(1.0 + tan_theta_sqr);
+        let sin_theta = f32::sqrt(f32::max(0.0, 1.0 - cos_theta * cos_theta));
+        let mut w_h = linalg::spherical_dir(sin_theta, cos_theta, phi);
+        if !bxdf::same_hemisphere(w_o, &w_h) {
+            w_h = -w_h;
+        }
         // The sampled incident direction is the outgoing direction perfectly reflected about the half-vector
         let w_i = 2.0 * linalg::dot(w_o, &w_h) * w_h - *w_o;
         let w = f32::abs(linalg::dot(w_o, &w_h)) * self.shadowing_masking(w_o, &w_i, &w_h) / (w_o.z * w_h.z);
