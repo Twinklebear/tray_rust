@@ -10,7 +10,7 @@ use geometry::BBox;
 
 /// An animated transform that blends between the keyframes in its transformation
 /// list over time.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AnimatedTransform {
     /// List of animated transforms in hierarchical order, e.g. the lowest
     /// index is the object's, index 1 holds its direct parent's transform, etc.

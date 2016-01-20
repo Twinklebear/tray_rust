@@ -57,13 +57,7 @@ impl Exec for MultiThreaded {
         let time_step = config.frame_info.time / config.frame_info.frames as f32;
         let frame_start_time = config.current_frame as f32 * time_step;
         let frame_end_time = (config.current_frame as f32 + 1.0) * time_step;
-        scene.camera.update_frame(frame_start_time, frame_end_time);
-
-        // TODO: How often to re-build the BVH?
-        let shutter_time = scene.camera.shutter_time();
-        println!("Frame {}: re-building bvh for {} to {}", config.current_frame,
-                 shutter_time.0, shutter_time.1);
-        scene.bvh.rebuild(shutter_time.0, shutter_time.1);
+        scene.update_frame(config.current_frame, frame_start_time, frame_end_time);
 
         println!("Frame {}: rendering for {} to {}", config.current_frame,
                  frame_start_time, frame_end_time);
@@ -85,6 +79,7 @@ fn thread_work(spp: usize, queue: &BlockQueue, scene: &Scene,
         Ok(r) => r,
         Err(e) => { println!("Failed to get StdRng, {}", e); return }
     };
+    let camera = scene.active_camera();
     // Grab a block from the queue and start working on it, submitting samples
     // to the render target thread after each pixel
     for b in queue.iter() {
@@ -95,7 +90,7 @@ fn thread_work(spp: usize, queue: &BlockQueue, scene: &Scene,
             sampler.get_samples(&mut sample_pos, &mut rng);
             sampler.get_samples_1d(&mut time_samples[..], &mut rng);
             for (s, t) in sample_pos.iter().zip(time_samples.iter()) {
-                let mut ray = scene.camera.generate_ray(s, *t);
+                let mut ray = camera.generate_ray(s, *t);
                 if let Some(hit) = scene.intersect(&mut ray) {
                     let c = scene.integrator.illumination(scene, light_list, &ray,
                                                           &hit, &mut sampler, &mut rng).clamp();
