@@ -1,8 +1,8 @@
 {
 	"film": {
-		"width": 800,
-		"height": 600,
-		"samples": 16,
+		"width": 16,
+		"height": 16,
+		"samples": 4,
 		"frames": 1,
 		"start_frame": 0,
 		"end_frame": 0,
@@ -53,14 +53,14 @@
 			"name": "metal",
 			"refractive_index": [0.155265, 0.116723, 0.138381],
 			"absorption_coefficient": [4.82835, 3.12225, 2.14696],
-			"roughness": 0.2
+			"roughness": 0.02
 		},
 		{
 			"type": "plastic",
 			"name": "plastic",
 			"gloss": [0.8, 0.8, 0.8],
 			"diffuse": [0.8, 0.2, 0.2],
-			"roughness": 0.2
+			"roughness": 0.02
 		},
 		{
 			"type": "glass",
@@ -190,21 +190,24 @@
 			]
 		},
 		{
-			"name": "the_sphere",
+			"name": "test_object",
 			"type": "receiver",
 			"material": "metal",
 			"geometry": {
-				"type": "sphere",
-				"radius": 1.0
+				"type": "plane"
 			},
 			"transform": [
 				{
 					"type": "scale",
-					"scaling": [20, 20, 5]
+					"scaling": [20, 20, 1]
+				},
+				{
+					"type": "rotate_x",
+					"rotation": 70
 				},
 				{
 					"type": "translate",
-					"translation": [0, 12, 6]
+					"translation": [0, 6, 6]
 				}
 			]
 		},

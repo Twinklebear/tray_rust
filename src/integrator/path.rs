@@ -83,11 +83,11 @@ impl Integrator for Path {
             // Determine the next direction to take the path by sampling the BSDF
             let path_sample = Sample::new(&path_samples[bounce], path_samples_comp[bounce]);
             let (f, w_i, pdf, sampled_type) = bsdf.sample(&w_o, BxDFType::all(), &path_sample);
-            if bounce == 0 && current_hit.instance.tag() == "the_sphere" {
+            if bounce == 0 && current_hit.instance.tag() == "test_object" {
                 if pdf != 0.0 {
                     println!("It's NOT 0!");
                 }
-                //println!("+++++\nf = {:?}\nw_i = {:?}\npdf = {:?}\n+++++", f, w_i, pdf);
+                println!("+++++\nf = {:?}\nw_i = {:?}\nw_o = {:?}\npdf = {:?}\n+++++", f, w_i, w_o, pdf);
             }
             if f.is_black() || pdf == 0.0 {
                 break;

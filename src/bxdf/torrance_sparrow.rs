@@ -57,8 +57,9 @@ impl BxDF for TorranceSparrow {
             (Colorf::black(), Vector::broadcast(0.0), 0.0)
         } else {
             let pdf = self.microfacet.pdf(&w_h);
-            //println!("Microfacet pdf = {}, will divide by {}, w_h = {:?}", pdf, 4.0 * linalg::dot(w_o, &w_h), w_h);
-            (self.eval(w_o, &w_i), w_i, self.microfacet.pdf(&w_h) / (4.0 * linalg::dot(w_o, &w_h)))
+            println!("****\nMicrofacet pdf = {}, will divide by {}, w_h = {:?}\nw_o = {:?}\nw_i = {:?}\n******",
+                     pdf, 4.0 * linalg::dot(w_o, &w_h), w_h, w_o, w_i);
+            (self.eval(w_o, &w_i), w_i, self.microfacet.pdf(&w_h) / (4.0 * f32::abs(linalg::dot(w_o, &w_h))))
         }
     }
     fn pdf(&self, w_o: &Vector, w_i: &Vector) -> f32 {
@@ -69,7 +70,7 @@ impl BxDF for TorranceSparrow {
             if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
                 0.0
             } else {
-                self.microfacet.pdf(&w_h.normalized()) / (4.0 * linalg::dot(w_o, &w_h))
+                self.microfacet.pdf(&w_h.normalized()) / (4.0 * f32::abs(linalg::dot(w_o, &w_h)))
             }
         }
     }

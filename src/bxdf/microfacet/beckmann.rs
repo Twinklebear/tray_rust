@@ -29,9 +29,10 @@ impl Beckmann {
 
 impl MicrofacetDistribution for Beckmann {
     fn normal_distribution(&self, w_h: &Vector) -> f32 {
-        if bxdf::cos_theta(&w_h) > 0.0 {
-            let e = f32::exp(-f32::powf(bxdf::tan_theta(w_h) / self.width, 2.0));
-            e / (f32::consts::PI * f32::powf(self.width, 2.0) * f32::powf(bxdf::cos_theta(w_h), 4.0))
+        if bxdf::cos_theta(w_h) > 0.0 {
+            println!("cos theta passed");
+            let e = f32::exp(-f32::powf(bxdf::tan_theta(&w_h) / self.width, 2.0));
+            e / (f32::consts::PI * f32::powf(self.width, 2.0) * f32::powf(bxdf::cos_theta(&w_h), 4.0))
         } else {
             0.0
         }
