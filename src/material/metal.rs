@@ -25,7 +25,7 @@ use std::vec::Vec;
 use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, TorranceSparrow};
-use bxdf::microfacet::{MicrofacetDistribution, Beckmann};
+use bxdf::microfacet::{MicrofacetDistribution, Beckmann, Blinn};
 use bxdf::fresnel::{Fresnel, Conductor};
 use material::Material;
 
