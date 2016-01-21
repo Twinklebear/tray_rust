@@ -99,7 +99,8 @@ impl<'a> BSDF<'a> {
         let bxdf = self.matching_at(comp, flags);
         let w_o = self.to_shading(wo_world);
         let (mut f, w_i, mut pdf) = bxdf.sample(&w_o, &samples.two_d);
-        if pdf == 0.0 {
+        if pdf == 0.0 && bxdf.bxdf_type().contains(&BxDFType::Glossy) {
+            //println!("------\npdf is 0! Others: f = {:?}\nw_i = {:?}\npdf = {:?}\n------", f, w_i, pdf);
             return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0, EnumSet::new());
         }
 

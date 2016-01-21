@@ -200,11 +200,11 @@
 			"transform": [
 				{
 					"type": "scale",
-					"scaling": 6
+					"scaling": [20, 20, 5]
 				},
 				{
 					"type": "translate",
-					"translation": [0, 6, 3]
+					"translation": [0, 12, 6]
 				}
 			]
 		},

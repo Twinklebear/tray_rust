@@ -24,7 +24,7 @@ pub trait MicrofacetDistribution {
     /// directions `w_i` and `w_o` for microfacets with normal `w_h`.
     /// Returns what fraction of the microfacets with the normal are visible
     /// in both directions.
-    fn shadowing_masking(&self, w_o: &Vector, w_i: &Vector, w_h: &Vector) -> f32;
+    fn shadowing_masking(&self, w_i: &Vector, w_o: &Vector, w_h: &Vector) -> f32;
     /// Return the monodirectional shadowing function, G_1
     /// `v` is the reflected/incident direction, `w_h` is the microfacet normal
     fn monodir_shadowing(&self, v: &Vector, w_h: &Vector) -> f32;

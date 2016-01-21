@@ -29,7 +29,7 @@ impl Beckmann {
 
 impl MicrofacetDistribution for Beckmann {
     fn normal_distribution(&self, w_h: &Vector) -> f32 {
-        if w_h.z > 0.0 {
+        if bxdf::cos_theta(&w_h) > 0.0 {
             let e = f32::exp(-f32::powf(bxdf::tan_theta(w_h) / self.width, 2.0));
             e / (f32::consts::PI * f32::powf(self.width, 2.0) * f32::powf(bxdf::cos_theta(w_h), 4.0))
         } else {
@@ -41,7 +41,7 @@ impl MicrofacetDistribution for Beckmann {
             x if f32::is_infinite(x) => { println!("it was inf!"); 0.0 },
             x => x,
         };
-        let tan_theta_sqr = -f32::powf(self.width, 2.0) * log_sample;
+        let tan_theta_sqr = f32::powf(self.width, 2.0) * log_sample;
         let phi = 2.0 * f32::consts::PI * samples.1;
         let cos_theta = 1.0 / f32::sqrt(1.0 + tan_theta_sqr);
         let sin_theta = f32::sqrt(f32::max(0.0, 1.0 - cos_theta * cos_theta));
@@ -54,16 +54,16 @@ impl MicrofacetDistribution for Beckmann {
         }
     }
     fn pdf(&self, w_h: &Vector) -> f32 {
-        w_h.z * self.normal_distribution(w_h)
+        f32::abs(bxdf::cos_theta(w_h)) * self.normal_distribution(w_h)
     }
-    fn shadowing_masking(&self, w_o: &Vector, w_i: &Vector, w_h: &Vector) -> f32 {
-        self.monodir_shadowing(w_o, w_h) * self.monodir_shadowing(w_i, w_h)
+    fn shadowing_masking(&self, w_i: &Vector, w_o: &Vector, w_h: &Vector) -> f32 {
+        self.monodir_shadowing(w_i, w_h) * self.monodir_shadowing(w_o, w_h)
     }
     /// Monodirectional shadowing function from Walter et al., we use the Smith
     /// shadowing-masking which uses the reciprocity of this function.
     /// `w` is the incident/outgoing light direction and `w_h` is the microfacet normal
     fn monodir_shadowing(&self, v: &Vector, w_h: &Vector) -> f32 {
-        if linalg::dot(v, w_h) / v.z > 0.0 {
+        if linalg::dot(v, w_h) / bxdf::cos_theta(v) > 0.0 {
             let a = 1.0 / (self.width * bxdf::tan_theta(v));
             if a < 1.6 {
                 let a_sqr = f32::powf(a, 2.0);
