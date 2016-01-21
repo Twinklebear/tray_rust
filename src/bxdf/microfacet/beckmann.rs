@@ -18,22 +18,6 @@ impl Beckmann {
     pub fn new(w: f32) -> Beckmann {
         Beckmann { width: w }
     }
-    /// Monodirectional shadowing function from Walter et al., we use the Smith
-    /// shadowing-masking which uses the reciprocity of this function.
-    /// `w` is the incident/outgoing light direction and `w_h` is the microfacet normal
-    fn monodir_shadowing(&self, w: &Vector, w_h: &Vector) -> f32 {
-        if linalg::dot(w, w_h) / w.z > 0.0 {
-            let a = 1.0 / (self.width * bxdf::tan_theta(w));
-            if a < 1.6 {
-                let a_sqr = f32::powf(a, 2.0);
-                (3.535 * a + 2.181 * a_sqr) / (1.0 + 2.276 * a + 2.577 * a_sqr)
-            } else {
-                1.0
-            }
-        } else {
-            0.0
-        }
-    }
 }
 
 
@@ -52,9 +36,7 @@ impl MicrofacetDistribution for Beckmann {
             0.0
         }
     }
-    // TODO: This should not return the reflected direction, it should return the sampled
-    // microfacet normal! It should also not return the PDF
-    fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Vector, f32) {
+    fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> Vector {
         let log_sample = match f32::ln(1.0 - samples.0) {
             x if f32::is_infinite(x) => { println!("it was inf!"); 0.0 },
             x => x,
@@ -63,21 +45,35 @@ impl MicrofacetDistribution for Beckmann {
         let phi = 2.0 * f32::consts::PI * samples.1;
         let cos_theta = 1.0 / f32::sqrt(1.0 + tan_theta_sqr);
         let sin_theta = f32::sqrt(f32::max(0.0, 1.0 - cos_theta * cos_theta));
-        let mut w_h = linalg::spherical_dir(sin_theta, cos_theta, phi);
+        let w_h = linalg::spherical_dir(sin_theta, cos_theta, phi);
+        // TODO: Can move this check to callers, then we can have microfacet transmission
         if !bxdf::same_hemisphere(w_o, &w_h) {
-            w_h = -w_h;
+            -w_h
+        } else {
+            w_h
         }
-        // The sampled incident direction is the outgoing direction perfectly reflected about the half-vector
-        let w_i = 2.0 * linalg::dot(w_o, &w_h) * w_h - *w_o;
-        let w = f32::abs(linalg::dot(w_o, &w_h)) * self.shadowing_masking(w_o, &w_i, &w_h) / (w_o.z * w_h.z);
-        (w_i, w)
     }
-    fn pdf(&self, w_o: &Vector, w_i: &Vector) -> f32 {
-        let w_h = (*w_o + *w_i).normalized();
-        f32::abs(linalg::dot(w_o, &w_h)) * self.shadowing_masking(w_o, &w_i, &w_h) / (w_o.z * w_h.z)
+    fn pdf(&self, w_h: &Vector) -> f32 {
+        w_h.z * self.normal_distribution(w_h)
     }
     fn shadowing_masking(&self, w_o: &Vector, w_i: &Vector, w_h: &Vector) -> f32 {
         self.monodir_shadowing(w_o, w_h) * self.monodir_shadowing(w_i, w_h)
+    }
+    /// Monodirectional shadowing function from Walter et al., we use the Smith
+    /// shadowing-masking which uses the reciprocity of this function.
+    /// `w` is the incident/outgoing light direction and `w_h` is the microfacet normal
+    fn monodir_shadowing(&self, v: &Vector, w_h: &Vector) -> f32 {
+        if linalg::dot(v, w_h) / v.z > 0.0 {
+            let a = 1.0 / (self.width * bxdf::tan_theta(v));
+            if a < 1.6 {
+                let a_sqr = f32::powf(a, 2.0);
+                (3.535 * a + 2.181 * a_sqr) / (1.0 + 2.276 * a + 2.577 * a_sqr)
+            } else {
+                1.0
+            }
+        } else {
+            0.0
+        }
     }
 }
 

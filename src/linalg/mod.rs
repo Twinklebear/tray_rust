@@ -106,6 +106,10 @@ pub fn coordinate_system(e1: &Vector) -> (Vector, Vector) {
     let e3 = cross(e1, &e2);
 	(e2, e3)
 }
+/// Compute the reflection of `w` about `v`, both vectors should be normalized
+pub fn reflect(w: &Vector, v: &Vector) -> Vector {
+    2.0 * dot(w, v) * *v - *w
+}
 
 #[test]
 fn test_cross() {
