@@ -1,8 +1,8 @@
 {
 	"film": {
-		"width": 16,
-		"height": 16,
-		"samples": 4,
+		"width": 800,
+		"height": 600,
+		"samples": 16,
 		"frames": 1,
 		"start_frame": 0,
 		"end_frame": 0,
@@ -53,7 +53,7 @@
 			"name": "metal",
 			"refractive_index": [0.155265, 0.116723, 0.138381],
 			"absorption_coefficient": [4.82835, 3.12225, 2.14696],
-			"roughness": 0.02
+			"roughness": 0.2
 		},
 		{
 			"type": "plastic",
@@ -199,11 +199,15 @@
 			"transform": [
 				{
 					"type": "scale",
-					"scaling": [20, 20, 1]
+					"scaling": [10, 10, 1]
+				},
+				{
+					"type": "rotate_y",
+					"rotation": 180
 				},
 				{
 					"type": "rotate_x",
-					"rotation": 70
+					"rotation": 45
 				},
 				{
 					"type": "translate",
