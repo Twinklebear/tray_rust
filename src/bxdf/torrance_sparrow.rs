@@ -57,8 +57,10 @@ impl BxDF for TorranceSparrow {
             (Colorf::black(), Vector::broadcast(0.0), 0.0)
         } else {
             let pdf = self.microfacet.pdf(&w_h);
+            /*
             println!("****\nMicrofacet pdf = {}, will divide by {}, w_h = {:?}\nw_o = {:?}\nw_i = {:?}\n******",
                      pdf, 4.0 * linalg::dot(w_o, &w_h), w_h, w_o, w_i);
+                     */
             (self.eval(w_o, &w_i), w_i, self.microfacet.pdf(&w_h) / (4.0 * f32::abs(linalg::dot(w_o, &w_h))))
         }
     }

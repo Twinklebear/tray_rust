@@ -16,7 +16,13 @@ pub struct Beckmann {
 impl Beckmann {
     /// Create a new Beckmann distribution with the desired width
     pub fn new(w: f32) -> Beckmann {
-        Beckmann { width: w }
+        // From pbrt-v3, conversion from Blinn-Phong style roughness to approximately
+        // equivalent Beckmann alpha
+        let roughness = f32::max(w, 0.001);
+        let x = f32::ln(roughness);
+        let alpha = 1.62142 + 0.819955 * x + 0.173 * f32::powf(x, 2.0)
+            + 0.0171201 * f32::powf(x, 3.0) + 0.000640711 * f32::powf(x, 4.0);
+        Beckmann { width: alpha }
     }
 }
 
@@ -30,7 +36,7 @@ impl Beckmann {
 impl MicrofacetDistribution for Beckmann {
     fn normal_distribution(&self, w_h: &Vector) -> f32 {
         if bxdf::cos_theta(w_h) > 0.0 {
-            println!("cos theta passed");
+            //println!("cos theta passed");
             let e = f32::exp(-f32::powf(bxdf::tan_theta(&w_h) / self.width, 2.0));
             e / (f32::consts::PI * f32::powf(self.width, 2.0) * f32::powf(bxdf::cos_theta(&w_h), 4.0))
         } else {
