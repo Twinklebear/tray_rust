@@ -1,3 +1,6 @@
+#![cfg_attr(feature = "unstable", feature(plugin))]
+#![cfg_attr(feature = "unstable", plugin(clippy))]
+
 extern crate image;
 extern crate rand;
 extern crate docopt;
@@ -6,6 +9,7 @@ extern crate num_cpus;
 extern crate scoped_threadpool;
 extern crate clock_ticks;
 extern crate tray_rust;
+
 
 use std::path::PathBuf;
 use std::io::ErrorKind;

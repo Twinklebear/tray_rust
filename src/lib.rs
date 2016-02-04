@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+#![cfg_attr(feature = "unstable", feature(plugin))]
+#![cfg_attr(feature = "unstable", plugin(clippy))]
 
 //! # tray\_rust - A Toy Ray Tracer in Rust
 //! 
