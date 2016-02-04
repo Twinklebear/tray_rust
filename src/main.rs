@@ -61,23 +61,20 @@ fn single_node_render(args: Args) {
         Some(n) => n,
         None => num_cpus::get() as u32,
     };
-    let out_path = match &args.flag_o {
-        &Some(ref f) => {
+    let out_path = match args.flag_o {
+        Some(ref f) => {
             let p = PathBuf::from(f);
             // If we're writing to a directory make sure it exists
             if p.extension() == None {
-                match std::fs::create_dir(p.as_path()) {
-                    Err(e) => {
-                        if e.kind() != ErrorKind::AlreadyExists {
-                            panic!("Failed to create output directory");
-                        }
-                    },
-                    Ok(_) => {},
+                if let Err(e) = std::fs::create_dir(p.as_path()) {
+                    if e.kind() != ErrorKind::AlreadyExists {
+                        panic!("Failed to create output directory");
+                    }
                 }
             }
             p
         },
-        &None => PathBuf::from("./"),
+        None => PathBuf::from("./"),
     };
 
     let (mut scene, mut rt, spp, mut frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);
@@ -115,23 +112,20 @@ fn single_node_render(args: Args) {
 }
 
 fn master_node(args: Args) {
-    let out_path = match &args.flag_o {
-        &Some(ref f) => {
+    let out_path = match args.flag_o {
+        Some(ref f) => {
             let p = PathBuf::from(f);
             // If we're writing to a directory make sure it exists
             if p.extension() == None {
-                match std::fs::create_dir(p.as_path()) {
-                    Err(e) => {
-                        if e.kind() != ErrorKind::AlreadyExists {
-                            panic!("Failed to create output directory");
-                        }
-                    },
-                    Ok(_) => {},
+                if let Err(e) = std::fs::create_dir(p.as_path()) {
+                    if e.kind() != ErrorKind::AlreadyExists {
+                        panic!("Failed to create output directory");
+                    }
                 }
             }
             p
         },
-        &None => PathBuf::from("./"),
+        None => PathBuf::from("./"),
     };
 
     let (_, rt, spp, mut frame_info) = scene::Scene::load_file(&args.arg_scenefile[..]);

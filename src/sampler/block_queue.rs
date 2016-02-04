@@ -61,12 +61,7 @@ impl BlockQueue {
     pub fn len(&self) -> usize { self.blocks.len() }
     /// Check if the queue is empty
     pub fn is_empty(&self) -> bool {
-        let i = self.next.load(Ordering::AcqRel);
-        if i >= self.blocks.len() {
-            true
-        } else {
-            false
-        }
+        self.next.load(Ordering::AcqRel) >= self.blocks.len()
     }
 }
 

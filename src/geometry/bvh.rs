@@ -254,8 +254,8 @@ impl<T: Boundable> BVH<T> {
                 BVH::<T>::flatten_tree(&c[0], tree);
                 let second_child = BVH::<T>::flatten_tree(&c[1], tree);
                 // This is a little awkward, TODO: maybe better to call resize?
-                match &mut tree[offset].node {
-                    &mut FlatNodeData::Interior { second_child: ref mut s, .. } => *s = second_child,
+                match tree[offset].node {
+                    FlatNodeData::Interior { second_child: ref mut s, .. } => *s = second_child,
                     _ => panic!("Interior node switched to leaf!?"),
                 };
             },

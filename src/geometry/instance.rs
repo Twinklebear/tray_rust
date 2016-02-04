@@ -128,9 +128,9 @@ impl Instance {
 
 impl Boundable for Instance {
     fn bounds(&self, start: f32, end: f32) -> BBox {
-        match self {
-            &Instance::Emitter(ref e) => e.bounds(start, end),
-            &Instance::Receiver(ref r) => r.bounds(start, end),
+        match *self {
+            Instance::Emitter(ref e) => e.bounds(start, end),
+            Instance::Receiver(ref r) => r.bounds(start, end),
         }
     }
 }

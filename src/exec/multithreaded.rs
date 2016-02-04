@@ -31,8 +31,8 @@ impl MultiThreaded {
         let dim = rt.dimensions();
         let block_queue = BlockQueue::new((dim.0 as u32, dim.1 as u32), (8, 8), config.select_blocks);
         let light_list: Vec<_> = scene.bvh.iter().filter_map(|x| {
-            match x {
-                &Instance::Emitter(ref e) => Some(e),
+            match *x {
+                Instance::Emitter(ref e) => Some(e),
                 _ => None,
             }
         }).collect();
@@ -41,7 +41,7 @@ impl MultiThreaded {
         self.pool.scoped(|scope| {
             for _ in 0..n {
                 let b = &block_queue;
-                let ref r = rt;
+                let r = &rt;
                 let l = &light_list;
                 scope.execute(move || {
                     thread_work(config.spp, b, scene, r, l);
@@ -69,7 +69,7 @@ impl Exec for MultiThreaded {
 }
 
 fn thread_work(spp: usize, queue: &BlockQueue, scene: &Scene,
-               target: &RenderTarget, light_list: &Vec<&Emitter>) {
+               target: &RenderTarget, light_list: &[&Emitter]) {
     let mut sampler = sampler::LowDiscrepancy::new(queue.block_dim(), spp);
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
     let mut time_samples: Vec<_> = iter::repeat(0.0).take(sampler.max_spp()).collect();

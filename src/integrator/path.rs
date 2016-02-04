@@ -41,7 +41,7 @@ impl Path {
 }
 
 impl Integrator for Path {
-    fn illumination(&self, scene: &Scene, light_list: &Vec<&Emitter>, r: &Ray,
+    fn illumination(&self, scene: &Scene, light_list: &[&Emitter], r: &Ray,
                     hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
         // TODO: We really need the memory pool now
         let num_samples = self.max_depth as usize + 1;
@@ -67,7 +67,7 @@ impl Integrator for Path {
         let mut bounce = 0;
         loop {
             if bounce == 0 || specular_bounce {
-                if let &Instance::Emitter(ref e) = current_hit.instance {
+                if let Instance::Emitter(ref e) = *current_hit.instance {
                     let w = -ray.d;
                     illum = illum + path_throughput * e.radiance(&w, &hit.dg.p, &hit.dg.ng, ray.time);
                 }
