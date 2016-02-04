@@ -211,8 +211,7 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
             AnimatedTransform::unanimated(&t)
         },
     };
-    let camera = Camera::new(transform, fov, dim, shutter_size, active_at);
-    camera
+    Camera::new(transform, fov, dim, shutter_size, active_at)
 }
 
 /// Load the integrator described by the JSON value passed.
@@ -548,9 +547,9 @@ fn load_animated_color(elem: &Value) -> Option<AnimatedColor> {
     }
     // Check if this is actually just a single color value
     if array[0].is_number() {
-       match load_color(elem){
-            Some(c) => return Some(AnimatedColor::with_keyframes(vec![ColorKeyframe::new(&c, 0.0)])),
-            None => return None,
+       match load_color(elem) {
+            Some(c) => Some(AnimatedColor::with_keyframes(vec![ColorKeyframe::new(&c, 0.0)])),
+            None => None,
         }
     } else {
         let mut v = Vec::new();
@@ -561,7 +560,7 @@ fn load_animated_color(elem: &Value) -> Option<AnimatedColor> {
                 .expect("A valid color is required for a color keyframe");
             v.push(ColorKeyframe::new(&color, time));
         }
-        return Some(AnimatedColor::with_keyframes(v));
+        Some(AnimatedColor::with_keyframes(v))
     }
 }
 

@@ -165,7 +165,7 @@ impl Matrix4 {
         assert!(det != 0f32);
         det = 1f32 / det;
 
-        for x in inv.mat.iter_mut() {
+        for x in &mut inv.mat {
             *x *= det;
         }
         inv
@@ -176,7 +176,7 @@ impl Matrix4 {
         self.mat.iter()
     }
     pub fn has_nans(&self) -> bool {
-        for x in self.mat.iter() {
+        for x in &self.mat {
             if x.is_nan() {
                 return true;
             }

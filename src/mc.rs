@@ -12,7 +12,7 @@ pub fn cos_sample_hemisphere(u: &(f32, f32)) -> Vector {
     //We use Malley's method here, generate samples on a disk then project
     //them up to the hemisphere
     let d = concentric_sample_disk(u);
-    return Vector::new(d.0, d.1, f32::sqrt(f32::max(0.0, 1.0 - d.0 * d.0 - d.1 * d.1)));
+    Vector::new(d.0, d.1, f32::sqrt(f32::max(0.0, 1.0 - d.0 * d.0 - d.1 * d.1)))
 }
 /// Compute the PDF of the cosine weighted hemisphere sampling
 pub fn cos_hemisphere_pdf(cos_theta: f32) -> f32 { cos_theta * f32::consts::FRAC_1_PI }

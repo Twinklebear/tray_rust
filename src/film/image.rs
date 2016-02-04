@@ -18,7 +18,7 @@ impl Image {
     }
     /// Add the floating point RGBAf32 pixels to the image. It is assumed that `pixels` contains
     /// a `dim.0` by `dim.1` pixel image.
-    pub fn add_pixels(&mut self, pixels: &Vec<f32>) {
+    pub fn add_pixels(&mut self, pixels: &[f32]) {
         for y in 0..self.dim.1 {
             for x in 0..self.dim.0 {
                 let c = &mut self.pixels[y * self.dim.0 + x];
@@ -33,7 +33,7 @@ impl Image {
     /// passed is equivalent to that returned by RenderTarget::get_blocks. `block_size` specifies
     /// the size of the blocks being passed, `blocks` contains the start points of each block and
     /// `pixels` contains `block_size.0 * block_size.1 * 4` floats for each block.
-    pub fn add_blocks(&mut self, block_size: (usize, usize), blocks: &Vec<(usize, usize)>, pixels: &Vec<f32>) {
+    pub fn add_blocks(&mut self, block_size: (usize, usize), blocks: &[(usize, usize)], pixels: &[f32]) {
         let block_stride = block_size.0 * block_size.1 * 4;
         for (i, b) in blocks.iter().enumerate() {
             let block_px = &pixels[block_stride * i..block_stride * (i + 1)];

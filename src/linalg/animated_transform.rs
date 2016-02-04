@@ -41,7 +41,7 @@ impl AnimatedTransform {
         let mut transform = Transform::identity();
         // Step through the transform stack, applying each animation transform at this
         // time as we move up
-        for spline in self.keyframes.iter() {
+        for spline in &self.keyframes {
             let domain = spline.knot_domain();
             let t =
                 if spline.control_points().count() == 1 {

@@ -74,7 +74,7 @@ impl RenderTarget {
         }
     }
     /// Write all the image samples to the render target
-    pub fn write(&self, samples: &Vec<ImageSample>, region: &Region) {
+    pub fn write(&self, samples: &[ImageSample], region: &Region) {
         // Determine which blocks we touch with our set of samples
         let x_range = (cmp::max(region.start.0 as i32 - self.filter_pixel_width.0, 0),
                        cmp::min(region.end.0 as i32 + self.filter_pixel_width.0, self.width as i32 - 1));
