@@ -64,9 +64,9 @@ struct Instructions {
 }
 
 impl Instructions {
-    pub fn new(scene: &String, frames: (usize, usize), block_start: usize,
+    pub fn new(scene: &str, frames: (usize, usize), block_start: usize,
                block_count: usize) -> Instructions {
-        let mut instr = Instructions { encoded_size: 0, scene: scene.clone(), frames: frames,
+        let mut instr = Instructions { encoded_size: 0, scene: scene.to_owned(), frames: frames,
                        block_start: block_start, block_count: block_count };
         instr.encoded_size = encoded_size(&instr);
         instr

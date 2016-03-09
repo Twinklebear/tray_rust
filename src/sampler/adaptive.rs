@@ -74,7 +74,7 @@ impl Adaptive {
                 return true;
             }
         }
-        return false;
+        false
     }
 }
 

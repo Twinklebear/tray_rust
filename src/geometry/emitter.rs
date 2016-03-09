@@ -102,7 +102,7 @@ impl Emitter {
         Emitter { emitter: EmitterType::Area(geom, material),
                   emission: emission,
                   transform: transform,
-                  tag: tag.to_string() }
+                  tag: tag }
     }
     /// Create a point light at the origin that is transformed by `transform` to its location
     /// in the world
@@ -110,15 +110,15 @@ impl Emitter {
         Emitter { emitter: EmitterType::Point,
                   emission: emission,
                   transform: transform,
-                  tag: tag.to_string() }
+                  tag: tag }
     }
     /// Test the ray for intersection against this insance of geometry.
     /// returns Some(Intersection) if an intersection was found and None if not.
     /// If an intersection is found `ray.max_t` will be set accordingly
     pub fn intersect(&self, ray: &mut Ray) -> Option<(DifferentialGeometry, &Material)> {
-        match &self.emitter {
-            &EmitterType::Point => None,
-            &EmitterType::Area(ref geom, ref mat) => {
+        match self.emitter {
+            EmitterType::Point => None,
+            EmitterType::Area(ref geom, ref mat) => {
                 let transform = self.transform.transform(ray.time);
                 let mut local = transform.inv_mul_ray(ray);
                 let mut dg = match geom.intersect(&mut local) {
@@ -152,9 +152,9 @@ impl Emitter {
 
 impl Boundable for Emitter {
     fn bounds(&self, start: f32, end: f32) -> BBox {
-        match &self.emitter {
-            &EmitterType::Point => self.transform.animation_bounds(&BBox::singular(Point::broadcast(0.0)), start, end),
-            &EmitterType::Area(ref g, _) => {
+        match self.emitter {
+            EmitterType::Point => self.transform.animation_bounds(&BBox::singular(Point::broadcast(0.0)), start, end),
+            EmitterType::Area(ref g, _) => {
                 self.transform.animation_bounds(&g.bounds(start, end), start, end)
             },
         }
@@ -165,14 +165,14 @@ impl Light for Emitter {
     fn sample_incident(&self, p: &Point, samples: &(f32, f32), time: f32)
         -> (Colorf, Vector, f32, OcclusionTester)
     {
-        match &self.emitter {
-            &EmitterType::Point => {
+        match self.emitter {
+            EmitterType::Point => {
                 let transform = self.transform.transform(time);
                 let pos = transform * Point::broadcast(0.0);
                 let w_i = (pos - *p).normalized();
                 (self.emission.color(time) / pos.distance_sqr(p), w_i, 1.0, OcclusionTester::test_points(p, &pos, time))
             }
-            &EmitterType::Area(ref g, _) => {
+            EmitterType::Area(ref g, _) => {
                 let transform = self.transform.transform(time);
                 let p_l = transform.inv_mul_point(p);
                 let (p_sampled, normal) = g.sample(&p_l, samples);
@@ -185,15 +185,15 @@ impl Light for Emitter {
         }
     }
     fn delta_light(&self) -> bool {
-        match &self.emitter {
-            &EmitterType::Point => true,
+        match self.emitter {
+            EmitterType::Point => true,
             _ => false,
         }
     }
     fn pdf(&self, p: &Point, w_i: &Vector, time: f32) -> f32 {
-        match &self.emitter {
-            &EmitterType::Point => 0.0,
-            &EmitterType::Area(ref g, _ ) => {
+        match self.emitter {
+            EmitterType::Point => 0.0,
+            EmitterType::Area(ref g, _ ) => {
                 let transform = self.transform.transform(time);
                 let p_l = transform.inv_mul_point(p);
                 let w = (transform.inv_mul_vector(w_i)).normalized();

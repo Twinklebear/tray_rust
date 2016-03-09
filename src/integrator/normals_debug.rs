@@ -24,7 +24,7 @@ use sampler::Sampler;
 pub struct NormalsDebug;
 
 impl Integrator for NormalsDebug {
-    fn illumination(&self, _: &Scene, _: &Vec<&Emitter>, _: &Ray,
+    fn illumination(&self, _: &Scene, _: &[&Emitter], _: &Ray,
                     hit: &Intersection, _: &mut Sampler, _: &mut StdRng) -> Colorf {
         let bsdf = hit.material.bsdf(hit);
         (Colorf::new(bsdf.n.x, bsdf.n.y, bsdf.n.z) + Colorf::broadcast(1.0)) / 2.0

@@ -37,7 +37,7 @@ impl Whitted {
 }
 
 impl Integrator for Whitted {
-    fn illumination(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,
+    fn illumination(&self, scene: &Scene, light_list: &[&Emitter], ray: &Ray,
                     hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
         let bsdf = hit.material.bsdf(hit);
         let w_o = -ray.d;
@@ -45,7 +45,7 @@ impl Integrator for Whitted {
         sampler.get_samples_2d(&mut sample_2d[..], rng);
         let mut illum = Colorf::broadcast(0.0);
         if ray.depth == 0 {
-            if let &Instance::Emitter(ref e) = hit.instance {
+            if let Instance::Emitter(ref e) = *hit.instance {
                 let w = -ray.d;
                 illum = illum + e.radiance(&w, &hit.dg.p, &hit.dg.ng, ray.time);
             }

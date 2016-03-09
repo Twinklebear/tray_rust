@@ -228,7 +228,7 @@ impl<T: Boundable> BVH<T> {
                                     total_nodes, max_geom, start, end));
         let r = Box::new(BVH::build(&mut build_info[mid..], ordered_geom,
                                     total_nodes, max_geom, start, end));
-        return BuildNode::interior([l, r], split_axis);
+        BuildNode::interior([l, r], split_axis)
     }
     /// Construct a new leaf node containing the passed geometry. Indices will be
     /// added to `ordered_geom` to instruct how the flattened tree should be placed
@@ -254,8 +254,8 @@ impl<T: Boundable> BVH<T> {
                 BVH::<T>::flatten_tree(&c[0], tree);
                 let second_child = BVH::<T>::flatten_tree(&c[1], tree);
                 // This is a little awkward, TODO: maybe better to call resize?
-                match &mut tree[offset].node {
-                    &mut FlatNodeData::Interior { second_child: ref mut s, axis: _ } => *s = second_child,
+                match tree[offset].node {
+                    FlatNodeData::Interior { second_child: ref mut s, .. } => *s = second_child,
                     _ => panic!("Interior node switched to leaf!?"),
                 };
             },

@@ -95,9 +95,8 @@ impl Master {
             match TcpStream::connect(&addr) {
                 Ok(stream) => {
                     // Each worker is identified in the event loop by their index in the vec
-                    match event_loop.register(&stream, Token(i), EventSet::all(), PollOpt::level()){
-                        Err(e) => panic!("Error registering stream from {}: {}", host, e),
-                        Ok(_) => {},
+                    if let Err(e) = event_loop.register(&stream, Token(i), EventSet::all(), PollOpt::level()) {
+                        panic!("Error registering stream from {}: {}", host, e);
                     }
                     connections.push(stream);
                 },
@@ -123,8 +122,8 @@ impl Master {
         let mut df = self.frames.entry(frame_num).or_insert_with(|| DistributedFrame::start(img_dim));
 
         let mut finished = false;
-        match df {
-            &mut DistributedFrame::InProgress { ref mut num_reporting, ref mut render } => {
+        match *df {
+            DistributedFrame::InProgress { ref mut num_reporting, ref mut render } => {
                 // Collect results from the worker and see if we've finished the frame and can save
                 // it out
                 render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
@@ -147,7 +146,7 @@ impl Master {
                     finished = true;
                 }
             },
-            &mut DistributedFrame::Completed => println!("Worker reporting on completed frame {}?", frame_num),
+            DistributedFrame::Completed => println!("Worker reporting on completed frame {}?", frame_num),
         }
         // This is a bit awkward, since we borrow df in the match we can't mark it finished in there
         if finished {
@@ -198,14 +197,12 @@ impl Handler for Master {
         }
         // If the worker has terminated, shutdown the read end of the connection
         if event.is_hup() {
-            match self.connections[worker].shutdown(Shutdown::Both) {
-                Err(e) => println!("Error shutting down worker {}: {}", worker, e),
-                Ok(_) => {},
+            if let Err(e) = self.connections[worker].shutdown(Shutdown::Both) {
+                println!("Error shutting down worker {}: {}", worker, e);
             }
             // Remove the connection from the event loop
-            match event_loop.deregister(&self.connections[worker]) {
-                Err(e) => println!("Error deregistering worker {}: {}", worker, e),
-                Ok(_) => {},
+            if let Err(e) = event_loop.deregister(&self.connections[worker]) {
+                println!("Error deregistering worker {}: {}", worker, e);
             }
         }
         // A worker is ready to receive instructions from us
@@ -222,9 +219,8 @@ impl Handler for Master {
                                           b_start, b_count);
             // Encode and send our instructions to the worker
             let bytes = encode(&instr, SizeLimit::Infinite).unwrap();
-            match self.connections[worker].write_all(&bytes[..]) {
-                Err(e) => println!("Failed to send instructions to {}: {:?}", self.workers[worker], e),
-                Ok(_) => {},
+            if let Err(e) = self.connections[worker].write_all(&bytes[..]) {
+                println!("Failed to send instructions to {}: {:?}", self.workers[worker], e);
             }
             // Register that we no longer care about writable events on this connection
             event_loop.reregister(&self.connections[worker], token,
@@ -232,24 +228,22 @@ impl Handler for Master {
                                   PollOpt::level()).expect("Re-registering failed");
         }
         // Some results are available from a worker
-        if event.is_readable() {
-            // Read results from the worker, if we've accumulated all the data being sent
-            // decode and accumulate the frame
-            if self.read_worker_buffer(worker) {
-                let frame = decode(&self.worker_buffers[worker].buf[..]).unwrap();
-                self.save_results(frame);
-                // Clean up the worker buffer for the next frame
-                self.worker_buffers[worker].buf.clear();
-                self.worker_buffers[worker].expected_size = 8;
-                self.worker_buffers[worker].currently_read = 0;
-            }
+        // Read results from the worker, if we've accumulated all the data being sent
+        // decode and accumulate the frame
+        if event.is_readable() && self.read_worker_buffer(worker) {
+            let frame = decode(&self.worker_buffers[worker].buf[..]).unwrap();
+            self.save_results(frame);
+            // Clean up the worker buffer for the next frame
+            self.worker_buffers[worker].buf.clear();
+            self.worker_buffers[worker].expected_size = 8;
+            self.worker_buffers[worker].currently_read = 0;
         }
         // After getting results from the worker we check if we've completed all our frames
         // and exit if so
         let all_complete = self.frames.values().fold(true,
                                 |all, v| {
-                                    match v {
-                                        &DistributedFrame::Completed => true && all,
+                                    match *v {
+                                        DistributedFrame::Completed => true && all,
                                         _ => false,
                                     }
                                 });

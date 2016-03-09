@@ -54,9 +54,8 @@ impl Scene {
             Err(e) => panic!("Failed to open scene file: {}", e),
         };
         let mut content = String::new();
-        match f.read_to_string(&mut content) {
-            Err(e) => panic!("Failed to read scene file: {}", e),
-            _ => {}
+        if let Err(e) = f.read_to_string(&mut content) {
+            panic!("Failed to read scene file: {}", e);
         }
         // Why not use expect here?
         let data: Value = match serde_json::from_str(&content[..]) {
@@ -211,8 +210,7 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
             AnimatedTransform::unanimated(&t)
         },
     };
-    let camera = Camera::new(transform, fov, dim, shutter_size, active_at);
-    camera
+    Camera::new(transform, fov, dim, shutter_size, active_at)
 }
 
 /// Load the integrator described by the JSON value passed.
@@ -238,7 +236,7 @@ fn load_integrator(elem: &Value) -> Box<Integrator + Send + Sync> {
 }
 
 /// Generate a material loading error string
-fn mat_error(mat_name: &String, msg: &str) -> String {
+fn mat_error(mat_name: &str, msg: &str) -> String {
     format!("Error loading material '{}': {}", mat_name, msg)
 }
 
@@ -251,7 +249,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
     for (i, m) in mat_vec.iter().enumerate() {
         let name = m.find("name").expect(&format!("Error loading material #{}: A name is required", i)[..])
             .as_string().expect(&format!("Error loading material #{}: name must be a string", i)[..])
-            .to_string();
+            .to_owned();
         let ty = m.find("type").expect(&mat_error(&name, "a type is required")[..])
             .as_string().expect(&mat_error(&name, "type must be a string")[..]);
         // Make sure names are unique to avoid people accidently overwriting materials
@@ -338,7 +336,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
     let objects = elem.as_array().expect("The objects must be an array of objects used");
     for o in objects {
         let name = o.find("name").expect("A name is required for an object")
-            .as_string().expect("Object name must be a string").to_string();
+            .as_string().expect("Object name must be a string").to_owned();
         let ty = o.find("type").expect("A type is required for an object")
             .as_string().expect("Object type must be a string");
 
@@ -434,7 +432,7 @@ fn load_geometry(path: &Path, meshes: &mut HashMap<String, HashMap<String, Arc<M
         }
         let file_string = file.to_str().expect("Invalid file name");
         if meshes.get(file_string).is_none() {
-            meshes.insert(file_string.to_string(), Mesh::load_obj(Path::new(&file)));
+            meshes.insert(file_string.to_owned(), Mesh::load_obj(Path::new(&file)));
         }
         let file_meshes = &meshes[file_string];
         match file_meshes.get(model) {
@@ -548,9 +546,9 @@ fn load_animated_color(elem: &Value) -> Option<AnimatedColor> {
     }
     // Check if this is actually just a single color value
     if array[0].is_number() {
-       match load_color(elem){
-            Some(c) => return Some(AnimatedColor::with_keyframes(vec![ColorKeyframe::new(&c, 0.0)])),
-            None => return None,
+       match load_color(elem) {
+            Some(c) => Some(AnimatedColor::with_keyframes(vec![ColorKeyframe::new(&c, 0.0)])),
+            None => None,
         }
     } else {
         let mut v = Vec::new();
@@ -561,7 +559,7 @@ fn load_animated_color(elem: &Value) -> Option<AnimatedColor> {
                 .expect("A valid color is required for a color keyframe");
             v.push(ColorKeyframe::new(&color, time));
         }
-        return Some(AnimatedColor::with_keyframes(v));
+        Some(AnimatedColor::with_keyframes(v))
     }
 }
 

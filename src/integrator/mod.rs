@@ -41,10 +41,10 @@ pub mod normals_debug;
 /// on how to specify them.
 pub trait Integrator {
     /// Compute the illumination at the intersection in the scene
-    fn illumination(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,
+    fn illumination(&self, scene: &Scene, light_list: &[&Emitter], ray: &Ray,
                     hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf;
     /// Compute the color of specularly reflecting light off the intersection
-    fn specular_reflection(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,
+    fn specular_reflection(&self, scene: &Scene, light_list: &[&Emitter], ray: &Ray,
                            bsdf: &BSDF, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
         let w_o = -ray.d;
         let mut spec_refl = EnumSet::new();
@@ -68,7 +68,7 @@ pub trait Integrator {
         refl
     }
     /// Compute the color of specularly transmitted light through the intersection
-    fn specular_transmission(&self, scene: &Scene, light_list: &Vec<&Emitter>, ray: &Ray,
+    fn specular_transmission(&self, scene: &Scene, light_list: &[&Emitter], ray: &Ray,
                              bsdf: &BSDF, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
         let w_o = -ray.d;
         let mut spec_trans = EnumSet::new();
@@ -99,7 +99,7 @@ pub trait Integrator {
     /// - `bsdf` surface properties of the surface being illuminated
     /// - `light_sample` 3 random samples for the light
     /// - `bsdf_sample` 3 random samples for the bsdf
-    fn sample_one_light(&self, scene: &Scene, light_list: &Vec<&Emitter>, w_o: &Vector, p: &Point,
+    fn sample_one_light(&self, scene: &Scene, light_list: &[&Emitter], w_o: &Vector, p: &Point,
                         bsdf: &BSDF, light_sample: &Sample, bsdf_sample: &Sample, time: f32) -> Colorf {
         let l = cmp::min((light_sample.one_d * light_list.len() as f32) as usize, light_list.len() - 1);
         self.estimate_direct(scene, w_o, p, bsdf, light_sample, bsdf_sample, light_list[l],
@@ -148,15 +148,12 @@ pub trait Integrator {
                 // Find out if the ray along w_i actually hits the light source
                 let mut ray = Ray::segment(p, &w_i, 0.001, f32::INFINITY, time);
                 let mut li = Colorf::black();
-                match scene.intersect(&mut ray) {
-                    Some(h) => {
-                        if let &Instance::Emitter(ref e) = h.instance {
-                            if e as *const Light == light as *const Light {
-                                li = e.radiance(&-w_i, &h.dg.p, &h.dg.ng, time)
-                            }
+                if let Some(h) = scene.intersect(&mut ray) {
+                    if let Instance::Emitter(ref e) = *h.instance {
+                        if e as *const Light == light as *const Light {
+                            li = e.radiance(&-w_i, &h.dg.p, &h.dg.ng, time)
                         }
-                    },
-                    None => {}
+                    }
                 }
                 if !li.is_black() {
                     direct_light = direct_light + f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) * w / pdf_bsdf;

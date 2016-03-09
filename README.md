@@ -56,7 +56,8 @@ the monkey head is Blender's Suzanne. I've made minor tweaks to some of the mode
 you can find versions that can be easily loaded into the sample scenes [here](https://drive.google.com/folderview?id=0B-l_lLEMo1YeflUzUndCd01hOHhRNUhrQUowM3hVd2pCc3JrSXRiS3FQSzRYLWtGcGM0eGc&usp=sharing), though the
 cube model for the Cornell box scene is included.
 The materials on the Rust logo, Buddha, Dragon and Lucy are from the
-[MERL BRDF Database](http://www.merl.com/brdf/).
+[MERL BRDF Database](http://www.merl.com/brdf/). Models for running the scenes and links to model sources
+can be found [here](https://drive.google.com/file/d/0B-l_lLEMo1YecFdtRlM5WEY3eE0/view?usp=sharing).
 
 Render times are formatted as hh:mm:ss and were measured using 144 threads on a machine with four
 [Xeon E7-8890 v3](http://ark.intel.com/products/84685/Intel-Xeon-Processor-E7-8890-v3-45M-Cache-2_50-GHz)

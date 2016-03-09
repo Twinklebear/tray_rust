@@ -94,9 +94,9 @@ impl Instance {
     /// returns Some(Intersection) if an intersection was found and None if not.
     /// If an intersection is found `ray.max_t` will be set accordingly
     pub fn intersect(&self, ray: &mut Ray) -> Option<Intersection> {
-        let hit = match self {
-            &Instance::Emitter(ref e) => e.intersect(ray),
-            &Instance::Receiver(ref r) => r.intersect(ray),
+        let hit = match *self {
+            Instance::Emitter(ref e) => e.intersect(ray),
+            Instance::Receiver(ref r) => r.intersect(ray),
         };
         match hit {
             Some((dg, mat)) => Some(Intersection::new(dg, self, mat)),
@@ -105,32 +105,32 @@ impl Instance {
     }
     /// Get the tag for this instance
     pub fn tag(&self) -> &str {
-        match self {
-            &Instance::Emitter(ref e) => &e.tag[..],
-            &Instance::Receiver(ref r) => &r.tag[..],
+        match *self {
+            Instance::Emitter(ref e) => &e.tag[..],
+            Instance::Receiver(ref r) => &r.tag[..],
         }
     }
     /// Get the transform for this instance
     pub fn get_transform(&self) -> &AnimatedTransform {
-        match self {
-            &Instance::Emitter(ref e) => e.get_transform(),
-            &Instance::Receiver(ref r) => r.get_transform()
+        match *self {
+            Instance::Emitter(ref e) => e.get_transform(),
+            Instance::Receiver(ref r) => r.get_transform()
         }
     }
     /// Set the transform for this instance
     pub fn set_transform(&mut self, transform: AnimatedTransform) {
-        match self {
-            &mut Instance::Emitter(ref mut e) => e.set_transform(transform),
-            &mut Instance::Receiver(ref mut r) => r.set_transform(transform)
+        match *self {
+            Instance::Emitter(ref mut e) => e.set_transform(transform),
+            Instance::Receiver(ref mut r) => r.set_transform(transform)
         }
     }
 }
 
 impl Boundable for Instance {
     fn bounds(&self, start: f32, end: f32) -> BBox {
-        match self {
-            &Instance::Emitter(ref e) => e.bounds(start, end),
-            &Instance::Receiver(ref r) => r.bounds(start, end),
+        match *self {
+            Instance::Emitter(ref e) => e.bounds(start, end),
+            Instance::Receiver(ref r) => r.bounds(start, end),
         }
     }
 }

@@ -59,6 +59,10 @@ impl BlockQueue {
     }
     /// Get the length of the queue
     pub fn len(&self) -> usize { self.blocks.len() }
+    /// Check if the queue is empty
+    pub fn is_empty(&self) -> bool {
+        self.next.load(Ordering::AcqRel) >= self.blocks.len()
+    }
 }
 
 impl<'a> Iterator for BlockQueueIterator<'a> {

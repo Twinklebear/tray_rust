@@ -1,7 +1,6 @@
 //! Defines the BSDF which acts as a container for composing the various BRDFs
 //! and BTDFs that describe the surface's properties
 
-use std::vec::Vec;
 use std::cmp;
 use enum_set::EnumSet;
 
@@ -34,13 +33,13 @@ pub struct BSDF<'a> {
     /// will leak since it won't be dropped. This would also migrate our BxDFs
     /// from Box<BxDF> to &BxDF. When unboxed traits land we can move to unboxed
     /// BxDFs here though.
-    bxdfs: &'a Vec<Box<BxDF + Send + Sync>>,
+    bxdfs: &'a [Box<BxDF + Send + Sync>],
 }
 
 impl<'a> BSDF<'a> {
     /// Create a new BSDF using the BxDFs passed to shade the differential geometry with
     /// refractive index `eta`
-    pub fn new(bxdfs: &'a Vec<Box<BxDF + Send + Sync>>, eta: f32,
+    pub fn new(bxdfs: &'a [Box<BxDF + Send + Sync>], eta: f32,
                dg: &DifferentialGeometry<'a>)
                -> BSDF<'a> {
         let n = dg.n.normalized();
