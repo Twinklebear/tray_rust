@@ -181,8 +181,6 @@ fn load_cameras(elem: &Value, dim: (usize, usize)) -> Vec<Camera> {
 /// Returns the camera along with the number of samples to take per pixel
 /// and the scene dimensions. Panics if the camera is incorrectly specified
 fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
-    let fov = elem.find("fov").expect("The camera must specify a field of view").as_f64()
-        .expect("fov must be a float") as f32;
     let shutter_size = match elem.find("shutter_size") {
         Some(s) => s.as_f64().expect("Shutter size should be a float from 0 to 1") as f32,
         None => 0.5,
@@ -210,7 +208,20 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
             AnimatedTransform::unanimated(&t)
         },
     };
-    Camera::new(transform, fov, dim, shutter_size, active_at)
+    let fov_elem = elem.find("fov").expect("The camera must specify a field of view");
+    if fov_elem.is_array() {
+        let fovs_elems = fov_elem.as_array().expect("List of FOVs must be an array");
+        let fov_knot_elems = elem.find("fov_knots").expect("Animated field of view must specify spline knots")
+            .as_array().expect("Fov spline knots must be an array");
+        let fov_spline_degree = elem.find("fov_spline_degree").expect("Animated fov spline must have degree")
+            .as_u64().expect("Animated fov spline degree must be a u64") as usize;
+        let fovs = fovs_elems.iter().map(|x| x.as_f64().expect("fovs must be a number") as f32).collect();
+        let fov_knots = fov_knot_elems.iter().map(|x| x.as_f64().expect("fov knots must be a number") as f32).collect();
+        Camera::animated_fov(transform, fovs, fov_knots, fov_spline_degree, dim, shutter_size, active_at)
+    } else {
+        let fov = fov_elem.as_f64().expect("Camera fov must be a number") as f32;
+        Camera::new(transform, fov, dim, shutter_size, active_at)
+    }
 }
 
 /// Load the integrator described by the JSON value passed.
