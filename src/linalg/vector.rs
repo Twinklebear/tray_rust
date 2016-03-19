@@ -1,6 +1,8 @@
 use std::f32;
 use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 
+use linalg::Point;
+
 /// Vector is a standard 3 component vector
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub struct Vector {
@@ -70,6 +72,14 @@ impl Mul<Vector> for f32 {
     /// Scale the vector by some value
     fn mul(self, rhs: Vector) -> Vector {
         Vector { x: self * rhs.x, y: self * rhs.y, z: self * rhs.z }
+    }
+}
+
+impl Mul<Point> for Vector {
+    type Output = Point;
+    /// Scale the vector by some value
+    fn mul(self, rhs: Point) -> Point {
+        Point { x: self.x * rhs.x, y: self.y * rhs.y, z: self.z * rhs.z }
     }
 }
 
