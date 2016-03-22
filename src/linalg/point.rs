@@ -81,6 +81,14 @@ impl Mul<Point> for f32 {
     }
 }
 
+impl Mul<Vector> for Point {
+    type Output = Point;
+    /// Scale the vector by some value
+    fn mul(self, rhs: Vector) -> Point {
+        Point { x: self.x * rhs.x, y: self.y * rhs.y, z: self.z * rhs.z }
+    }
+}
+
 impl Div for Point {
     type Output = Point;
     /// Divide the points components by the right hand side's components

@@ -46,12 +46,9 @@ impl AnimatedTransform {
             let t =
                 if spline.control_points().count() == 1 {
                     spline.control_points().next().unwrap().transform()
-                } else if time < domain.0 {
-                    spline.point(domain.0).transform()
-                } else if time > domain.1 {
-                    spline.point(domain.1).transform()
                 } else {
-                    spline.point(time).transform()
+                    let t_val = linalg::clamp(time, domain.0, domain.1);
+                    spline.point(t_val).transform()
                 };
             transform = t * transform;
         }
