@@ -64,11 +64,13 @@ impl Geometry for Sphere {
         let inv_z = 1.0 / f32::sqrt(p.x * p.x + p.y * p.y);
         let cos_phi = p.x * inv_z;
         let sin_phi = p.y * inv_z;
+        // TODO: It doesn't make sense that dp_du x dp_dv and n point it such different
+        // directions, they should at least point in a similar direction
         let dp_du = Vector::new(-f32::consts::PI * 2.0 * p.y, f32::consts::PI * 2.0 * p.x, 0.0);
         let dp_dv = Vector::new(p.z * cos_phi, p.z * sin_phi,
                                 -self.radius * f32::sin(theta)) * f32::consts::PI;
 
-        Some(DifferentialGeometry::new(&p, &n, &dp_du, &dp_dv, self))
+        Some(DifferentialGeometry::with_normal(&p, &n, &dp_du, &dp_dv, self))
     }
 }
 
@@ -99,7 +101,8 @@ impl Sampleable for Sphere {
             let (w_x, w_y) = linalg::coordinate_system(&w_z);
             // Compute theta and phi for samples in the cone of the sphere seen from `p`
             let cos_theta_max = f32::sqrt(f32::max(0.0, 1.0 - self.radius * self.radius / dist_sqr));
-            let mut ray = Ray::new(p, &mc::uniform_sample_cone_frame(samples, cos_theta_max, &w_x, &w_y, &w_z).normalized(), 0.0);
+            let mut ray = Ray::new(p, &mc::uniform_sample_cone_frame(samples, cos_theta_max,
+                                                                     &w_x, &w_y, &w_z).normalized(), 0.0);
             // Try to hit the sphere with this ray to sample it
             match self.intersect(&mut ray) {
                 Some(dg) => (dg.p, dg.ng),

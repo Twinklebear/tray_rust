@@ -36,20 +36,17 @@ impl BxDF for SpecularTransmission {
     fn eval(&self, _: &Vector, _: &Vector) -> Colorf { Colorf::broadcast(0.0) }
     /// Sampling the specular BTDF just returns the specular transmission direction
     /// for the light leaving along `w_o`
-    fn sample(&self, w_o_neg: &Vector, _: &(f32, f32)) -> (Colorf, Vector, f32) {
-        // The w_o passed to us is pointing away from the surface, we want it pointing towards
-        // the hit point
-        let w_o = -*w_o_neg;
+    fn sample(&self, w_o: &Vector, _: &(f32, f32)) -> (Colorf, Vector, f32) {
         // Select the incident and transmited indices of refraction based on whether
         // we're entering or exiting the material
-        let entering = bxdf::cos_theta(&w_o) > 0.0;
+        let entering = bxdf::cos_theta(w_o) > 0.0;
         let (ei, et) =
             if entering {
                 (self.fresnel.eta_i, self.fresnel.eta_t)
             } else {
                 (self.fresnel.eta_t, self.fresnel.eta_i)
             };
-        let sin_i_sqr = bxdf::sin_theta_sqr(&w_o);
+        let sin_i_sqr = bxdf::sin_theta_sqr(w_o);
         let eta = ei / et;
         let sin_t_sqr = eta * eta * sin_i_sqr;
         // Total internal reflection, nothing is transmitted
@@ -58,13 +55,13 @@ impl BxDF for SpecularTransmission {
         }
         let cos_t =
             if entering {
-                f32::sqrt(f32::max(0.0, 1.0 - sin_t_sqr))
-            } else {
                 -f32::sqrt(f32::max(0.0, 1.0 - sin_t_sqr))
+            } else {
+                f32::sqrt(f32::max(0.0, 1.0 - sin_t_sqr))
             };
-        let w_i = Vector::new(eta * w_o.x, eta * w_o.y, cos_t);
-        let f = self.fresnel.fresnel(bxdf::cos_theta(&w_o));
-        let c = (Colorf::broadcast(1.0) - f) * self.transmission / f32::abs(bxdf::cos_theta(&w_i));
+        let w_i = Vector::new(eta * -w_o.x, eta * -w_o.y, cos_t);
+        let f = self.fresnel.fresnel(bxdf::cos_theta(w_o));
+        let c = (Colorf::broadcast(1.0) - f * self.transmission / f32::abs(bxdf::cos_theta(&w_i));
         (c, w_i, 1.0)
     }
 }
