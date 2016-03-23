@@ -61,7 +61,7 @@ impl BxDF for SpecularTransmission {
             };
         let w_i = Vector::new(eta * -w_o.x, eta * -w_o.y, cos_t);
         let f = self.fresnel.fresnel(bxdf::cos_theta(w_o));
-        let c = (Colorf::broadcast(1.0) - f * self.transmission / f32::abs(bxdf::cos_theta(&w_i));
+        let c = (Colorf::broadcast(1.0) - f) * self.transmission / f32::abs(bxdf::cos_theta(&w_i));
         (c, w_i, 1.0)
     }
 }
