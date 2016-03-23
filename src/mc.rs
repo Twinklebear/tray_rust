@@ -75,6 +75,16 @@ pub fn uniform_sample_cone(samples: &(f32, f32), cos_theta_max: f32) -> Vector {
     let phi = samples.1 * f32::consts::PI * 2.0;
     Vector::new(f32::cos(phi) * sin_theta, f32::sin(phi) * sin_theta, cos_theta)
 }
+/// Uniformly sample a direction in a cone with max angle `cos_theta_max` where
+/// the cone looks down the w_z vector provided, with w_x, w_y forming the rest
+/// of the coordinate frame for the cone
+pub fn uniform_sample_cone_frame(samples: &(f32, f32), cos_theta_max: f32, w_x: &Vector,
+                                 w_y: &Vector, w_z: &Vector) -> Vector {
+    let cos_theta = linalg::lerp(samples.0, &cos_theta_max, &1.0);
+    let sin_theta = f32::sqrt(1.0 - cos_theta * cos_theta);
+    let phi = samples.1 * f32::consts::PI * 2.0;
+    f32::cos(phi) * sin_theta * *w_z + f32::sin(phi) * sin_theta * *w_y + cos_theta * *w_z
+}
 /// Uniformly sample a direction on the unit sphere about the origin
 pub fn uniform_sample_sphere(samples: &(f32, f32)) -> Vector {
     let z = 1.0 - 2.0 * samples.0;

@@ -99,26 +99,22 @@ impl Sampleable for Sphere {
             let (w_x, w_y) = linalg::coordinate_system(&w_z);
             // Compute theta and phi for samples in the cone of the sphere seen from `p`
             let cos_theta_max = f32::sqrt(f32::max(0.0, 1.0 - self.radius * self.radius / dist_sqr));
-            let cos_theta = linalg::lerp(samples.0, &cos_theta_max, &1.0);
-            let sin_theta = f32::sqrt(1.0 - cos_theta * cos_theta);
-            let phi = samples.1 * f32::consts::PI * 2.0;
-            // Compute angle `alpha` from center of sphere to the sampled point on the surface
-            let dist = f32::sqrt(dist_sqr);
-            let dist_surf = dist * cos_theta
-                - f32::sqrt(f32::max(0.0, self.radius * self.radius - dist * dist * sin_theta * sin_theta));
-            let cos_alpha = (dist * dist + self.radius * self.radius - dist_surf * dist_surf)
-                / (2.0 * dist * self.radius);
-            let sin_alpha = f32::sqrt(f32::max(0.0, 1.0 - cos_alpha * cos_alpha));
-            let normal = linalg::spherical_dir_coords(sin_alpha, cos_alpha, phi, &-w_x, &-w_y, &-w_z);
-            let point = self.radius * Point::new(normal.x, normal.y, normal.z);
-            // Return the point re-projected onto the surface and the normalized normal
-            (point * self.radius / point.distance(&Point::broadcast(0.0)),
-                Normal::new(normal.x, normal.y, normal.z).normalized())
+            let mut ray = Ray::new(p, &mc::uniform_sample_cone_frame(samples, cos_theta_max, &w_x, &w_y, &w_z).normalized(), 0.0);
+            // Try to hit the sphere with this ray to sample it
+            match self.intersect(&mut ray) {
+                Some(dg) => (dg.p, dg.ng),
+                None => {
+                    // If we miss find where we kind of hit at the edge
+                    let t = linalg::dot(&(Point::broadcast(0.0) - *p), &ray.d);
+                    let p = ray.at(t);
+                    (p, Normal::new(p.x, p.y, p.z).normalized())
+                }
+            }
         }
     }
     /// Compute the sphere's surface area
     fn surface_area(&self) -> f32 {
-        2.0 * f32::consts::PI * 2.0 * self.radius
+        4.0 * f32::consts::PI * self.radius
     }
     /// Compute the PDF that the ray from `p` with direction `w_i` intersects
     /// the shape
