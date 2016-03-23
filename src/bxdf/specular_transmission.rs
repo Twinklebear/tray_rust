@@ -51,7 +51,7 @@ impl BxDF for SpecularTransmission {
         let sin_t_sqr = eta * eta * sin_i_sqr;
         // Total internal reflection, nothing is transmitted
         if sin_t_sqr >= 1.0 {
-            return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0);
+            return (Colorf::black(), Vector::broadcast(0.0), 0.0);
         }
         let cos_t =
             if entering {

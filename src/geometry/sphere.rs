@@ -66,6 +66,8 @@ impl Geometry for Sphere {
         let sin_phi = p.y * inv_z;
         // TODO: It doesn't make sense that dp_du x dp_dv and n point it such different
         // directions, they should at least point in a similar direction
+        // Doing dp_dv x dp_du gives the same as normal, kind of as we'd expect since they're
+        // facing opposite directions, but it doesn't explain why this would be wrong
         let dp_du = Vector::new(-f32::consts::PI * 2.0 * p.y, f32::consts::PI * 2.0 * p.x, 0.0);
         let dp_dv = Vector::new(p.z * cos_phi, p.z * sin_phi,
                                 -self.radius * f32::sin(theta)) * f32::consts::PI;

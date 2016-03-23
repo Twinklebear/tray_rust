@@ -47,6 +47,10 @@ impl Colorf {
     pub fn has_nans(&self) -> bool {
         f32::is_nan(self.r) || f32::is_nan(self.g) || f32::is_nan(self.b) || f32::is_nan(self.a)
     }
+    /// Check if any of the color channels are infinite
+    pub fn has_infs(&self) -> bool {
+        f32::is_infinite(self.r) || f32::is_infinite(self.g) || f32::is_infinite(self.b) || f32::is_infinite(self.a)
+    }
     /// Convert the linear RGB color to sRGB
     pub fn to_srgb(&self) -> Colorf {
         let a = 0.055f32;
