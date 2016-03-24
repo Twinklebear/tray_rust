@@ -34,6 +34,5 @@ rpath = false
 lto = true
 
 [features]
-# unstable = ["clippy"]
-unstable = []
+unstable = ["clippy"]
 
