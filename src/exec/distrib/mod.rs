@@ -1,5 +1,5 @@
 //! The distrib module provides methods for executing the rendering in a
-//! distributed environment across multiple machies. The worker module provides
+//! distributed environment across multiple machines. The worker module provides
 //! the Worker which does the actual job of rendering a subregion of the image.
 //! The master module provides the Master which instructs the Workers what to render
 //! and collects their results to save out the final image.
