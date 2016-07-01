@@ -2,21 +2,11 @@ language: rust
 sudo: false
 rust:
     - stable
+    - beta
+    - nightly
 matrix:
     allow_failures:
         - rust: nightly
-    include:
-        - rust: beta
-          script:
-            - travis-cargo build
-            - travis-cargo test
-            - travis-cargo doc
-        - rust: nightly
-          script:
-            - travis-cargo build
-            - travis-cargo test
-            - travis-cargo doc
-
 before_script:
     - pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
 script:
