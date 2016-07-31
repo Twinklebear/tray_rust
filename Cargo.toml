@@ -10,20 +10,20 @@ doc = false
 [dependencies]
 enum-set = "0.0.6"
 rand = "0.3.14"
-rustc-serialize = "0.3.18"
-docopt = "0.6.78"
-image = "0.7.0"
-num_cpus = "0.2.11"
+rustc-serialize = "0.3.19"
+docopt = "0.6.82"
+image = "0.10.1"
+num_cpus = "1.0.0"
 tobj = "0.1.1"
-byteorder = "0.4.2"
-serde_json = "0.7.0"
+byteorder = "0.5.3"
+serde_json = "0.8.0"
 scoped_threadpool = "0.1.7"
 bspline = "0.2.2"
 clock_ticks = "0.1.0"
-bincode = "0.5.0"
-mio = "0.5.0"
+bincode = "0.6.0"
+mio = "0.5.1"
 la = "0.2.0"
-clippy = { version = "0.0.77", optional = true }
+clippy = { version = "0.0.79", optional = true }
 
 [profile.release]
 # How to send extra compiler flag for -march=native equivalent in Rust
