@@ -143,7 +143,7 @@ fn load_filter(elem: &Value) -> Box<filter::Filter + Send + Sync> {
     let height = elem.find("height").expect("The filter must specify the filter height")
         .as_f64().expect("Filter height must be a number") as f32;
     let ty = elem.find("type").expect("A type is required for the filter")
-        .as_string().expect("Filter type must be a string");
+        .as_str().expect("Filter type must be a string");
     if ty == "mitchell_netravali" {
         let b = elem.find("b").expect("A b parameter is required for the Mitchell-Netravali filter")
             .as_f64().expect("b must be a number") as f32;
@@ -228,7 +228,7 @@ fn load_camera(elem: &Value, dim: (usize, usize)) -> Camera {
 /// Return the integrator or panics if it's incorrectly specified
 fn load_integrator(elem: &Value) -> Box<Integrator + Send + Sync> {
     let ty = elem.find("type").expect("Integrator must specify a type")
-        .as_string().expect("Integrator type must be a string");
+        .as_str().expect("Integrator type must be a string");
     if ty == "pathtracer" {
         let min_depth = elem.find("min_depth").expect("The integrator must specify the minimum ray depth")
             .as_u64().expect("min_depth must be a number") as u32;
@@ -259,10 +259,10 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
     let mat_vec = elem.as_array().expect("The materials must be an array of materials used");
     for (i, m) in mat_vec.iter().enumerate() {
         let name = m.find("name").expect(&format!("Error loading material #{}: A name is required", i)[..])
-            .as_string().expect(&format!("Error loading material #{}: name must be a string", i)[..])
+            .as_str().expect(&format!("Error loading material #{}: name must be a string", i)[..])
             .to_owned();
         let ty = m.find("type").expect(&mat_error(&name, "a type is required")[..])
-            .as_string().expect(&mat_error(&name, "type must be a string")[..]);
+            .as_str().expect(&mat_error(&name, "type must be a string")[..]);
         // Make sure names are unique to avoid people accidently overwriting materials
         if materials.contains_key(&name) {
             panic!("Error loading material '{}': name conflicts with an existing entry", name);
@@ -289,7 +289,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
         } else if ty == "merl" {
             let file_path = Path::new(m.find("file")
                       .expect(&mat_error(&name, "A filename containing the MERL material data is required")[..])
-                      .as_string().expect(&mat_error(&name, "The MERL file must be a string")[..]));
+                      .as_str().expect(&mat_error(&name, "The MERL file must be a string")[..]));
             if file_path.is_relative() {
                 materials.insert(name, Arc::new(Merl::load_file(path.join(file_path).as_path()))
                                  as Arc<Material + Send + Sync>);
@@ -347,9 +347,9 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
     let objects = elem.as_array().expect("The objects must be an array of objects used");
     for o in objects {
         let name = o.find("name").expect("A name is required for an object")
-            .as_string().expect("Object name must be a string").to_owned();
+            .as_str().expect("Object name must be a string").to_owned();
         let ty = o.find("type").expect("A type is required for an object")
-            .as_string().expect("Object type must be a string");
+            .as_str().expect("Object type must be a string");
 
         let transform = match o.find("keyframes") {
             Some(t) => load_keyframes(t).expect("Invalid keyframes specified"),
@@ -363,7 +363,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
         };
         if ty == "emitter" {
             let emit_ty = o.find("emitter").expect("An emitter type is required for emitters")
-                .as_string().expect("Emitter type must be a string");
+                .as_str().expect("Emitter type must be a string");
             let emission = load_animated_color(o.find("emission")
                     .expect("An emission color is required for emitters"))
                     .expect("Emitter emission must be a color");
@@ -371,7 +371,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
                 instances.push(Instance::point_light(transform, emission, name));
             } else if emit_ty == "area" {
                 let mat_name = o.find("material").expect("A material is required for an object")
-                    .as_string().expect("Object material name must be a string");
+                    .as_str().expect("Object material name must be a string");
                 let mat = materials.get(mat_name)
                     .expect("Material was not found in the material list").clone();
                 let geom = load_sampleable_geometry(o.find("geometry")
@@ -383,7 +383,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             }
         } else if ty == "receiver" {
             let mat_name = o.find("material").expect("A material is required for an object")
-                    .as_string().expect("Object material name must be a string");
+                    .as_str().expect("Object material name must be a string");
             let mat = materials.get(mat_name)
                 .expect("Material was not found in the material list").clone();
             let geom = load_geometry(path, mesh_cache, o.find("geometry")
@@ -412,7 +412,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
 fn load_geometry(path: &Path, meshes: &mut HashMap<String, HashMap<String, Arc<Mesh>>>, elem: &Value)
              -> Arc<BoundableGeom + Send + Sync> {
     let ty = elem.find("type").expect("A type is required for geometry")
-        .as_string().expect("Geometry type must be a string");
+        .as_str().expect("Geometry type must be a string");
     if ty == "sphere" {
         let r = elem.find("radius").expect("A radius is required for a sphere").as_f64()
             .expect("radius must be a number") as f32;
@@ -434,9 +434,9 @@ fn load_geometry(path: &Path, meshes: &mut HashMap<String, HashMap<String, Arc<M
         Arc::new(Rectangle::new(width, height))
     } else if ty == "mesh" {
         let mut file = Path::new(elem.find("file").expect("An OBJ file is required for meshes")
-            .as_string().expect("OBJ filename must be a string")).to_path_buf();
+            .as_str().expect("OBJ filename must be a string")).to_path_buf();
         let model = elem.find("model").expect("A model name is required for geometry")
-            .as_string().expect("Model name type must be a string");
+            .as_str().expect("Model name type must be a string");
 
         if file.is_relative() {
             file = path.join(file);
@@ -459,7 +459,7 @@ fn load_geometry(path: &Path, meshes: &mut HashMap<String, HashMap<String, Arc<M
 /// is not sampleable.
 fn load_sampleable_geometry(elem: &Value) -> Arc<SampleableGeom + Send + Sync> {
     let ty = elem.find("type").expect("A type is required for geometry")
-        .as_string().expect("Geometry type must be a string");
+        .as_str().expect("Geometry type must be a string");
     if ty == "sphere" {
         let r = elem.find("radius").expect("A radius is required for a sphere").as_f64()
             .expect("radius must be a number") as f32;
@@ -584,7 +584,7 @@ fn load_transform(elem: &Value) -> Option<Transform> {
     let mut transform = Transform::identity();
     for t in array {
         let ty = t.find("type").expect("A type is required for a transform")
-            .as_string().expect("Transform type must be a string");
+            .as_str().expect("Transform type must be a string");
         if ty == "translate" {
             let v = load_vector(t.find("translation").expect("A translation vector is required for translate"))
                 .expect("Invalid vector specified for translation direction");
