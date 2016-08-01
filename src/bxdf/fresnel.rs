@@ -8,20 +8,20 @@ use linalg;
 /// Compute the Fresnel term for a dielectric material given the incident and transmission
 /// angles and refractive indices
 fn dielectric(cos_i: f32, cos_t: f32, eta_i: f32, eta_t: f32) -> Colorf {
-	let r_par = (eta_t * cos_i - eta_i * cos_t) / (eta_t * cos_i + eta_i * cos_t);
-	let r_perp = (eta_i * cos_i - eta_t * cos_t) / (eta_i * cos_i + eta_t * cos_t);
-	Colorf::broadcast(0.5 * (r_par * r_par + r_perp * r_perp))
+    let r_par = (eta_t * cos_i - eta_i * cos_t) / (eta_t * cos_i + eta_i * cos_t);
+    let r_perp = (eta_i * cos_i - eta_t * cos_t) / (eta_i * cos_i + eta_t * cos_t);
+    Colorf::broadcast(0.5 * (r_par * r_par + r_perp * r_perp))
 }
 /// Compute the Fresnel term for a conductor given the incident angle and the material properties
 fn conductor(cos_i: f32, eta: &Colorf, k: &Colorf) -> Colorf {
-	let a = (*eta * *eta + *k * *k) * cos_i * cos_i;
+    let a = (*eta * *eta + *k * *k) * cos_i * cos_i;
     let col = Colorf::broadcast(1.0);
-	let r_par = (a - *eta * cos_i * 2.0 + col) / (a + *eta * cos_i * 2.0 + col);
-	let b = *eta * *eta + *k * *k;
+    let r_par = (a - *eta * cos_i * 2.0 + col) / (a + *eta * cos_i * 2.0 + col);
+    let b = *eta * *eta + *k * *k;
     let col = Colorf::broadcast(cos_i * cos_i);
-	let r_perp = (b - *eta * cos_i * 2.0 + col) / (b + *eta * cos_i * 2.0 + col);
-	//These are actually r_par^2 and r_perp^2, so don't square here
-	(r_par + r_perp) * 0.5
+    let r_perp = (b - *eta * cos_i * 2.0 + col) / (b + *eta * cos_i * 2.0 + col);
+    //These are actually r_par^2 and r_perp^2, so don't square here
+    (r_par + r_perp) * 0.5
 }
 
 /// The Fresnel trait implemented by the various Fresnel term components

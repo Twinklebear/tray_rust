@@ -56,12 +56,10 @@ impl BxDF for TorranceSparrow {
         if !bxdf::same_hemisphere(w_o, &w_i) {
             (Colorf::black(), Vector::broadcast(0.0), 0.0)
         } else {
-            let pdf = self.microfacet.pdf(&w_h);
-            /*
-            println!("****\nMicrofacet pdf = {}, will divide by {}, w_h = {:?}\nw_o = {:?}\nw_i = {:?}\n******",
-                     pdf, 4.0 * linalg::dot(w_o, &w_h), w_h, w_o, w_i);
-                     */
-            (self.eval(w_o, &w_i), w_i, self.microfacet.pdf(&w_h) / (4.0 * f32::abs(linalg::dot(w_o, &w_h))))
+            // TODO: This term is p_o(o) in eq. 37 of Walter's 07 paper and is for reflection,
+            // need to correct if planning to support transmission
+            let pdf = self.microfacet.pdf(&w_h) / (4.0 * f32::abs(linalg::dot(w_o, &w_h)));
+            (self.eval(w_o, &w_i), w_i, pdf)
         }
     }
     fn pdf(&self, w_o: &Vector, w_i: &Vector) -> f32 {
