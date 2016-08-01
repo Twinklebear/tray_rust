@@ -18,25 +18,14 @@ impl Beckmann {
     pub fn new(w: f32) -> Beckmann {
         // From pbrt-v3, conversion from Blinn-Phong style roughness to approximately
         // equivalent Beckmann alpha
-        let roughness = f32::max(w, 0.001);
-        let x = f32::ln(roughness);
-        let alpha = 1.62142 + 0.819955 * x + 0.173 * f32::powf(x, 2.0)
-            + 0.0171201 * f32::powf(x, 3.0) + 0.000640711 * f32::powf(x, 4.0);
-        Beckmann { width: alpha }
+        let roughness = f32::max(w, 0.000001);
+        Beckmann { width: roughness }
     }
 }
-
-
-// In walter et al. chi^+(a) = 1 if a > 0 and 0 if a <= 0
-// bold n is the macrosurface normal. In shading space this is +z
-// theta is angle between the dir and the macrosurface normal (a.k.a +z)
-// phi is angle between the dir and a vector perpindicular to the macrosurface normal, like tangent
-// or bitangent
 
 impl MicrofacetDistribution for Beckmann {
     fn normal_distribution(&self, w_h: &Vector) -> f32 {
         if bxdf::cos_theta(w_h) > 0.0 {
-            //println!("cos theta passed");
             let e = f32::exp(-f32::powf(bxdf::tan_theta(&w_h) / self.width, 2.0));
             e / (f32::consts::PI * f32::powf(self.width, 2.0) * f32::powf(bxdf::cos_theta(&w_h), 4.0))
         } else {
@@ -48,7 +37,7 @@ impl MicrofacetDistribution for Beckmann {
             x if f32::is_infinite(x) => { println!("it was inf!"); 0.0 },
             x => x,
         };
-        let tan_theta_sqr = f32::powf(self.width, 2.0) * log_sample;
+        let tan_theta_sqr = -f32::powf(self.width, 2.0) * log_sample;
         let phi = 2.0 * f32::consts::PI * samples.1;
         let cos_theta = 1.0 / f32::sqrt(1.0 + tan_theta_sqr);
         let sin_theta = f32::sqrt(f32::max(0.0, 1.0 - cos_theta * cos_theta));
