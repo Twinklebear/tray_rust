@@ -9,9 +9,8 @@ use rand::StdRng;
 
 use sampler::BlockQueue;
 use film::{RenderTarget, ImageSample, Colorf};
-use geometry::{Geometry, Instance, Emitter};
+use geometry::{Instance, Emitter};
 use sampler::{self, Sampler};
-use integrator::Integrator;
 use scene::Scene;
 use exec::{Config, Exec};
 

@@ -34,7 +34,7 @@ impl MicrofacetDistribution for Beckmann {
     }
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> Vector {
         let log_sample = match f32::ln(1.0 - samples.0) {
-            x if f32::is_infinite(x) => { println!("it was inf!"); 0.0 },
+            x if f32::is_infinite(x) => 0.0,
             x => x,
         };
         let tan_theta_sqr = -f32::powf(self.width, 2.0) * log_sample;

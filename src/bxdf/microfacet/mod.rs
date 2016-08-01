@@ -3,10 +3,8 @@
 
 use linalg::Vector;
 
-pub use self::blinn::Blinn;
 pub use self::beckmann::Beckmann;
 
-pub mod blinn;
 pub mod beckmann;
 
 /// Trait implemented by all microfacet distributions
