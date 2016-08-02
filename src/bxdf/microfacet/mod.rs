@@ -4,8 +4,10 @@
 use linalg::Vector;
 
 pub use self::beckmann::Beckmann;
+pub use self::ggx::GGX;
 
 pub mod beckmann;
+pub mod ggx;
 
 /// Trait implemented by all microfacet distributions
 pub trait MicrofacetDistribution {
