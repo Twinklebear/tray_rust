@@ -16,8 +16,6 @@ pub struct Beckmann {
 impl Beckmann {
     /// Create a new Beckmann distribution with the desired width
     pub fn new(w: f32) -> Beckmann {
-        // From pbrt-v3, conversion from Blinn-Phong style roughness to approximately
-        // equivalent Beckmann alpha
         let roughness = f32::max(w, 0.000001);
         Beckmann { width: roughness }
     }
