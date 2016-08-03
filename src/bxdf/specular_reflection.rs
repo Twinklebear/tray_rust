@@ -40,7 +40,8 @@ impl BxDF for SpecularReflection {
         // TODO: is this an expected but super rare case? or does it imply some error
         // in the sphere intersection? Such a glancing angle shouldn't really be counted right?
         if w_i.z != 0.0 {
-            let c = self.fresnel.fresnel(bxdf::cos_theta(w_o)) * self.reflectance / f32::abs(bxdf::cos_theta(&w_i));
+            let c = self.fresnel.fresnel(bxdf::cos_theta(w_o)) * self.reflectance
+                / f32::abs(bxdf::cos_theta(&w_i));
             (c, w_i, 1.0)
         } else {
             (Colorf::black(), w_i, 0.0)

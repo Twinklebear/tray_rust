@@ -104,6 +104,14 @@ impl Mul<f32> for Colorf {
     }
 }
 
+impl Mul<Colorf> for f32 {
+    type Output = Colorf;
+    /// Scale the color by the float
+    fn mul(self, rhs: Colorf) -> Colorf {
+        Colorf { r: self * rhs.r, g: self * rhs.g, b: self * rhs.b, a: self * rhs.a }
+    }
+}
+
 impl Div for Colorf {
     type Output = Colorf;
     /// Divide the channels of one color by another

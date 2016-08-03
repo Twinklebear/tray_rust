@@ -110,6 +110,21 @@ pub fn coordinate_system(e1: &Vector) -> (Vector, Vector) {
 pub fn reflect(w: &Vector, v: &Vector) -> Vector {
     2.0 * dot(w, v) * *v - *w
 }
+/// Compute the refraction of `w` entering surface with normal `n` where
+/// the refractive index in the incident material is `eta_1` and the refractive
+/// index of the entered material is `eta_2`. In the case of total internal
+/// refraction this will return None.
+pub fn refract(w: &Vector, n: &Vector, eta_1: f32, eta_2: f32) -> Option<Vector> {
+    let eta = eta_1 / eta_2;
+    let cos_t1 = -dot(n, w);
+    let sin_t2 = eta * f32::sqrt(1.0 - f32::powf(cos_t1, 2.0));
+    if sin_t2 >= 1.0 {
+        None
+    } else {
+        let cos_t2 = f32::sqrt(1.0 - f32::powf(sin_t2, 2.0));
+        Some(eta * *w + (eta * cos_t1 - cos_t2) * *n)
+    }
+}
 
 #[test]
 fn test_cross() {
