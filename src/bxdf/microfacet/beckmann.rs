@@ -30,7 +30,7 @@ impl MicrofacetDistribution for Beckmann {
             0.0
         }
     }
-    fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> Vector {
+    fn sample(&self, _: &Vector, samples: &(f32, f32)) -> Vector {
         let log_sample = match f32::ln(1.0 - samples.0) {
             x if f32::is_infinite(x) => 0.0,
             x => x,
@@ -39,13 +39,7 @@ impl MicrofacetDistribution for Beckmann {
         let phi = 2.0 * f32::consts::PI * samples.1;
         let cos_theta = 1.0 / f32::sqrt(1.0 + tan_theta_sqr);
         let sin_theta = f32::sqrt(f32::max(0.0, 1.0 - cos_theta * cos_theta));
-        let w_h = linalg::spherical_dir(sin_theta, cos_theta, phi);
-        // TODO: Can move this check to callers, then we can have microfacet transmission
-        if !bxdf::same_hemisphere(w_o, &w_h) {
-            -w_h
-        } else {
-            w_h
-        }
+        linalg::spherical_dir(sin_theta, cos_theta, phi)
     }
     fn pdf(&self, w_h: &Vector) -> f32 {
         f32::abs(bxdf::cos_theta(w_h)) * self.normal_distribution(w_h)

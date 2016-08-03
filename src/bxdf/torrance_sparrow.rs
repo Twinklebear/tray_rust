@@ -1,5 +1,6 @@
-//! This module provides the Torrance Sparrow microfacet BRDF
-//! TODO: Wikipedia link?
+//! This module provides the Torrance Sparrow microfacet BRDF, see
+//! [Walter et al. 07](https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf)
+//! for details.
 
 use std::f32;
 use enum_set::EnumSet;
@@ -10,7 +11,8 @@ use bxdf::{self, BxDF, BxDFType};
 use bxdf::fresnel::Fresnel;
 use bxdf::microfacet::{MicrofacetDistribution};
 
-/// Struct providing the Torrance Sparrow BRDF
+/// Struct providing the Torrance Sparrow BRDF, implemented as described in
+/// [Walter et al. 07](https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf)
 pub struct TorranceSparrow {
     reflectance: Colorf,
     fresnel: Box<Fresnel + Send + Sync>,
@@ -51,14 +53,18 @@ impl BxDF for TorranceSparrow {
         (self.reflectance * f * d * g / (4.0 * cos_ti * cos_to))
     }
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Colorf, Vector, f32) {
-        let w_h = self.microfacet.sample(w_o, samples);
+        let mut w_h = self.microfacet.sample(w_o, samples);
+        if !bxdf::same_hemisphere(w_o, &w_h) {
+            w_h = -w_h;
+        }
         let w_i = linalg::reflect(w_o, &w_h);
         if !bxdf::same_hemisphere(w_o, &w_i) {
             (Colorf::black(), Vector::broadcast(0.0), 0.0)
         } else {
-            // TODO: This term is p_o(o) in eq. 37 of Walter's 07 paper and is for reflection,
-            // need to correct if planning to support transmission
-            let pdf = self.microfacet.pdf(&w_h) / (4.0 * f32::abs(linalg::dot(w_o, &w_h)));
+            // This term is p_o(o) in eq. 38 of Walter et al's 07 paper and is for reflection so
+            // we use the Jacobian for reflection, eq. 14
+            let jacobian = 1.0 / (4.0 * f32::abs(linalg::dot(w_o, &w_h)));
+            let pdf = self.microfacet.pdf(&w_h) * jacobian;
             (self.eval(w_o, &w_i), w_i, pdf)
         }
     }
@@ -70,7 +76,10 @@ impl BxDF for TorranceSparrow {
             if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
                 0.0
             } else {
-                self.microfacet.pdf(&w_h.normalized()) / (4.0 * f32::abs(linalg::dot(w_o, &w_h)))
+                // This term is p_o(o) in eq. 38 of Walter et al's 07 paper and is for reflection so
+                // we use the Jacobian for reflection, eq. 14
+                let jacobian = 1.0 / (4.0 * f32::abs(linalg::dot(w_o, &w_h)));
+                self.microfacet.pdf(&w_h.normalized()) * jacobian
             }
         }
     }
