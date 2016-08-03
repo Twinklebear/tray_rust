@@ -35,7 +35,7 @@ use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
 use film::{filter, Camera, Colorf, RenderTarget, FrameInfo, AnimatedColor, ColorKeyframe};
 use geometry::{Sphere, Instance, Intersection, BVH, Mesh, Disk, Rectangle,
                BoundableGeom, SampleableGeom};
-use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal};
+use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal, RoughGlass};
 use integrator::{self, Integrator};
 
 /// The scene containing the objects and camera configuration we'd like to render,
@@ -278,6 +278,21 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
                 .expect(&mat_error(&name, "A refractive index 'eta' is required for glass")[..]).as_f64()
                 .expect(&mat_error(&name, "glass eta must be a float")[..]) as f32;
             materials.insert(name, Arc::new(Glass::new(&reflect, &transmit, eta)) as Arc<Material + Send + Sync>);
+        } else if ty == "rough_glass" {
+            let reflect = load_color(m.find("reflect")
+                                     .expect(&mat_error(&name, "A reflect color is required for roughglass")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for reflect of glass")[..]);
+            let transmit = load_color(m.find("transmit")
+                                      .expect(&mat_error(&name, "A transmit color is required for roughglass")[..]))
+                .expect(&mat_error(&name, "Invalid color specified for transmit of roughglass")[..]);
+            let eta = m.find("eta")
+                .expect(&mat_error(&name, "A refractive index 'eta' is required for roughglass")[..]).as_f64()
+                .expect(&mat_error(&name, "roughglass eta must be a float")[..]) as f32;
+            let roughness = m.find("roughness")
+                .expect(&mat_error(&name, "A roughness is required for roughglass")[..]).as_f64()
+                .expect(&mat_error(&name, "roughness of roughglass must be a float")[..]) as f32;
+            materials.insert(name, Arc::new(RoughGlass::new(&reflect, &transmit, eta, roughness))
+                             as Arc<Material + Send + Sync>);
         } else if ty == "matte" {
             let diffuse = load_color(m.find("diffuse")
                                      .expect(&mat_error(&name, "A diffuse color is required for matte")[..]))
