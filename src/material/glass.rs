@@ -1,7 +1,7 @@
 //! Defines a specular glass material
 //!
 //! # Scene Usage Example
-//! The specular glass material describes a thing glass surface type of material,
+//! The specular glass material describes a thin glass surface type of material,
 //! not a solid block of glass (there is no absorption of light). The glass requires
 //! a reflective and emissive color along with a refrective index, eta.
 //!
