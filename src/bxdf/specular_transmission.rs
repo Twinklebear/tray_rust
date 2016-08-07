@@ -3,7 +3,7 @@
 use std::f32;
 use enum_set::EnumSet;
 
-use linalg::Vector;
+use linalg::{self, Vector};
 use film::Colorf;
 use bxdf::{self, BxDF, BxDFType};
 use bxdf::fresnel::{self, Fresnel};
@@ -40,29 +40,19 @@ impl BxDF for SpecularTransmission {
         // Select the incident and transmited indices of refraction based on whether
         // we're entering or exiting the material
         let entering = bxdf::cos_theta(w_o) > 0.0;
-        let (ei, et) =
+        let (ei, et, n) =
             if entering {
-                (self.fresnel.eta_i, self.fresnel.eta_t)
+                (self.fresnel.eta_i, self.fresnel.eta_t, Vector::new(0.0, 0.0, 1.0))
             } else {
-                (self.fresnel.eta_t, self.fresnel.eta_i)
+                (self.fresnel.eta_t, self.fresnel.eta_i, Vector::new(0.0, 0.0, -1.0))
             };
-        let sin_i_sqr = bxdf::sin_theta_sqr(w_o);
-        let eta = ei / et;
-        let sin_t_sqr = eta * eta * sin_i_sqr;
-        // Total internal reflection, nothing is transmitted
-        if sin_t_sqr >= 1.0 {
-            return (Colorf::black(), Vector::broadcast(0.0), 0.0);
+        if let Some(w_i) = linalg::refract(w_o, &n, ei, et) {
+            let f = Colorf::broadcast(1.0) - self.fresnel.fresnel(bxdf::cos_theta(&w_i));
+            let c = f * self.transmission / f32::abs(bxdf::cos_theta(&w_i));
+            (c, w_i, 1.0)
+        } else {
+            (Colorf::black(), Vector::broadcast(0.0), 0.0)
         }
-        let cos_t =
-            if entering {
-                -f32::sqrt(f32::max(0.0, 1.0 - sin_t_sqr))
-            } else {
-                f32::sqrt(f32::max(0.0, 1.0 - sin_t_sqr))
-            };
-        let w_i = Vector::new(eta * -w_o.x, eta * -w_o.y, cos_t);
-        let f = self.fresnel.fresnel(bxdf::cos_theta(w_o));
-        let c = (Colorf::broadcast(1.0) - f) * self.transmission / f32::abs(bxdf::cos_theta(&w_i));
-        (c, w_i, 1.0)
     }
 }
 
