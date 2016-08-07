@@ -61,10 +61,6 @@ impl BxDF for MicrofacetTransmission {
         e.insert(BxDFType::Transmission);
         e
     }
-    // etaA is on the outside, etaB is on the inside
-    // so etaA = eta.0, etaB = eta.1
-    // in walter eta al eta_i is incident side, eta_o/eta_t is transmitted side
-    // so eta_i = eta.0, eta_o & eta_t = eta.1
     fn eval(&self, w_o: &Vector, w_i: &Vector) -> Colorf {
         if bxdf::same_hemisphere(w_o, w_i) {
             return Colorf::black();
@@ -87,7 +83,6 @@ impl BxDF for MicrofacetTransmission {
             Colorf::black()
         }
     }
-    // NOTE: w_o is in the material we're coming from, w_i is in the material we're entering
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Colorf, Vector, f32) {
         let mut w_h = self.microfacet.sample(w_o, samples);
         if !bxdf::same_hemisphere(w_o, &w_h) {
