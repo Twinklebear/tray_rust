@@ -94,7 +94,7 @@ pub fn solve_quadratic(a: f32, b: f32, c: f32) -> Option<(f32, f32)> {
 }
 /// Compute a local ortho-normal coordinate system from a single vector.
 pub fn coordinate_system(e1: &Vector) -> (Vector, Vector) {
-	let e2 =
+    let e2 =
         if f32::abs(e1.x) > f32::abs(e1.y) {
             let inv_len = 1.0 / f32::sqrt(e1.x * e1.x + e1.z * e1.z);
             Vector::new(-e1.z * inv_len, 0.0, e1.x * inv_len)
@@ -104,7 +104,7 @@ pub fn coordinate_system(e1: &Vector) -> (Vector, Vector) {
             Vector::new(0.0, e1.z * inv_len, -e1.y * inv_len)
         };
     let e3 = cross(e1, &e2);
-	(e2, e3)
+    (e2, e3)
 }
 /// Compute the reflection of `w` about `v`, both vectors should be normalized
 pub fn reflect(w: &Vector, v: &Vector) -> Vector {
@@ -116,13 +116,14 @@ pub fn reflect(w: &Vector, v: &Vector) -> Vector {
 /// refraction this will return None.
 pub fn refract(w: &Vector, n: &Vector, eta_1: f32, eta_2: f32) -> Option<Vector> {
     let eta = eta_1 / eta_2;
-    let cos_t1 = -dot(n, w);
-    let sin_t2 = eta * f32::sqrt(1.0 - f32::powf(cos_t1, 2.0));
-    if sin_t2 >= 1.0 {
+    let cos_t1 = dot(n, w);
+    let sin_t1_sqr = f32::max(0.0, 1.0 - f32::powf(cos_t1, 2.0));
+    let sin_t2_sqr = f32::powf(eta, 2.0) * sin_t1_sqr;
+    if sin_t2_sqr >= 1.0 {
         None
     } else {
-        let cos_t2 = f32::sqrt(1.0 - f32::powf(sin_t2, 2.0));
-        Some(eta * *w + (eta * cos_t1 - cos_t2) * *n)
+        let cos_t2 = f32::sqrt(1.0 - sin_t2_sqr);
+        Some(eta * -*w + (eta * cos_t1 - cos_t2) * *n)
     }
 }
 
