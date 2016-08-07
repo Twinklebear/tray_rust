@@ -120,8 +120,9 @@ impl<'a> BSDF<'a> {
     /// Compute the pdf for sampling the pair of incident and outgoing light directions for
     /// the BxDFs matching the flags set
     pub fn pdf(&self, wo_world: &Vector, wi_world: &Vector, flags: EnumSet<BxDFType>) -> f32 {
-        let w_o = self.to_shading(wo_world);
-        let w_i = self.to_shading(wi_world);
+        // should also normalize?
+        let w_o = self.to_shading(wo_world).normalized();
+        let w_i = self.to_shading(wi_world).normalized();
         let (pdf_val, n_comps) = self.bxdfs.iter()
             .filter_map(|ref x| if x.matches(flags) { Some(x.pdf(&w_o, &w_i)) } else { None })
             .fold((0.0, 0), |(p, n), y| (p + y, n + 1));
