@@ -101,8 +101,8 @@ impl<'a> BSDF<'a> {
         if w_i.length_sqr() == 0.0 {
             return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0, EnumSet::new());
         }
-
         let wi_world = self.from_shading(&w_i).normalized();
+
         // TODO: We re-use our functions but actually do a lot of redundant computation. I'm not
         // sure that the compiler will eliminate it. Should just copy in the code from pdf and eval
         if !bxdf.bxdf_type().contains(&BxDFType::Specular) && n_matching > 1 {
