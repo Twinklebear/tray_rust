@@ -45,7 +45,7 @@ impl MicrofacetTransmission {
         f32::powf(eta.1, 2.0) * f32::abs(wo_dot_h) / f32::powf(eta.0 * wi_dot_h + eta.1 * wo_dot_h, 2.0)
     }
     fn half_vector(w_o: &Vector, w_i: &Vector, eta: (f32, f32)) -> Option<Vector> {
-        let mut w_h = -eta.0 * *w_o - eta.1 * *w_i;
+        let w_h = -eta.0 * *w_o - eta.1 * *w_i;
         if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
             None
         } else {
