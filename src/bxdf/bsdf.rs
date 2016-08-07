@@ -96,13 +96,13 @@ impl<'a> BSDF<'a> {
         }
         let comp = cmp::min((samples.one_d * n_matching as f32) as usize, n_matching - 1);
         let bxdf = self.matching_at(comp, flags);
-        let w_o = self.to_shading(wo_world);
+        let w_o = self.to_shading(wo_world).normalized();
         let (mut f, w_i, mut pdf) = bxdf.sample(&w_o, &samples.two_d);
-        if pdf == 0.0 && bxdf.bxdf_type().contains(&BxDFType::Glossy) {
+        if w_i.length_sqr() == 0.0 {
             return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0, EnumSet::new());
         }
 
-        let wi_world = self.from_shading(&w_i);
+        let wi_world = self.from_shading(&w_i).normalized();
         // TODO: We re-use our functions but actually do a lot of redundant computation. I'm not
         // sure that the compiler will eliminate it. Should just copy in the code from pdf and eval
         if !bxdf.bxdf_type().contains(&BxDFType::Specular) && n_matching > 1 {
