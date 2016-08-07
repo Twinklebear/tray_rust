@@ -72,10 +72,11 @@ impl BxDF for TorranceSparrow {
         if !bxdf::same_hemisphere(w_o, w_i) {
             0.0
         } else {
-            let w_h = *w_o + *w_i;
+            let mut w_h = *w_o + *w_i;
             if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
                 0.0
             } else {
+                w_h = w_h.normalized();
                 // This term is p_o(o) in eq. 38 of Walter et al's 07 paper and is for reflection so
                 // we use the Jacobian for reflection, eq. 14
                 let jacobian = 1.0 / (4.0 * f32::abs(linalg::dot(w_o, &w_h)));
