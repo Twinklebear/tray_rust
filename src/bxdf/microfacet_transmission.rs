@@ -42,7 +42,12 @@ impl MicrofacetTransmission {
     fn jacobian(w_o: &Vector, w_i: &Vector, w_h: &Vector, eta: (f32, f32)) -> f32 {
         let wi_dot_h = linalg::dot(w_i, w_h);
         let wo_dot_h = linalg::dot(w_o, w_h);
-        f32::powf(eta.1, 2.0) * f32::abs(wo_dot_h) / f32::powf(eta.0 * wi_dot_h + eta.1 * wo_dot_h, 2.0)
+        let denom = f32::powf(eta.0 * wi_dot_h + eta.1 * wo_dot_h, 2.0);
+        if denom == 0.0 {
+            0.0
+        } else {
+            f32::powf(eta.1, 2.0) * f32::abs(wo_dot_h) / denom
+        }
     }
     fn half_vector(w_o: &Vector, w_i: &Vector, eta: (f32, f32)) -> Option<Vector> {
         let w_h = -eta.0 * *w_o - eta.1 * *w_i;
