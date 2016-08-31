@@ -37,13 +37,11 @@ impl Quaternion {
             // Compute largest of x, y or z then the remaining components
             let next = [1, 2, 0];
             let mut q = Vector::broadcast(0.0);
-            let mut i = 0;
-            if *m.at(1, 1) > *m.at(0, 0) {
-                i = 1;
-            }
-            if *m.at(2, 2) > *m.at(i, i) {
-                i = 2;
-            }
+            let i = if *m.at(1, 1) > *m.at(0, 0) {
+                1
+            } else if *m.at(2, 2) > *m.at(0, 0) {
+                2
+            } else { 0 };
             let j = next[i];
             let k = next[j];
             let mut s = f32::sqrt((*m.at(i, i) - (*m.at(j, j) + *m.at(k, k))) + 1.0);

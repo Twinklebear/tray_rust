@@ -19,8 +19,8 @@ use exec::Config;
 use exec::distrib::{worker, Instructions, Frame};
 use sampler::BlockQueue;
 
-/// Stores distributed rendering status. The frame is either InProgress and contains
-/// partially rendered results from the workers who've reported the frame or is Completed
+/// Stores distributed rendering status. The frame is either `InProgress` and contains
+/// partially rendered results from the workers who've reported the frame or is `Completed`
 /// and has been saved out to disk.
 #[derive(Debug)]
 enum DistributedFrame {
@@ -41,7 +41,7 @@ impl DistributedFrame {
 
 /// Buffer for collecting results from a worker asynchronously. The buffer is filled
 /// as we get readable events from the workers until it reaches the expected size.
-/// After this the Frame is decoded and accumulated in the appropriate DistributedFrame
+/// After this the Frame is decoded and accumulated in the appropriate `DistributedFrame`
 #[derive(Clone, Debug)]
 struct WorkerBuffer {
     pub buf: Vec<u8>,

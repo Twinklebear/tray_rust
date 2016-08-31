@@ -52,7 +52,7 @@ impl<'a> BSDF<'a> {
     pub fn num_bxdfs(&self) -> usize { self.bxdfs.len() }
     /// Return the number of BxDFs matching the flags
     pub fn num_matching(&self, flags: EnumSet<BxDFType>) -> usize {
-        self.bxdfs.iter().filter(|ref x| x.matches(flags)).count()
+        self.bxdfs.iter().filter(|x| x.matches(flags)).count()
     }
     /// Transform the vector from world space to shading space
     pub fn to_shading(&self, v: &Vector) -> Vector {
@@ -80,7 +80,7 @@ impl<'a> BSDF<'a> {
             flags.remove(&BxDFType::Reflection);
         }
         // Find all matching BxDFs and add their contribution to the material's color
-        self.bxdfs.iter().filter_map(|ref x| if x.matches(flags) { Some(x.eval(&w_o, &w_i)) } else { None })
+        self.bxdfs.iter().filter_map(|x| if x.matches(flags) { Some(x.eval(&w_o, &w_i)) } else { None })
             .fold(Colorf::broadcast(0.0), |x, y| x + y)
     }
     /// Sample a component of the BSDF to get an incident light direction for light
@@ -124,7 +124,7 @@ impl<'a> BSDF<'a> {
         let w_o = self.to_shading(wo_world).normalized();
         let w_i = self.to_shading(wi_world).normalized();
         let (pdf_val, n_comps) = self.bxdfs.iter()
-            .filter_map(|ref x| if x.matches(flags) { Some(x.pdf(&w_o, &w_i)) } else { None })
+            .filter_map(|x| if x.matches(flags) { Some(x.pdf(&w_o, &w_i)) } else { None })
             .fold((0.0, 0), |(p, n), y| (p + y, n + 1));
         if n_comps > 0 {
             pdf_val / n_comps as f32
@@ -135,7 +135,7 @@ impl<'a> BSDF<'a> {
     /// Get the `i`th BxDF that matches the flags passed. There should not be fewer than i
     /// BxDFs that match the flags
     fn matching_at(&self, i: usize, flags: EnumSet<BxDFType>) -> &Box<BxDF + Send + Sync> {
-        let mut it = self.bxdfs.iter().filter(|ref x| x.matches(flags)).skip(i);
+        let mut it = self.bxdfs.iter().filter(|x| x.matches(flags)).skip(i);
         match it.next() {
             Some(b) => b,
             None => panic!("Out of bounds index for BxDF type {:?}", flags)

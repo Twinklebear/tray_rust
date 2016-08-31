@@ -87,7 +87,7 @@ impl CLike for BxDFType {
     unsafe fn from_u32(v: u32) -> BxDFType { mem::transmute(v) }
 }
 
-/// Trait implemented by BRDF/BTDFs in tray_rust. Provides methods for
+/// Trait implemented by BRDF/BTDFs in `tray_rust`. Provides methods for
 /// evaluating and sampling the function
 pub trait BxDF {
     /// Get the type of this BxDF

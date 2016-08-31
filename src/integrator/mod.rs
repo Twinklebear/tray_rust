@@ -137,14 +137,13 @@ pub trait Integrator {
             let (f, w_i, pdf_bsdf, sampled_type) = bsdf.sample(w_o, flags, bsdf_sample);
             if pdf_bsdf > 0.0 && !f.is_black() {
                 // Handle delta distributions the same way we did for the light
-                let mut w = 1.0;
-                if !sampled_type.contains(&BxDFType::Specular) {
+                let w = if !sampled_type.contains(&BxDFType::Specular) {
                     let pdf_light = light.pdf(p, &w_i, time);
                     if pdf_light == 0.0 {
                         return direct_light;
                     }
-                    w = mc::power_heuristic(1.0, pdf_bsdf, 1.0, pdf_light);
-                }
+                    mc::power_heuristic(1.0, pdf_bsdf, 1.0, pdf_light)
+                } else { 1.0 };
                 // Find out if the ray along w_i actually hits the light source
                 let mut ray = Ray::segment(p, &w_i, 0.001, f32::INFINITY, time);
                 let mut li = Colorf::black();

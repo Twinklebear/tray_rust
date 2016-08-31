@@ -59,7 +59,7 @@ impl Geometry for Disk {
         }
         let mut phi = f32::atan2(p.y, p.x);
         if phi < 0.0 {
-            phi = phi + f32::consts::PI * 2.0;
+            phi += f32::consts::PI * 2.0;
         }
         if phi > f32::consts::PI * 2.0 {
             return None;
@@ -94,7 +94,7 @@ impl Sampleable for Disk {
     fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
         // Time doesn't matter here, we're already in the object's space so we're moving
         // with it so to speak
-        let mut ray = Ray::segment(&p, &w_i, 0.001, f32::INFINITY, 0.0);
+        let mut ray = Ray::segment(p, w_i, 0.001, f32::INFINITY, 0.0);
         match self.intersect(&mut ray) {
             Some(d) => {
                 let w = -*w_i;

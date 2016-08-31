@@ -180,7 +180,7 @@ impl Light for Emitter {
                 let pdf = g.pdf(&p_l, &w_il);
                 let radiance = self.radiance(&-w_il, &p_sampled, &normal, time);
                 let p_w = transform * p_sampled;
-                (radiance, transform * w_il, pdf, OcclusionTester::test_points(&p, &p_w, time))
+                (radiance, transform * w_il, pdf, OcclusionTester::test_points(p, &p_w, time))
             },
         }
     }

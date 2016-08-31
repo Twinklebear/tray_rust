@@ -32,7 +32,7 @@ impl AnimatedTransform {
         AnimatedTransform { keyframes: vec![BSpline::new(degree, keyframes, knots)] }
     }
     pub fn unanimated(transform: &Transform) -> AnimatedTransform {
-        let key = Keyframe::new(&transform);
+        let key = Keyframe::new(transform);
         AnimatedTransform { keyframes: vec![BSpline::new(0, vec![key], vec![0.0, 1.0])] }
     }
     /// Compute the transformation matrix for the animation at some time point using B-Spline
