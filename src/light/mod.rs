@@ -1,5 +1,5 @@
-//! Defines the light interface implemented by all lights in tray_rust and
-//! the OcclusionTester which provides a convenient interface for doing
+//! Defines the light interface implemented by all lights in `tray_rust` and
+//! the `OcclusionTester` which provides a convenient interface for doing
 //! shadow tests for lights
 
 use std::f32;
@@ -8,7 +8,7 @@ use linalg::{Point, Vector, Ray};
 use film::Colorf;
 use scene::Scene;
 
-/// The OcclusionTester provides a simple interface for setting up and executing
+/// The `OcclusionTester` provides a simple interface for setting up and executing
 /// occlusion queries in the scene
 #[derive(Clone, Copy, Debug)]
 pub struct OcclusionTester {
@@ -37,7 +37,7 @@ impl OcclusionTester {
     }
 }
 
-/// Trait implemented by all lights in tray_rust. Provides methods for sampling
+/// Trait implemented by all lights in `tray_rust`. Provides methods for sampling
 /// the light and in the future ones for checking if it's a delta light, computing
 /// its power and so on.
 pub trait Light {

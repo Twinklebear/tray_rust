@@ -25,7 +25,7 @@ impl ImageSample {
     }
 }
 
-/// RenderTarget is a RGBF render target to write our image too while rendering
+/// `RenderTarget` is a RGBF render target to write our image too while rendering
 pub struct RenderTarget {
     width: usize,
     height: usize,

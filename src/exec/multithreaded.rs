@@ -14,7 +14,7 @@ use sampler::{self, Sampler};
 use scene::Scene;
 use exec::{Config, Exec};
 
-/// The MultiThreaded execution uses a configurable number of threads in
+/// The `MultiThreaded` execution uses a configurable number of threads in
 /// a threadpool to render each frame
 pub struct MultiThreaded {
     pool: Pool,

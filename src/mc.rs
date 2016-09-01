@@ -41,15 +41,13 @@ pub fn concentric_sample_disk(u: &(f32, f32)) -> (f32, f32) {
             theta = 2.0 - s.0 / s.1;
         }
     }
-    else {
-        if s.0 <= s.1 {
+    else if s.0 <= s.1 {
             radius = -s.0;
             theta = 4.0 + s.1 / s.0;
-        }
-        else {
-            radius = -s.1;
-            theta = 6.0 - s.0 / s.1;
-        }
+    }
+    else {
+        radius = -s.1;
+        theta = 6.0 - s.0 / s.1;
     }
     let theta = theta * f32::consts::FRAC_PI_4;
     (radius * f32::cos(theta), radius * f32::sin(theta))
@@ -76,7 +74,7 @@ pub fn uniform_sample_cone(samples: &(f32, f32), cos_theta_max: f32) -> Vector {
     Vector::new(f32::cos(phi) * sin_theta, f32::sin(phi) * sin_theta, cos_theta)
 }
 /// Uniformly sample a direction in a cone with max angle `cos_theta_max` where
-/// the cone looks down the w_z vector provided, with w_x, w_y forming the rest
+/// the cone looks down the `w_z` vector provided, with `w_x`, `w_y` forming the rest
 /// of the coordinate frame for the cone
 pub fn uniform_sample_cone_frame(samples: &(f32, f32), cos_theta_max: f32, w_x: &Vector,
                                  w_y: &Vector, w_z: &Vector) -> Vector {

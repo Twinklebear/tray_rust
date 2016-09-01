@@ -1,7 +1,7 @@
-//! Defines the NormalsDebug integrator which renders out the object's normals
+//! Defines the `NormalsDebug` integrator which renders out the object's normals
 //!
 //! # Scene Usage Example
-//! The NormalsDebug integrator just needs a maximum ray depth to terminate specular reflection
+//! The `NormalsDebug` integrator just needs a maximum ray depth to terminate specular reflection
 //! and transmission rays.
 //!
 //! ```json
@@ -19,7 +19,7 @@ use film::Colorf;
 use integrator::Integrator;
 use sampler::Sampler;
 
-/// The NormalsDebug integrator implementing the NormalsDebug recursive ray tracing algorithm
+/// The `NormalsDebug` integrator implementing the `NormalsDebug` recursive ray tracing algorithm
 #[derive(Clone, Copy, Debug)]
 pub struct NormalsDebug;
 

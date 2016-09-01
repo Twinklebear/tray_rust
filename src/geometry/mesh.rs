@@ -5,7 +5,7 @@
 //! The mesh is specified by the OBJ file to load and the name of the specific
 //! model within the file to use. The file and other loaded models are kept loaded
 //! so you can easily use the same or other models in the file as well. If no name is
-//! assigned to the model in the file it will be given the name "unnamed_model",
+//! assigned to the model in the file it will be given the name "`unnamed_model`",
 //! however it's recommended to name your models.
 //!
 //! ```json

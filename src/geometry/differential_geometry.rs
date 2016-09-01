@@ -1,4 +1,4 @@
-//! Defines the DifferentialGeometry type which is used to pass information
+//! Defines the `DifferentialGeometry` type which is used to pass information
 //! about the hit piece of geometry back from the intersection to the shading
 
 use linalg::{self, Point, Normal, Vector};

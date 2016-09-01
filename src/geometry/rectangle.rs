@@ -89,7 +89,7 @@ impl Sampleable for Rectangle {
     fn pdf(&self, p: &Point, w_i: &Vector) -> f32 {
         // Time doesn't matter here, we're already in the object's space so we're moving
         // with it so to speak
-        let mut ray = Ray::segment(&p, &w_i, 0.001, f32::INFINITY, 0.0);
+        let mut ray = Ray::segment(p, w_i, 0.001, f32::INFINITY, 0.0);
         match self.intersect(&mut ray) {
             Some(d) => {
                 let w = -*w_i;

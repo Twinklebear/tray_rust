@@ -5,7 +5,7 @@ use std::cmp::{Eq, Ord, PartialOrd, PartialEq, Ordering};
 use linalg;
 use film::Colorf;
 
-/// ColorKeyframe is a color associated with a specific time
+/// `ColorKeyframe` is a color associated with a specific time
 #[derive(Debug, Copy, Clone)]
 pub struct ColorKeyframe {
     pub color: Colorf,
@@ -34,7 +34,7 @@ impl PartialEq for ColorKeyframe {
     }
 }
 
-/// AnimatedColor is a list of colors associated with time points in the scene
+/// `AnimatedColor` is a list of colors associated with time points in the scene
 /// that will compute the color at the desired time by blending the two nearest ones
 #[derive(Debug, Clone)]
 pub struct AnimatedColor {

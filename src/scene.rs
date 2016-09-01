@@ -72,11 +72,11 @@ impl Scene {
         let cameras = load_cameras(&data, rt.dimensions());
         let integrator = load_integrator(data.find("integrator")
                                          .expect("The scene must specify the integrator to render with"));
-        let materials = load_materials(&path, data.find("materials")
+        let materials = load_materials(path, data.find("materials")
                                        .expect("The scene must specify an array of materials"));
         // mesh cache is a map of file_name -> (map of mesh name -> mesh)
         let mut mesh_cache = HashMap::new();
-        let instances = load_objects(&path, &materials, &mut mesh_cache,
+        let instances = load_objects(path, &materials, &mut mesh_cache,
                                      data.find("objects").expect("The scene must specify a list of objects"));
 
         assert!(!instances.is_empty(), "Aborting: the scene does not have any objects!");
@@ -309,7 +309,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
                 materials.insert(name, Arc::new(Merl::load_file(path.join(file_path).as_path()))
                                  as Arc<Material + Send + Sync>);
             } else {
-                materials.insert(name, Arc::new(Merl::load_file(&file_path)) as Arc<Material + Send + Sync>);
+                materials.insert(name, Arc::new(Merl::load_file(file_path)) as Arc<Material + Send + Sync>);
             }
         } else if ty == "metal" {
             let refr_index = load_color(m.find("refractive_index")
