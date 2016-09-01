@@ -5,7 +5,7 @@ dependencies = [
  "bincode 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "bspline 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "byteorder 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "clippy 0.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clippy 0.0.87 (registry+https://github.com/rust-lang/crates.io-index)",
  "clock_ticks 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt 0.6.82 (registry+https://github.com/rust-lang/crates.io-index)",
  "enum-set 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -71,15 +71,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "clippy"
-version = "0.0.79"
+version = "0.0.87"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "clippy_lints 0.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clippy_lints 0.0.87 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "clippy_lints"
-version = "0.0.79"
+version = "0.0.87"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "matches 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",

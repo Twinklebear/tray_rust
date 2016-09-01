@@ -143,7 +143,9 @@ pub trait Integrator {
                         return direct_light;
                     }
                     mc::power_heuristic(1.0, pdf_bsdf, 1.0, pdf_light)
-                } else { 1.0 };
+                } else {
+                    1.0
+                };
                 // Find out if the ray along w_i actually hits the light source
                 let mut ray = Ray::segment(p, &w_i, 0.001, f32::INFINITY, time);
                 let mut li = Colorf::black();

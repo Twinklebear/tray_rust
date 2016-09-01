@@ -35,17 +35,14 @@ pub fn concentric_sample_disk(u: &(f32, f32)) -> (f32, f32) {
             } else {
                 theta = 8.0 + s.1 / s.0;
             }
-        }
-        else {
+        } else {
             radius = s.1;
             theta = 2.0 - s.0 / s.1;
         }
-    }
-    else if s.0 <= s.1 {
+    } else if s.0 <= s.1 {
             radius = -s.0;
             theta = 4.0 + s.1 / s.0;
-    }
-    else {
+    } else {
         radius = -s.1;
         theta = 6.0 - s.0 / s.1;
     }

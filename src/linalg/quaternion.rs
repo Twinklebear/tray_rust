@@ -41,7 +41,9 @@ impl Quaternion {
                 1
             } else if *m.at(2, 2) > *m.at(0, 0) {
                 2
-            } else { 0 };
+            } else {
+                0
+            };
             let j = next[i];
             let k = next[j];
             let mut s = f32::sqrt((*m.at(i, i) - (*m.at(j, j) + *m.at(k, k))) + 1.0);
