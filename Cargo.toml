@@ -12,7 +12,7 @@ enum-set = "0.0.6"
 rand = "0.3.14"
 rustc-serialize = "0.3.19"
 docopt = "0.6.82"
-image = "0.10.1"
+image = "0.10.3"
 num_cpus = "1.0.0"
 tobj = "0.1.1"
 byteorder = "0.5.3"
@@ -35,4 +35,3 @@ lto = true
 
 [features]
 unstable = ["clippy"]
-
