@@ -29,6 +29,7 @@ pub use self::differential_geometry::DifferentialGeometry;
 pub use self::intersection::Intersection;
 pub use self::instance::Instance;
 pub use self::sphere::Sphere;
+pub use self::plane::Plane;
 pub use self::disk::Disk;
 pub use self::rectangle::Rectangle;
 pub use self::bbox::BBox;
@@ -41,6 +42,7 @@ pub mod differential_geometry;
 pub mod intersection;
 pub mod instance;
 pub mod sphere;
+pub mod plane;
 pub mod disk;
 pub mod rectangle;
 pub mod bbox;
@@ -88,4 +90,3 @@ impl<T: ?Sized> BoundableGeom for T where T: Geometry + Boundable {}
 
 pub trait SampleableGeom: Geometry + Boundable + Sampleable {}
 impl<T: ?Sized> SampleableGeom for T where T: Geometry + Boundable + Sampleable {}
-
