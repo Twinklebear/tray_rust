@@ -5,10 +5,9 @@ extern crate image;
 use rand::StdRng;
 
 use tray_rust::linalg::{AnimatedTransform, Transform, Point, Vector};
-use tray_rust::film;
 use tray_rust::film::{Colorf, RenderTarget, Camera, ImageSample};
 use tray_rust::film::filter::MitchellNetravali;
-use tray_rust::geometry::{Geometry, Sphere, Instance};
+use tray_rust::geometry::{Sphere, Instance};
 use tray_rust::material::Matte;
 use tray_rust::sampler::{BlockQueue, LowDiscrepancy, Sampler};
 
@@ -17,7 +16,7 @@ fn main() {
     let height = 600usize;
     let filter =
         Box::new(MitchellNetravali::new(2.0, 2.0, 0.333333333333333333, 0.333333333333333333));
-    let mut rt = RenderTarget::new((width, height), (20, 20), filter);
+    let rt = RenderTarget::new((width, height), (20, 20), filter);
     let transform =
         AnimatedTransform::unanimated(&Transform::look_at(&Point::new(0.0, 0.0, -10.0),
                                                           &Point::new(0.0, 0.0, 0.0),
@@ -46,23 +45,26 @@ fn main() {
     // is a good choice for quality.
     let mut sampler = LowDiscrepancy::new(block_dim, 2);
     let mut sample_pos = Vec::with_capacity(sampler.max_spp());
-    let mut block_samples = Vec::with_capacity(sampler.max_spp() * (block_dim.0 * block_dim.1) as usize);
+    let mut block_samples = Vec::with_capacity(sampler.max_spp() *
+                                               (block_dim.0 * block_dim.1) as usize);
     let mut rng = match StdRng::new() {
         Ok(r) => r,
-        Err(e) => { println!("Failed to get StdRng, {}", e); return }
+        Err(e) => {
+            println!("Failed to get StdRng, {}", e);
+            return;
+        }
     };
     // Grab a block from the queue and start working on it, submitting samples
     // to the render target thread after each pixel
     for b in block_queue.iter() {
         sampler.select_block(b);
-        let mut pixel_samples = 0;
         // While the sampler has samples left to take for this pixel, take some samples
         while sampler.has_samples() {
             // Get samples for a pixel and render them
             sampler.get_samples(&mut sample_pos, &mut rng);
             for s in &sample_pos[..] {
                 let mut ray = camera.generate_ray(s, 0.0);
-                if let Some(hit) = instance.intersect(&mut ray) {
+                if let Some(_) = instance.intersect(&mut ray) {
                     block_samples.push(ImageSample::new(s.0, s.1, Colorf::broadcast(1.0)));
                 } else {
                     // For correct filtering we also MUST set a background color of some kind
@@ -80,9 +82,12 @@ fn main() {
 
     // Get the sRGB8 render buffer from the floating point framebuffer and save it
     let img = rt.get_render();
-    match image::save_buffer("sphere.png", &img[..], dim.0 as u32, dim.1 as u32, image::RGB(8)) {
-        Ok(_) => {},
-            Err(e) => println!("Error saving image, {}", e),
+    match image::save_buffer("sphere.png",
+                             &img[..],
+                             dim.0 as u32,
+                             dim.1 as u32,
+                             image::RGB(8)) {
+        Ok(_) => {}
+        Err(e) => println!("Error saving image, {}", e),
     };
 }
-
