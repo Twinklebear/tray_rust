@@ -7,6 +7,7 @@ use std::io::prelude::*;
 use std::collections::HashMap;
 use std::net::ToSocketAddrs;
 use std::iter;
+use std::time::SystemTime;
 
 use bincode::SizeLimit;
 use bincode::rustc_serialize::{encode, decode};
@@ -29,13 +30,19 @@ enum DistributedFrame {
         // frame so far
         num_reporting: usize,
         render: Image,
+        // Start time of this frame, when we got the first tiles in from a worker
+        first_tile_recv: SystemTime,
     },
     Completed,
 }
 
 impl DistributedFrame {
     pub fn start(img_dim: (usize, usize)) -> DistributedFrame {
-        DistributedFrame::InProgress { num_reporting: 0, render: Image::new(img_dim) }
+        DistributedFrame::InProgress {
+            num_reporting: 0,
+            render: Image::new(img_dim),
+            first_tile_recv: SystemTime::now(),
+        }
     }
 }
 
@@ -123,12 +130,13 @@ impl Master {
 
         let mut finished = false;
         match *df {
-            DistributedFrame::InProgress { ref mut num_reporting, ref mut render } => {
+            DistributedFrame::InProgress { ref mut num_reporting, ref mut render, ref first_tile_recv } => {
                 // Collect results from the worker and see if we've finished the frame and can save
                 // it out
                 render.add_blocks(frame.block_size, &frame.blocks, &frame.pixels);
                 *num_reporting += 1;
                 if *num_reporting == self.workers.len() {
+                    let render_time = first_tile_recv.elapsed().expect("Failed to get rendering time?");
                     let out_file = match self.config.out_path.extension() {
                         Some(_) => self.config.out_path.clone(),
                         None => self.config.out_path.join(
@@ -141,7 +149,8 @@ impl Master {
                         Ok(_) => {},
                         Err(e) => println!("Error saving image, {}", e),
                     };
-                    println!("Frame {}: rendered to '{}'\n--------------------",
+                    println!("Frame {}: rendering took {:4}s\nFrame {}: rendered to '{}'\n--------------------",
+                             frame_num, render_time.as_secs() as f64 + render_time.subsec_nanos() as f64 * 1e-9,
                              frame_num, out_file.display());
                     finished = true;
                 }

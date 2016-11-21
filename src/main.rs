@@ -7,12 +7,11 @@ extern crate docopt;
 extern crate rustc_serialize;
 extern crate num_cpus;
 extern crate scoped_threadpool;
-extern crate clock_ticks;
 extern crate tray_rust;
-
 
 use std::path::PathBuf;
 use std::io::ErrorKind;
+use std::time::SystemTime;
 
 use docopt::Docopt;
 
@@ -88,7 +87,7 @@ fn single_node_render(args: Args) {
         Some(x) => x,
         _ => frame_info.end,
     };
-    let scene_start = clock_ticks::precise_time_s();
+    let scene_start = SystemTime::now();
     let mut config = exec::Config::new(out_path, args.arg_scenefile, spp, num_threads, frame_info, (0, 0));
     let mut exec = exec::MultiThreaded::new(num_threads);
     for i in frame_info.start..frame_info.end + 1 {
@@ -107,8 +106,8 @@ fn single_node_render(args: Args) {
         rt.clear();
         println!("Frame {}: rendered to '{}'\n--------------------", i, out_file.display());
     }
-    let time = clock_ticks::precise_time_s() - scene_start;
-    println!("Rendering entire sequence took {}s", time);
+    let time = scene_start.elapsed().expect("Failed to get render time?");
+    println!("Rendering entire sequence took {:4}s", time.as_secs() as f64 + time.subsec_nanos() as f64 * 1e-9)
 }
 
 fn master_node(args: Args) {
@@ -138,14 +137,14 @@ fn master_node(args: Args) {
         Some(x) => x,
         _ => frame_info.end,
     };
-    let scene_start = clock_ticks::precise_time_s();
+    let scene_start = SystemTime::now();
     let config = exec::Config::new(out_path, args.arg_scenefile, spp, 0, frame_info, (0, 0));
     // Connect to all the workers and prepare to send/receive data from/to them
     let (mut master, mut event_loop) = distrib::Master::start_workers(args.arg_workers, config, rt.dimensions());
     // Start the event loop to wait for and read results from each worker. No
     event_loop.run(&mut master).unwrap();
-    let time = clock_ticks::precise_time_s() - scene_start;
-    println!("Rendering entire sequence took {}s", time);
+    let time = scene_start.elapsed().expect("Failed to get render time?");
+    println!("Rendering entire sequence took {:4}s", time.as_secs() as f64 + time.subsec_nanos() as f64 * 1e-9)
 }
 
 fn worker_node(args: Args) {
@@ -156,7 +155,7 @@ fn worker_node(args: Args) {
     let mut exec = exec::MultiThreaded::new(num_threads);
     // Get our instructions of what to render from the master
     let mut worker = distrib::Worker::listen_for_master(num_threads);
-    let scene_start = clock_ticks::precise_time_s();
+    let scene_start = SystemTime::now();
     for i in worker.config.frame_info.start..worker.config.frame_info.end + 1 {
         worker.config.current_frame = i;
         exec.render(&mut worker.scene, &mut worker.render_target, &worker.config);
@@ -164,8 +163,8 @@ fn worker_node(args: Args) {
         worker.render_target.clear();
         println!("--------------------");
     }
-    let time = clock_ticks::precise_time_s() - scene_start;
-    println!("Rendering entire sequence took {}s", time);
+    let time = scene_start.elapsed().expect("Failed to get render time?");
+    println!("Rendering entire sequence took {:4}s", time.as_secs() as f64 + time.subsec_nanos() as f64 * 1e-9)
 }
 
 fn main() {

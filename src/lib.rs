@@ -90,7 +90,6 @@ extern crate bspline;
 extern crate docopt;
 extern crate rustc_serialize;
 extern crate scoped_threadpool;
-extern crate clock_ticks;
 extern crate image;
 extern crate bincode;
 extern crate mio;

@@ -2,8 +2,8 @@
 //! the image.
 
 use std::iter;
+use std::time::SystemTime;
 
-use clock_ticks;
 use scoped_threadpool::Pool;
 use rand::StdRng;
 
@@ -60,10 +60,11 @@ impl Exec for MultiThreaded {
 
         println!("Frame {}: rendering for {} to {}", config.current_frame,
                  frame_start_time, frame_end_time);
-        let start = clock_ticks::precise_time_s();
+        let scene_start = SystemTime::now();
         self.render_parallel(scene, rt, config);
-        let time = clock_ticks::precise_time_s() - start;
-        println!("Frame {}: rendering took {}s", config.current_frame, time);
+        let time = scene_start.elapsed().expect("Failed to get render time?");
+        println!("Frame {}: rendering took {:4}s", config.current_frame,
+                 time.as_secs() as f64 + time.subsec_nanos() as f64 * 1e-9);
     }
 }
 
