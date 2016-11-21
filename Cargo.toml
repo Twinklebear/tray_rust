@@ -22,7 +22,7 @@ bspline = "0.2.2"
 bincode = "0.6.0"
 mio = "0.5.1"
 la = "0.2.0"
-clippy = { version = "0.0.87", optional = true }
+clippy = { version = "0.0.91", optional = true }
 
 [profile.release]
 # How to send extra compiler flag for -march=native equivalent in Rust
