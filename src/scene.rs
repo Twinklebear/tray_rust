@@ -42,7 +42,7 @@ use integrator::{self, Integrator};
 /// shared immutably among the ray tracing threads
 pub struct Scene {
     pub cameras: Vec<Camera>,
-    active_camera: usize,
+    active_camera: Option<usize>,
     pub bvh: BVH<Instance>,
     pub integrator: Box<Integrator + Send + Sync>,
 }
@@ -82,7 +82,7 @@ impl Scene {
         assert!(!instances.is_empty(), "Aborting: the scene does not have any objects!");
         let scene = Scene {
             cameras: cameras,
-            active_camera: 0,
+            active_camera: None,
             // TODO: Read time parameters from the scene file, update BVH every few frames
             bvh: BVH::new(4, instances, 0.0, frame_info.time),
             integrator: integrator,
@@ -96,19 +96,33 @@ impl Scene {
     }
     /// Advance the time the scene is currently displaying to the time range passed
     pub fn update_frame(&mut self, frame: usize, start: f32, end: f32) {
-        if self.active_camera != self.cameras.len() - 1 && self.cameras[self.active_camera + 1].active_at == frame {
-            self.active_camera += 1;
-            println!("Changing to camera {}", self.active_camera);
-        }
-        self.cameras[self.active_camera].update_frame(start, end);
+        let cam = match self.active_camera {
+            Some(c) => {
+                if c != self.cameras.len() - 1 && self.cameras[c + 1].active_at == frame {
+                    println!("Changing to camera {}", c + 1);
+                    c + 1
+                } else { c }
+            },
+            None => {
+                // If there's no active camera we need to find the right one to start with
+                // based on what frame we're beginning the rendering at. e.g. if you have a
+                // camera become active at frame 5 and pass --start-frame 5, you should render
+                // from that camera.
+                let c = self.cameras.iter().take_while(|x| x.active_at <= frame).count() - 1;
+                println!("Selecting starting camera {}", c);
+                c
+            },
+        };
+        self.active_camera = Some(cam);
+        self.cameras[cam].update_frame(start, end);
         // TODO: How often to re-build the BVH?
-        let shutter_time = self.cameras[self.active_camera].shutter_time();
+        let shutter_time = self.cameras[cam].shutter_time();
         println!("Frame {}: re-building bvh for {} to {}", frame, shutter_time.0, shutter_time.1);
         self.bvh.rebuild(shutter_time.0, shutter_time.1);
     }
     /// Get the active camera for the current frame
     pub fn active_camera(&self) -> &Camera {
-        &self.cameras[self.active_camera]
+        &self.cameras[self.active_camera.expect("Update frame must be called before active_camera")]
     }
 }
 
