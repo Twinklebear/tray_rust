@@ -402,7 +402,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
                 let mat_name = o.find("material").expect("A material is required for an object")
                     .as_str().expect("Object material name must be a string");
                 let mat = materials.get(mat_name)
-                    .expect("Material was not found in the material list").clone();
+                    .expect(&format!("Material {} was not found in the material list", mat_name)).clone();
                 let geom = load_sampleable_geometry(o.find("geometry")
                                                     .expect("Geometry is required for area lights"));
 
@@ -414,7 +414,7 @@ fn load_objects(path: &Path, materials: &HashMap<String, Arc<Material + Send + S
             let mat_name = o.find("material").expect("A material is required for an object")
                     .as_str().expect("Object material name must be a string");
             let mat = materials.get(mat_name)
-                .expect("Material was not found in the material list").clone();
+                .expect(&format!("Material {} was not found in the material list", mat_name)).clone();
             let geom = load_geometry(path, mesh_cache, o.find("geometry")
                                      .expect("Geometry is required for receivers"));
 
