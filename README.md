@@ -65,7 +65,11 @@ CPUs. The machine is an early/engineering sample from Intel so your results may 
 Intel for the hardware! Some older renders are shown as well without timing since they were
 run on a different machine.
 
-Some more sample renders can be found [here](http://imgur.com/a/3qNBc).
+Some more sample renders can be found [here](http://imgur.com/a/3qNBc). I've also used tray\_rust
+for the past two years at [Utah's Teapot Rendering Competition](http://graphics.cs.utah.edu/trc/),
+view my animations for [2015](http://www.willusher.io/courses/cs6620/tr15.html)
+and [2016](http://www.willusher.io/courses/cs6620/tr16.html). The latter was
+made using the Blender plugin for modeling and contains more complex motion and sequences.
 
 [![Model gallery](http://i.imgur.com/X5y8oIq.png)](http://i.imgur.com/X5y8oIq.png)
 
