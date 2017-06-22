@@ -4,7 +4,8 @@
 extern crate image;
 extern crate rand;
 extern crate docopt;
-extern crate rustc_serialize;
+#[macro_use]
+extern crate serde_derive;
 extern crate num_cpus;
 extern crate scoped_threadpool;
 extern crate tray_rust;
@@ -43,7 +44,7 @@ Options:
   -h, --help              Show this message.
 ";
 
-#[derive(RustcDecodable, Debug)]
+#[derive(Deserialize, Debug)]
 struct Args {
     arg_scenefile: String,
     flag_o: Option<String>,
@@ -168,7 +169,7 @@ fn worker_node(args: Args) {
 }
 
 fn main() {
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.deserialize()).unwrap_or_else(|e| e.exit());
     if Some(true) == args.flag_master {
         master_node(args);
     } else if Some(true) == args.flag_worker {

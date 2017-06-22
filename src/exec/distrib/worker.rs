@@ -6,8 +6,7 @@ use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 use std::iter;
 
-use bincode::SizeLimit;
-use bincode::rustc_serialize::{encode, decode};
+use bincode::{Infinite, serialize, deserialize};
 
 use scene::Scene;
 use film::RenderTarget;
@@ -50,7 +49,7 @@ impl Worker {
     pub fn send_results(&mut self) {
         let (block_size, blocks, pixels) = self.render_target.get_rendered_blocks();
         let frame = Frame::new(self.config.current_frame, block_size, blocks, pixels);
-        let bytes = encode(&frame, SizeLimit::Infinite).unwrap();
+        let bytes = serialize(&frame, Infinite).unwrap();
         if let Err(e) = self.master.write_all(&bytes[..]) {
             panic!("Failed to send frame to {:?}: {}", self.master, e);
         }
@@ -73,7 +72,7 @@ fn get_instructions() -> (Instructions, TcpStream) {
                 }
             }
             // How many bytes we expect to get from the worker for a frame
-            expected_size = decode(&buf[..]).unwrap();
+            expected_size = deserialize(&buf[..]).unwrap();
             buf.extend(iter::repeat(0u8).take(expected_size - 8));
             // Now read the rest
             while currently_read < expected_size {
@@ -82,7 +81,7 @@ fn get_instructions() -> (Instructions, TcpStream) {
                     Err(e) => panic!("Failed to read from master, {:?}", e),
                 }
             }
-            let instr = decode(&buf[..]).unwrap();
+            let instr = deserialize(&buf[..]).unwrap();
             println!("Received instructions: {:?}", instr);
             (instr, stream)
         },

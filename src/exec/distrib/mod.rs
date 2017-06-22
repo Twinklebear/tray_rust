@@ -38,7 +38,7 @@
 //! these IP addresses instead of the public IPs of the worker nodes.
 //!
 
-use bincode::rustc_serialize::encoded_size;
+use bincode::serialized_size;
 
 pub use self::worker::Worker;
 pub use self::master::Master;
@@ -48,7 +48,7 @@ pub mod master;
 
 /// Stores instructions sent to a worker about which blocks it should be rendering,
 /// block size is assumed to be 8x8
-#[derive(Debug, Clone, RustcEncodable, RustcDecodable)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct Instructions {
     /// Size header for binary I/O with bincode
     pub encoded_size: u64,
@@ -68,14 +68,14 @@ impl Instructions {
                block_count: usize) -> Instructions {
         let mut instr = Instructions { encoded_size: 0, scene: scene.to_owned(), frames: frames,
                        block_start: block_start, block_count: block_count };
-        instr.encoded_size = encoded_size(&instr);
+        instr.encoded_size = serialized_size(&instr);
         instr
     }
 }
 
 /// Frame is used by the worker to send its results back to the master. Sends information
 /// about which frame is being sent, which blocks were rendered and the data for the blocks
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(Serialize, Deserialize)]
 struct Frame {
     /// Size header for binary I/O with bincode
     pub encoded_size: u64,
@@ -94,7 +94,7 @@ impl Frame {
                pixels: Vec<f32>) -> Frame {
         let mut frame = Frame { encoded_size: 0, frame: frame, block_size: block_size,
                             blocks: blocks, pixels: pixels };
-        frame.encoded_size = encoded_size(&frame);
+        frame.encoded_size = serialized_size(&frame);
         frame
     }
 }

@@ -88,7 +88,8 @@ extern crate byteorder;
 extern crate serde_json;
 extern crate bspline;
 extern crate docopt;
-extern crate rustc_serialize;
+#[macro_use]
+extern crate serde_derive;
 extern crate scoped_threadpool;
 extern crate image;
 extern crate bincode;

@@ -9,8 +9,7 @@ use std::net::ToSocketAddrs;
 use std::iter;
 use std::time::SystemTime;
 
-use bincode::SizeLimit;
-use bincode::rustc_serialize::{encode, decode};
+use bincode::{Infinite, serialize, deserialize};
 use image;
 use mio::tcp::{TcpStream, Shutdown};
 use mio::*;
@@ -176,7 +175,7 @@ impl Master {
             }
             if buf.currently_read == buf.expected_size {
                 // How many bytes we expect to get from the worker for a frame
-                buf.expected_size = decode(&buf.buf[..]).unwrap();
+                buf.expected_size = deserialize(&buf.buf[..]).unwrap();
                 // Extend the Vec so we've got enough room for the remaning bytes, minus the 8 for the
                 // encoded size header
                 buf.buf.extend(iter::repeat(0u8).take(buf.expected_size - 8));
@@ -227,7 +226,7 @@ impl Handler for Master {
                                           (self.config.frame_info.start, self.config.frame_info.end),
                                           b_start, b_count);
             // Encode and send our instructions to the worker
-            let bytes = encode(&instr, SizeLimit::Infinite).unwrap();
+            let bytes = serialize(&instr, Infinite).unwrap();
             if let Err(e) = self.connections[worker].write_all(&bytes[..]) {
                 println!("Failed to send instructions to {}: {:?}", self.workers[worker], e);
             }
@@ -240,7 +239,7 @@ impl Handler for Master {
         // Read results from the worker, if we've accumulated all the data being sent
         // decode and accumulate the frame
         if event.is_readable() && self.read_worker_buffer(worker) {
-            let frame = decode(&self.worker_buffers[worker].buf[..]).unwrap();
+            let frame = deserialize(&self.worker_buffers[worker].buf[..]).unwrap();
             self.save_results(frame);
             // Clean up the worker buffer for the next frame
             self.worker_buffers[worker].buf.clear();
