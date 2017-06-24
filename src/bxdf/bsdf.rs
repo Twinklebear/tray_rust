@@ -29,19 +29,13 @@ pub struct BSDF<'a> {
     pub bitan: Vector,
     /// Refractive index of the geometry
     pub eta: f32,
-    /// TODO: Currently a Vec is safe to use but once in the memory pool it
-    /// will leak since it won't be dropped. This would also migrate our BxDFs
-    /// from Box<BxDF> to &BxDF. When unboxed traits land we can move to unboxed
-    /// BxDFs here though.
-    bxdfs: &'a [Box<BxDF + Send + Sync>],
+    bxdfs: &'a [&'a BxDF],
 }
 
 impl<'a> BSDF<'a> {
     /// Create a new BSDF using the BxDFs passed to shade the differential geometry with
     /// refractive index `eta`
-    pub fn new(bxdfs: &'a [Box<BxDF + Send + Sync>], eta: f32,
-               dg: &DifferentialGeometry<'a>)
-               -> BSDF<'a> {
+    pub fn new<'b>(bxdfs: &'a [&'a BxDF], eta: f32, dg: &DifferentialGeometry<'b>) -> BSDF<'a> {
         let n = dg.n.normalized();
         let mut bitan = dg.dp_du.normalized();
         let tan = linalg::cross(&n, &bitan);
@@ -134,10 +128,10 @@ impl<'a> BSDF<'a> {
     }
     /// Get the `i`th BxDF that matches the flags passed. There should not be fewer than i
     /// BxDFs that match the flags
-    fn matching_at(&self, i: usize, flags: EnumSet<BxDFType>) -> &Box<BxDF + Send + Sync> {
+    fn matching_at(&self, i: usize, flags: EnumSet<BxDFType>) -> &BxDF {
         let mut it = self.bxdfs.iter().filter(|x| x.matches(flags)).skip(i);
         match it.next() {
-            Some(b) => b,
+            Some(b) => *b,
             None => panic!("Out of bounds index for BxDF type {:?}", flags)
         }
     }

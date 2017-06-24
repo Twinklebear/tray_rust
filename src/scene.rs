@@ -35,7 +35,8 @@ use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
 use film::{filter, Camera, Colorf, RenderTarget, FrameInfo, AnimatedColor, ColorKeyframe};
 use geometry::{Sphere, Instance, Intersection, BVH, Mesh, Disk, Rectangle,
                BoundableGeom, SampleableGeom};
-use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal, RoughGlass};
+//use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal, RoughGlass};
+use material::{Material, Matte};
 use integrator::{self, Integrator};
 
 /// The scene containing the objects and camera configuration we'd like to render,
@@ -281,6 +282,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
         if materials.contains_key(&name) {
             panic!("Error loading material '{}': name conflicts with an existing entry", name);
         }
+        /*
         if ty == "glass" {
             let reflect = load_color(m.get("reflect")
                                      .expect(&mat_error(&name, "A reflect color is required for glass")[..]))
@@ -307,7 +309,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
                 .expect(&mat_error(&name, "roughness of roughglass must be a float")[..]) as f32;
             materials.insert(name, Arc::new(RoughGlass::new(&reflect, &transmit, eta, roughness))
                              as Arc<Material + Send + Sync>);
-        } else if ty == "matte" {
+        } else */if ty == "matte" {
             let diffuse = load_color(m.get("diffuse")
                                      .expect(&mat_error(&name, "A diffuse color is required for matte")[..]))
                 .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
@@ -315,7 +317,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
                 .expect(&mat_error(&name, "A roughness is required for matte")[..]).as_f64()
                 .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
             materials.insert(name, Arc::new(Matte::new(&diffuse, roughness)) as Arc<Material + Send + Sync>);
-        } else if ty == "merl" {
+        } /*else if ty == "merl" {
             let file_path = Path::new(m.get("file")
                       .expect(&mat_error(&name, "A filename containing the MERL material data is required")[..])
                       .as_str().expect(&mat_error(&name, "The MERL file must be a string")[..]));
@@ -360,7 +362,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
                                    "Invalid color specified for absorption_coefficient of specular metal")[..]);
             materials.insert(name, Arc::new(SpecularMetal::new(&refr_index, &absorption_coef))
                              as Arc<Material + Send + Sync>);
-        } else {
+        } */ else {
             panic!("Error parsing material '{}': unrecognized type '{}'", name, ty);
         }
     }

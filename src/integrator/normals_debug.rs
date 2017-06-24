@@ -27,8 +27,8 @@ pub struct NormalsDebug;
 impl Integrator for NormalsDebug {
     fn illumination(&self, _: &Scene, _: &[&Emitter], _: &Ray,
                     hit: &Intersection, _: &mut Sampler, _: &mut StdRng,
-                    _: &Allocator) -> Colorf {
-        let bsdf = hit.material.bsdf(hit);
+                    alloc: &Allocator) -> Colorf {
+        let bsdf = hit.material.bsdf(hit, alloc);
         (Colorf::new(bsdf.n.x, bsdf.n.y, bsdf.n.z) + Colorf::broadcast(1.0)) / 2.0
     }
 }
