@@ -19,8 +19,6 @@
 //! ]
 //! ```
 
-use std::vec::Vec;
-
 use light_arena::Allocator;
 
 use film::Colorf;

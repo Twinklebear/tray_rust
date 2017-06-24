@@ -16,15 +16,12 @@
 //! ]
 //! ```
 
-
-use std::vec::Vec;
-
 use light_arena::Allocator;
 
 use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, SpecularReflection};
-use bxdf::fresnel::{Fresnel, Conductor};
+use bxdf::fresnel::Conductor;
 use material::Material;
 
 /// The Specular Metal material describes specularly reflective metals using their
