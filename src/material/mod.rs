@@ -28,7 +28,7 @@ pub use self::specular_metal::SpecularMetal;
 pub use self::glass::Glass;
 pub use self::merl::Merl;
 pub use self::plastic::Plastic;
-//pub use self::metal::Metal;
+pub use self::metal::Metal;
 pub use self::rough_glass::RoughGlass;
 
 pub mod matte;
@@ -36,7 +36,7 @@ pub mod specular_metal;
 pub mod glass;
 pub mod merl;
 pub mod plastic;
-//pub mod metal;
+pub mod metal;
 pub mod rough_glass;
 
 /// Trait implemented by materials. Provides method to get the BSDF describing

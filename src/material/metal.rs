@@ -20,33 +20,37 @@
 //! ]
 //! ```
 
-use std::vec::Vec;
+use light_arena::Allocator;
 
 use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, TorranceSparrow};
-use bxdf::microfacet::{MicrofacetDistribution, Beckmann};
-use bxdf::fresnel::{Fresnel, Conductor};
+use bxdf::microfacet::Beckmann;
+use bxdf::fresnel::Conductor;
 use material::Material;
 
 /// The Metal material describes metals of varying roughness
 pub struct Metal {
-    bxdfs: Vec<Box<BxDF + Send + Sync>>,
+    eta: Colorf,
+    k: Colorf,
+    roughness: f32,
 }
 
 impl Metal {
     /// Create a new metal material specifying the reflectance properties of the metal
     pub fn new(eta: &Colorf, k: &Colorf, roughness: f32) -> Metal {
-        let fresnel = Box::new(Conductor::new(eta, k)) as Box<Fresnel + Send + Sync>;
-        let microfacet = Box::new(Beckmann::new(roughness)) as Box<MicrofacetDistribution + Send + Sync>;
-        Metal { bxdfs: vec![Box::new(TorranceSparrow::new(&Colorf::broadcast(1.0), fresnel, microfacet))
-                            as Box<BxDF + Send + Sync>] }
+        Metal { eta: *eta, k: *k, roughness: roughness }
     }
 }
 
 impl Material for Metal {
-    fn bsdf<'a, 'b>(&'a self, hit: &Intersection<'a, 'b>) -> BSDF<'a> {
-        BSDF::new(&self.bxdfs, 1.0, &hit.dg)
+    fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>,
+                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
+        let bxdfs = alloc.alloc_slice::<&BxDF>(1);
+        let fresnel = alloc <- Conductor::new(&self.eta, &self.k);
+        let microfacet = alloc <- Beckmann::new(self.roughness);
+        bxdfs[0] = alloc <- TorranceSparrow::new(&Colorf::broadcast(1.0), fresnel, microfacet);
+        BSDF::new(bxdfs, 1.0, &hit.dg)
     }
 }
 
