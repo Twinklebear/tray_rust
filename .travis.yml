@@ -1,12 +1,7 @@
 language: rust
 sudo: false
 rust:
-    - stable
-    - beta
     - nightly
-matrix:
-    allow_failures:
-        - rust: nightly
 before_script:
     - pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
 script:
@@ -16,7 +11,7 @@ script:
 after_success:
     - git config user.name "Travis-CI Doc Bot"
     - git config user.email "willusher.life@gmail.com"
-    - travis-cargo --only stable doc-upload
+    - travis-cargo --only nightly doc-upload
 env:
   global:
     secure: Tcwn04OZmCAntcLiAMoOJwgIW6r55veMD3d4Yy+qco6KE8FCnYww8zsp1vb4BeRe6asVxsPxJgP2EZeoDdPayZqTAgCw7AVVL1umlhik8XN86cm/BcTDbu7azF8PS0LFh7HaAEarRYBlBn7mFpLZwKjoGGoMxwsKsbmdnCZz9Yk=
