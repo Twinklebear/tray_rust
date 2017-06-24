@@ -6,25 +6,25 @@ use enum_set::EnumSet;
 use linalg::{self, Vector};
 use film::Colorf;
 use bxdf::{self, BxDF, BxDFType};
-use bxdf::fresnel::{self, Fresnel};
+use bxdf::fresnel::{Fresnel, Dielectric};
 
 /// Specular transmission BTDF that implements a specularly transmissive material model
-#[derive(Clone, Copy, Debug)]
-pub struct SpecularTransmission {
+#[derive(Clone, Copy)]
+pub struct SpecularTransmission<'a> {
     /// Color of the transmissited light
     transmission: Colorf,
     /// Fresnel term for the tranmission model, only dielectrics make sense here
-    fresnel: fresnel::Dielectric,
+    fresnel: &'a Dielectric,
 }
 
-impl SpecularTransmission {
+impl<'a> SpecularTransmission<'a> {
     /// Create a specularly transmissive BTDF with the color and Fresnel term
-    pub fn new(c: &Colorf, fresnel: fresnel::Dielectric) -> SpecularTransmission {
+    pub fn new(c: &Colorf, fresnel: &'a Dielectric) -> SpecularTransmission<'a> {
         SpecularTransmission { transmission: *c, fresnel: fresnel }
     }
 }
 
-impl BxDF for SpecularTransmission {
+impl<'a> BxDF for SpecularTransmission<'a> {
     fn bxdf_type(&self) -> EnumSet<BxDFType> {
         let mut e = EnumSet::new();
         e.insert(BxDFType::Specular);
