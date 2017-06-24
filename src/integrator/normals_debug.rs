@@ -11,6 +11,7 @@
 //! ```
 
 use rand::StdRng;
+use light_arena::Allocator;
 
 use scene::Scene;
 use linalg::Ray;
@@ -25,7 +26,8 @@ pub struct NormalsDebug;
 
 impl Integrator for NormalsDebug {
     fn illumination(&self, _: &Scene, _: &[&Emitter], _: &Ray,
-                    hit: &Intersection, _: &mut Sampler, _: &mut StdRng) -> Colorf {
+                    hit: &Intersection, _: &mut Sampler, _: &mut StdRng,
+                    _: &Allocator) -> Colorf {
         let bsdf = hit.material.bsdf(hit);
         (Colorf::new(bsdf.n.x, bsdf.n.y, bsdf.n.z) + Colorf::broadcast(1.0)) / 2.0
     }

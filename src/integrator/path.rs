@@ -15,8 +15,9 @@
 //! }
 //! ```
 
-use std::{f32, iter};
+use std::f32;
 use rand::{StdRng, Rng};
+use light_arena::Allocator;
 
 use scene::Scene;
 use linalg::{self, Ray};
@@ -42,21 +43,21 @@ impl Path {
 
 impl Integrator for Path {
     fn illumination(&self, scene: &Scene, light_list: &[&Emitter], r: &Ray,
-                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
-        // TODO: We really need the memory pool now
+                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng,
+                    alloc: &Allocator) -> Colorf {
         let num_samples = self.max_depth as usize + 1;
-        let mut l_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(num_samples).collect();
-        let mut l_samples_comp: Vec<_> = iter::repeat(0.0).take(num_samples).collect();
-        let mut bsdf_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(num_samples).collect();
-        let mut bsdf_samples_comp: Vec<_> = iter::repeat(0.0).take(num_samples).collect();
-        let mut path_samples: Vec<_> = iter::repeat((0.0, 0.0)).take(num_samples).collect();
-        let mut path_samples_comp: Vec<_> = iter::repeat(0.0).take(num_samples).collect();
-        sampler.get_samples_2d(&mut l_samples[..], rng);
-        sampler.get_samples_2d(&mut bsdf_samples[..], rng);
-        sampler.get_samples_2d(&mut path_samples[..], rng);
-        sampler.get_samples_1d(&mut l_samples_comp[..], rng);
-        sampler.get_samples_1d(&mut bsdf_samples_comp[..], rng);
-        sampler.get_samples_1d(&mut path_samples_comp[..], rng);
+        let l_samples = alloc.alloc_slice::<(f32, f32)>(num_samples);
+        let l_samples_comp = alloc.alloc_slice::<f32>(num_samples);
+        let bsdf_samples = alloc.alloc_slice::<(f32, f32)>(num_samples);
+        let bsdf_samples_comp = alloc.alloc_slice::<f32>(num_samples);
+        let path_samples = alloc.alloc_slice::<(f32, f32)>(num_samples);
+        let path_samples_comp = alloc.alloc_slice::<f32>(num_samples);
+        sampler.get_samples_2d(l_samples, rng);
+        sampler.get_samples_2d(bsdf_samples, rng);
+        sampler.get_samples_2d(path_samples, rng);
+        sampler.get_samples_1d(l_samples_comp, rng);
+        sampler.get_samples_1d(bsdf_samples_comp, rng);
+        sampler.get_samples_1d(path_samples_comp, rng);
 
         let mut illum = Colorf::black();
         let mut path_throughput = Colorf::broadcast(1.0);

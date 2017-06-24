@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![feature(placement_in_syntax)]
 #![cfg_attr(feature = "unstable", feature(plugin))]
 #![cfg_attr(feature = "unstable", plugin(clippy))]
 
@@ -95,6 +96,7 @@ extern crate image;
 extern crate bincode;
 extern crate mio;
 extern crate la;
+extern crate light_arena;
 
 pub mod linalg;
 pub mod film;

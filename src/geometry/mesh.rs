@@ -120,7 +120,7 @@ impl Geometry for Triangle {
         s[0] = linalg::cross(&ray.d, &e[1]);
         let div = match linalg::dot(&s[0], &e[0]) {
             // 0.0 => degenerate triangle, can't hit
-            0.0 => return None,
+            d if d == 0.0  => return None,
             d => 1.0 / d,
         };
 

@@ -7,7 +7,7 @@ but has surpassed it in a few ways.
 The renderer is currently capable of path tracing, supports triangle meshes (MTL support coming soon),
 and various physically based material models (including measured data from the
 [MERL BRDF Database](http://www.merl.com/brdf/)). tray\_rust also supports rigid body animation along
-B-spline paths and distributed rendering.
+B-spline paths and distributed rendering. **Currently requires nightly Rust** for placement new.
 
 [![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)
 

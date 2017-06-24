@@ -23,6 +23,7 @@ bspline = "0.2.2"
 bincode = "0.8"
 mio = "0.5.1"
 la = "0.2.0"
+light_arena = "0.1.1"
 clippy = { version = "0.0.140", optional = true }
 
 [profile.release]

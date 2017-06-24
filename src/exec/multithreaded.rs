@@ -6,6 +6,7 @@ use std::time::SystemTime;
 
 use scoped_threadpool::Pool;
 use rand::StdRng;
+use light_arena;
 
 use sampler::BlockQueue;
 use film::{RenderTarget, ImageSample, Colorf};
@@ -79,6 +80,7 @@ fn thread_work(spp: usize, queue: &BlockQueue, scene: &Scene,
         Ok(r) => r,
         Err(e) => { println!("Failed to get StdRng, {}", e); return }
     };
+    let mut arena = light_arena::MemoryArena::new(8);
     let camera = scene.active_camera();
     // Grab a block from the queue and start working on it, submitting samples
     // to the render target thread after each pixel
@@ -90,10 +92,11 @@ fn thread_work(spp: usize, queue: &BlockQueue, scene: &Scene,
             sampler.get_samples(&mut sample_pos, &mut rng);
             sampler.get_samples_1d(&mut time_samples[..], &mut rng);
             for (s, t) in sample_pos.iter().zip(time_samples.iter()) {
+                let alloc = arena.allocator();
                 let mut ray = camera.generate_ray(s, *t);
                 if let Some(hit) = scene.intersect(&mut ray) {
-                    let c = scene.integrator.illumination(scene, light_list, &ray,
-                                                          &hit, &mut sampler, &mut rng).clamp();
+                    let c = scene.integrator.illumination(scene, light_list, &ray, &hit,
+                                                          &mut sampler, &mut rng, &alloc).clamp();
                     block_samples.push(ImageSample::new(s.0, s.1, c));
                 } else {
                     block_samples.push(ImageSample::new(s.0, s.1, Colorf::black()));

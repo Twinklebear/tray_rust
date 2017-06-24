@@ -14,6 +14,7 @@
 
 use std::f32;
 use rand::StdRng;
+use light_arena::Allocator;
 
 use scene::Scene;
 use linalg::{self, Ray};
@@ -38,7 +39,8 @@ impl Whitted {
 
 impl Integrator for Whitted {
     fn illumination(&self, scene: &Scene, light_list: &[&Emitter], ray: &Ray,
-                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
+                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng,
+                    alloc: &Allocator) -> Colorf {
         let bsdf = hit.material.bsdf(hit);
         let w_o = -ray.d;
         let mut sample_2d = [(0.0, 0.0)];
@@ -59,8 +61,8 @@ impl Integrator for Whitted {
             }
         }
         if ray.depth < self.max_depth {
-            illum = illum + self.specular_reflection(scene, light_list, ray, &bsdf, sampler, rng);
-            illum = illum + self.specular_transmission(scene, light_list, ray, &bsdf, sampler, rng);
+            illum = illum + self.specular_reflection(scene, light_list, ray, &bsdf, sampler, rng, alloc);
+            illum = illum + self.specular_transmission(scene, light_list, ray, &bsdf, sampler, rng, alloc);
         }
         illum
     }

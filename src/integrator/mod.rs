@@ -18,6 +18,7 @@ use std::f32;
 use std::cmp;
 use enum_set::EnumSet;
 use rand::StdRng;
+use light_arena::Allocator;
 
 use scene::Scene;
 use linalg::{self, Ray, Vector, Point};
@@ -42,10 +43,12 @@ pub mod normals_debug;
 pub trait Integrator {
     /// Compute the illumination at the intersection in the scene
     fn illumination(&self, scene: &Scene, light_list: &[&Emitter], ray: &Ray,
-                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf;
+                    hit: &Intersection, sampler: &mut Sampler, rng: &mut StdRng,
+                    alloc: &Allocator) -> Colorf;
     /// Compute the color of specularly reflecting light off the intersection
     fn specular_reflection(&self, scene: &Scene, light_list: &[&Emitter], ray: &Ray,
-                           bsdf: &BSDF, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
+                           bsdf: &BSDF, sampler: &mut Sampler, rng: &mut StdRng,
+                           alloc: &Allocator) -> Colorf {
         let w_o = -ray.d;
         let mut spec_refl = EnumSet::new();
         spec_refl.insert(BxDFType::Specular);
@@ -61,7 +64,7 @@ pub trait Integrator {
             let mut refl_ray = ray.child(&bsdf.p, &w_i);
             refl_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut refl_ray) {
-                let li = self.illumination(scene, light_list, &refl_ray, &hit, sampler, rng);
+                let li = self.illumination(scene, light_list, &refl_ray, &hit, sampler, rng, alloc);
                 refl = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
             }
         }
@@ -69,7 +72,8 @@ pub trait Integrator {
     }
     /// Compute the color of specularly transmitted light through the intersection
     fn specular_transmission(&self, scene: &Scene, light_list: &[&Emitter], ray: &Ray,
-                             bsdf: &BSDF, sampler: &mut Sampler, rng: &mut StdRng) -> Colorf {
+                             bsdf: &BSDF, sampler: &mut Sampler, rng: &mut StdRng,
+                             alloc: &Allocator) -> Colorf {
         let w_o = -ray.d;
         let mut spec_trans = EnumSet::new();
         spec_trans.insert(BxDFType::Specular);
@@ -85,7 +89,7 @@ pub trait Integrator {
             let mut trans_ray = ray.child(&bsdf.p, &w_i);
             trans_ray.min_t = 0.001;
             if let Some(hit) = scene.intersect(&mut trans_ray) {
-                let li = self.illumination(scene, light_list, &trans_ray, &hit, sampler, rng);
+                let li = self.illumination(scene, light_list, &trans_ray, &hit, sampler, rng, alloc);
                 transmit = f * li * f32::abs(linalg::dot(&w_i, &bsdf.n)) / pdf;
             }
         }
