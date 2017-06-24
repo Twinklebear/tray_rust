@@ -13,23 +13,24 @@ use bxdf::microfacet::{MicrofacetDistribution};
 
 /// Struct providing the Torrance Sparrow BRDF, implemented as described in
 /// [Walter et al. 07](https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf)
-pub struct TorranceSparrow {
+#[derive(Copy, Clone)]
+pub struct TorranceSparrow<'a> {
     reflectance: Colorf,
-    fresnel: Box<Fresnel + Send + Sync>,
+    fresnel: &'a Fresnel,
     /// Microfacet distribution describing the structure of the microfacets of
     /// the material
-    microfacet: Box<MicrofacetDistribution + Send + Sync>,
+    microfacet: &'a MicrofacetDistribution,
 }
 
-impl TorranceSparrow {
+impl<'a> TorranceSparrow<'a> {
     /// Create a new Torrance Sparrow microfacet BRDF
-    pub fn new(c: &Colorf, fresnel: Box<Fresnel + Send + Sync>,
-               microfacet: Box<MicrofacetDistribution + Send + Sync>) -> TorranceSparrow {
+    pub fn new(c: &Colorf, fresnel: &'a Fresnel, microfacet: &'a MicrofacetDistribution)
+        -> TorranceSparrow<'a> {
         TorranceSparrow { reflectance: *c, fresnel: fresnel, microfacet: microfacet }
     }
 }
 
-impl BxDF for TorranceSparrow {
+impl<'a> BxDF for TorranceSparrow<'a> {
     fn bxdf_type(&self) -> EnumSet<BxDFType> {
         let mut e = EnumSet::new();
         e.insert(BxDFType::Glossy);

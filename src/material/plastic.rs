@@ -24,38 +24,54 @@
 
 use std::vec::Vec;
 
+use light_arena::Allocator;
+
 use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, TorranceSparrow, Lambertian};
-use bxdf::microfacet::{MicrofacetDistribution, Beckmann};
-use bxdf::fresnel::{Fresnel, Dielectric};
+use bxdf::microfacet::Beckmann;
+use bxdf::fresnel::Dielectric;
 use material::Material;
 
 /// The Plastic material describes plastic materials of varying roughness
 pub struct Plastic {
-    bxdfs: Vec<Box<BxDF + Send + Sync>>,
+    diffuse: Colorf,
+    gloss: Colorf,
+    roughness: f32,
 }
 
 impl Plastic {
     /// Create a new plastic material specifying the diffuse and glossy colors
     /// along with the roughness of the surface
     pub fn new(diffuse: &Colorf, gloss: &Colorf, roughness: f32) -> Plastic {
-        let mut bxdfs = Vec::new();
-        if !diffuse.is_black() {
-            bxdfs.push(Box::new(Lambertian::new(diffuse)) as Box<BxDF + Send + Sync>);
-        }
-        if !gloss.is_black() {
-            let fresnel = Box::new(Dielectric::new(1.0, 1.5)) as Box<Fresnel + Send + Sync>;
-            let microfacet = Box::new(Beckmann::new(roughness)) as Box<MicrofacetDistribution + Send + Sync>;
-            bxdfs.push(Box::new(TorranceSparrow::new(gloss, fresnel, microfacet)) as Box<BxDF + Send + Sync>);
-        }
-        Plastic { bxdfs: bxdfs }
+        Plastic { diffuse: *diffuse, gloss: *gloss, roughness: roughness }
     }
 }
 
 impl Material for Plastic {
-    fn bsdf<'a, 'b>(&'a self, hit: &Intersection<'a, 'b>) -> BSDF<'a> {
-        BSDF::new(&self.bxdfs, 1.0, &hit.dg)
+    fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>, alloc: &'c Allocator) -> BSDF<'c> {
+        // TODO: I don't like this counting and junk we have to do to figure out
+        // the slice size and then the indices. Is there a better way?
+        let mut num_bxdfs = 0;
+        if !self.diffuse.is_black() {
+            num_bxdfs += 1;
+        }
+        if !self.gloss.is_black() {
+            num_bxdfs += 1;
+        }
+        let bxdfs = alloc.alloc_slice::<&BxDF>(num_bxdfs);
+        
+        let mut i = 0;
+        if !self.diffuse.is_black() {
+            bxdfs[i] = alloc <- Lambertian::new(&self.diffuse);
+            i += 1;
+        }
+        if !self.gloss.is_black() {
+            let fresnel = alloc <- Dielectric::new(1.0, 1.5);
+            let microfacet = alloc <- Beckmann::new(self.roughness);
+            bxdfs[i] = alloc <- TorranceSparrow::new(&self.gloss, fresnel, microfacet);
+        }
+        BSDF::new(bxdfs, 1.0, &hit.dg)
     }
 }
 

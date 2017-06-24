@@ -36,7 +36,7 @@ use film::{filter, Camera, Colorf, RenderTarget, FrameInfo, AnimatedColor, Color
 use geometry::{Sphere, Instance, Intersection, BVH, Mesh, Disk, Rectangle,
                BoundableGeom, SampleableGeom};
 //use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal, RoughGlass};
-use material::{Material, Matte};
+use material::{Material, Matte, Plastic};
 use integrator::{self, Integrator};
 
 /// The scene containing the objects and camera configuration we'd like to render,
@@ -339,7 +339,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
                 .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
             materials.insert(name, Arc::new(Metal::new(&refr_index, &absorption_coef, roughness))
                              as Arc<Material + Send + Sync>);
-        } else if ty == "plastic" {
+        } */else if ty == "plastic" {
             let diffuse = load_color(m.get("diffuse")
                              .expect(&mat_error(&name, "A diffuse color is required for plastic")[..]))
                 .expect(&mat_error(&name, "Invalid color specified for diffuse of plastic")[..]);
@@ -351,7 +351,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
                 .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
             materials.insert(name, Arc::new(Plastic::new(&diffuse, &gloss, roughness))
                              as Arc<Material + Send + Sync>);
-        } else if ty == "specular_metal" {
+        } /*else if ty == "specular_metal" {
             let refr_index = load_color(m.get("refractive_index")
                     .expect(&mat_error(&name, "A refractive_index color is required for specular metal")[..]))
                 .expect(&mat_error(&name, "Invalid color specified for refractive_index of specular metal")[..]);
