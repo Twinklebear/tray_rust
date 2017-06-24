@@ -42,7 +42,8 @@ impl Matte {
 }
 
 impl Material for Matte {
-    fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>, alloc: &'c Allocator) -> BSDF<'c> {
+    fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>,
+                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
         let bsdfs = alloc.alloc_slice::<&'c BxDF>(1);
         if self.roughness == 0.0 {
             bsdfs[0] = alloc <- Lambertian::new(&self.diffuse);

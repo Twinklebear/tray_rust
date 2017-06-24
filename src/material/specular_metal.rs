@@ -41,7 +41,8 @@ impl SpecularMetal {
 }
 
 impl Material for SpecularMetal {
-    fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>, alloc: &'c Allocator) -> BSDF<'c> {
+    fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>,
+                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
         let bxdfs = alloc.alloc_slice::<&BxDF>(1);
         let fresnel = alloc <- Conductor::new(&self.eta, &self.k);
         bxdfs[0] = alloc <- SpecularReflection::new(&Colorf::broadcast(1.0), fresnel);

@@ -22,7 +22,9 @@ use std::iter;
 use std::path::Path;
 use std::fs::File;
 use std::io::BufReader;
+
 use byteorder::{LittleEndian, ReadBytesExt};
+use light_arena::Allocator;
 
 use bxdf::{self, BSDF, BxDF};
 use material::Material;
@@ -33,7 +35,14 @@ use geometry::Intersection;
 /// by Wojciech Matusik, Hanspeter Pfister, Matt Brand and Leonard McMillan,
 /// in ACM Transactions on Graphics 22, 3(2003), 759-769
 pub struct Merl {
-    bxdfs: Vec<Box<BxDF + Send + Sync>>,
+    /// Vec containing the BRDF values for various incident/exiting angles
+    brdf: Vec<f32>,
+    /// Number of theta_h measurements in `brdf`
+    n_theta_h: usize,
+    /// Number of theta_d measurements in `brdf`
+    n_theta_d: usize,
+    /// Number of phi_d measurements in `brdf`
+    n_phi_d: usize,
 }
 
 impl Merl {
@@ -71,13 +80,16 @@ impl Merl {
                 brdf[3 * i + c] = f32::max(0.0, x);
             }
         }
-        Merl { bxdfs: vec![Box::new(bxdf::Merl::new(brdf, n_theta_h, n_theta_d, n_phi_d))] }
+        Merl { brdf: brdf, n_theta_h: n_theta_h, n_theta_d: n_theta_d, n_phi_d: n_phi_d }
     }
 }
 
 impl Material for Merl {
-    fn bsdf<'a, 'b>(&'a self, hit: &Intersection<'a, 'b>) -> BSDF<'a> {
-        BSDF::new(&self.bxdfs, 1.0, &hit.dg)
+    fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>,
+                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
+        let bxdfs = alloc.alloc_slice::<&BxDF>(1);
+        bxdfs[0] = alloc <- bxdf::Merl::new(&self.brdf[..], self.n_theta_h, self.n_theta_d, self.n_phi_d);
+        BSDF::new(bxdfs, 1.0, &hit.dg)
     }
 }
 

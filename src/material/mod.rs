@@ -26,7 +26,7 @@ use bxdf::BSDF;
 pub use self::matte::Matte;
 pub use self::specular_metal::SpecularMetal;
 pub use self::glass::Glass;
-//pub use self::merl::Merl;
+pub use self::merl::Merl;
 pub use self::plastic::Plastic;
 //pub use self::metal::Metal;
 //pub use self::rough_glass::RoughGlass;
@@ -34,7 +34,7 @@ pub use self::plastic::Plastic;
 pub mod matte;
 pub mod specular_metal;
 pub mod glass;
-//pub mod merl;
+pub mod merl;
 pub mod plastic;
 //pub mod metal;
 //pub mod rough_glass;
@@ -42,10 +42,12 @@ pub mod plastic;
 /// Trait implemented by materials. Provides method to get the BSDF describing
 /// the material properties at the intersection
 pub trait Material {
-    /// Get the BSDF for the material which defines its properties at the
-    /// hit point. TODO: When we implement a memory pool we need to pass it
-    /// here, currently the BxDFs and BSDF are allocated once at surface
-    /// creation instead of as needed based on material properties.
-    fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>, alloc: &'c Allocator) -> BSDF<'c>;
+    /// Get the BSDF for the material which defines its properties at the hit point.
+    ///
+    /// We have the lifetime constraint on the returned BSDF to enforce it does not
+    /// outlive the material which produced it. This allows us to borrow things from
+    /// the parent material in the BxDFs making up the BSDF.
+    fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>,
+                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c;
 }
 

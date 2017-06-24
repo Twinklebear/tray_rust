@@ -14,10 +14,10 @@ use bxdf::{self, BxDF, BxDFType};
 /// The measured data is from "A Data-Driven Reflectance Model",
 /// by Wojciech Matusik, Hanspeter Pfister, Matt Brand and Leonard McMillan,
 /// in ACM Transactions on Graphics 22, 3(2003), 759-769
-#[derive(Clone, Debug)]
-pub struct Merl {
-    /// Vec containing the BRDF values for various incident/exiting angles 
-    brdf: Vec<f32>,
+#[derive(Copy, Clone)]
+pub struct Merl<'a> {
+    /// Vec containing the BRDF values for various incident/exiting angles
+    brdf: &'a [f32],
     /// Number of theta_h measurements in `brdf`
     n_theta_h: usize,
     /// Number of theta_d measurements in `brdf`
@@ -26,9 +26,9 @@ pub struct Merl {
     n_phi_d: usize,
 }
 
-impl Merl {
+impl<'a> Merl<'a> {
     /// Create a MERL BRDF to use data loaded from a MERL BRDF data file
-    pub fn new(brdf: Vec<f32>, n_theta_h: usize, n_theta_d: usize, n_phi_d: usize) -> Merl {
+    pub fn new(brdf: &'a [f32], n_theta_h: usize, n_theta_d: usize, n_phi_d: usize) -> Merl<'a> {
         Merl { brdf: brdf, n_theta_h: n_theta_h, n_theta_d: n_theta_d, n_phi_d: n_phi_d }
     }
     /// Re-map values from an angular value to the index in the MERL data table
@@ -37,7 +37,7 @@ impl Merl {
     }
 }
 
-impl BxDF for Merl {
+impl<'a> BxDF for Merl<'a> {
     fn bxdf_type(&self) -> EnumSet<BxDFType> {
         let mut e = EnumSet::new();
         e.insert(BxDFType::Glossy);

@@ -47,7 +47,8 @@ impl Plastic {
 }
 
 impl Material for Plastic {
-    fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>, alloc: &'c Allocator) -> BSDF<'c> {
+    fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>,
+                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
         // TODO: I don't like this counting and junk we have to do to figure out
         // the slice size and then the indices. Is there a better way?
         let mut num_bxdfs = 0;
