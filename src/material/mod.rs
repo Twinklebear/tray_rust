@@ -24,7 +24,7 @@ use geometry::Intersection;
 use bxdf::BSDF;
 
 pub use self::matte::Matte;
-//pub use self::specular_metal::SpecularMetal;
+pub use self::specular_metal::SpecularMetal;
 //pub use self::glass::Glass;
 //pub use self::merl::Merl;
 pub use self::plastic::Plastic;
@@ -32,7 +32,7 @@ pub use self::plastic::Plastic;
 //pub use self::rough_glass::RoughGlass;
 
 pub mod matte;
-//pub mod specular_metal;
+pub mod specular_metal;
 //pub mod glass;
 //pub mod merl;
 pub mod plastic;

@@ -19,6 +19,8 @@
 
 use std::vec::Vec;
 
+use light_arena::Allocator;
+
 use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, SpecularReflection};
@@ -28,7 +30,8 @@ use material::Material;
 /// The Specular Metal material describes specularly reflective metals using their
 /// refractive index and absorption coefficient
 pub struct SpecularMetal {
-    bxdfs: Vec<Box<BxDF + Send + Sync>>,
+    eta: Colorf,
+    k: Colorf,
 }
 
 impl SpecularMetal {
@@ -36,15 +39,16 @@ impl SpecularMetal {
     /// `eta`: refractive index of the metal
     /// `k`: absorption coefficient of the metal
     pub fn new(eta: &Colorf, k: &Colorf) -> SpecularMetal {
-        SpecularMetal { bxdfs: vec![Box::new(SpecularReflection::new(&Colorf::broadcast(1.0),
-                                         Box::new(Conductor::new(eta, k)) as Box<Fresnel + Send + Sync>))
-                                    as Box<BxDF + Send + Sync>] }
+        SpecularMetal { eta: *eta, k: *k }
     }
 }
 
 impl Material for SpecularMetal {
-    fn bsdf<'a, 'b>(&'a self, hit: &Intersection<'a, 'b>) -> BSDF<'a> {
-        BSDF::new(&self.bxdfs, 1.0, &hit.dg)
+    fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>, alloc: &'c Allocator) -> BSDF<'c> {
+        let bxdfs = alloc.alloc_slice::<&BxDF>(1);
+        let fresnel = alloc <- Conductor::new(&self.eta, &self.k);
+        bxdfs[0] = alloc <- SpecularReflection::new(&Colorf::broadcast(1.0), fresnel);
+        BSDF::new(bxdfs, 1.0, &hit.dg)
     }
 }
 

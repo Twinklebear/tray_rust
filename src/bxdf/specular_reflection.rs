@@ -9,21 +9,22 @@ use bxdf::{self, BxDF, BxDFType};
 use bxdf::fresnel::Fresnel;
 
 /// Specular reflection BRDF that implements a specularly reflective material model
-pub struct SpecularReflection {
+#[derive(Copy, Clone)]
+pub struct SpecularReflection<'a> {
     /// Color of the reflective material
     reflectance: Colorf,
     /// Fresnel term for the reflection model
-    fresnel: Box<Fresnel + Send + Sync>
+    fresnel: &'a Fresnel,
 }
 
-impl SpecularReflection {
+impl<'a> SpecularReflection<'a> {
     /// Create a specularly reflective BRDF with the reflective color and Fresnel term
-    pub fn new(c: &Colorf, fresnel: Box<Fresnel + Send + Sync>) -> SpecularReflection {
+    pub fn new(c: &Colorf, fresnel: &'a Fresnel) -> SpecularReflection<'a> {
         SpecularReflection { reflectance: *c, fresnel: fresnel }
     }
 }
 
-impl BxDF for SpecularReflection {
+impl<'a> BxDF for SpecularReflection<'a> {
     fn bxdf_type(&self) -> EnumSet<BxDFType> {
         let mut e = EnumSet::new();
         e.insert(BxDFType::Specular);
