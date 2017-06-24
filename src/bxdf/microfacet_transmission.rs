@@ -13,18 +13,19 @@ use bxdf::microfacet::{MicrofacetDistribution};
 
 /// Struct providing the microfacet BTDF, implemented as described in
 /// [Walter et al. 07](https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf)
-pub struct MicrofacetTransmission {
+#[derive(Copy, Clone)]
+pub struct MicrofacetTransmission<'a> {
     reflectance: Colorf,
-    fresnel: Dielectric,
+    fresnel: &'a Dielectric,
     /// Microfacet distribution describing the structure of the microfacets of
     /// the material
-    microfacet: Box<MicrofacetDistribution + Send + Sync>,
+    microfacet: &'a MicrofacetDistribution,
 }
 
-impl MicrofacetTransmission {
+impl<'a> MicrofacetTransmission<'a> {
     /// Create a new transmissive microfacet BRDF
-    pub fn new(c: &Colorf, fresnel: Dielectric,
-               microfacet: Box<MicrofacetDistribution + Send + Sync>) -> MicrofacetTransmission {
+    pub fn new(c: &Colorf, fresnel: &'a Dielectric, microfacet: &'a MicrofacetDistribution)
+            -> MicrofacetTransmission<'a> {
         MicrofacetTransmission { reflectance: *c, fresnel: fresnel, microfacet: microfacet }
     }
     /// Convenience method for getting `eta_i` and `eta_t` in the right order for if
@@ -59,7 +60,7 @@ impl MicrofacetTransmission {
     }
 }
 
-impl BxDF for MicrofacetTransmission {
+impl<'a> BxDF for MicrofacetTransmission<'a> {
     fn bxdf_type(&self) -> EnumSet<BxDFType> {
         let mut e = EnumSet::new();
         e.insert(BxDFType::Glossy);
