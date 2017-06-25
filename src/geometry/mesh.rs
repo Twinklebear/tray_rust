@@ -176,7 +176,7 @@ impl Geometry for Triangle {
                 let dp_dv = (-du[1] * dp[0] + du[0] * dp[1]) * det;
                 (dp_du, dp_dv)
             };
-        Some(DifferentialGeometry::with_normal(&p, &n, &dp_du, &dp_dv, self))
+        Some(DifferentialGeometry::with_normal(&p, &n, 0.0, 0.0, ray.time, &dp_du, &dp_dv, self))
     }
 }
 

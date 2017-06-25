@@ -29,34 +29,34 @@ pub struct DifferentialGeometry<'a> {
 impl<'a> DifferentialGeometry<'a> {
     /// Setup the differential geometry. Note that the normal will be computed
     /// using cross(dp_du, dp_dv)
-    pub fn new(p: &Point, ng: &Normal, dp_du: &Vector, dp_dv: &Vector,
-               geom: &'a (Geometry + 'a))
-               -> DifferentialGeometry<'a> {
+    pub fn new(p: &Point, ng: &Normal, u: f32, v: f32, time: f32,
+               dp_du: &Vector, dp_dv: &Vector, geom: &'a (Geometry + 'a)) -> DifferentialGeometry<'a>
+    {
         let n = linalg::cross(dp_du, dp_dv).normalized();
         DifferentialGeometry {
             p: *p,
             n: Normal::new(n.x, n.y, n.z),
             ng: ng.normalized(),
-            u: 0.0,
-            v: 0.0,
-            time: 0.0,
+            u: u,
+            v: v,
+            time: time,
             dp_du: *dp_du,
             dp_dv: *dp_dv,
             geom: geom
         }
     }
     /// Setup the differential geometry using the normal passed for the surface normal
-    pub fn with_normal(p: &Point, n: &Normal, dp_du: &Vector, dp_dv: &Vector,
-               geom: &'a (Geometry + 'a))
-               -> DifferentialGeometry<'a> {
+    pub fn with_normal(p: &Point, n: &Normal, u: f32, v: f32, time: f32,
+               dp_du: &Vector, dp_dv: &Vector, geom: &'a (Geometry + 'a)) -> DifferentialGeometry<'a>
+    {
         let nn = n.normalized();
         DifferentialGeometry {
             p: *p,
             n: nn,
             ng: nn,
-            u: 0.0,
-            v: 0.0,
-            time: 0.0,
+            u: u,
+            v: v,
+            time: time,
             dp_du: *dp_du,
             dp_dv: *dp_dv,
             geom: geom

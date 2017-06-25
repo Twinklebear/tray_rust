@@ -52,9 +52,11 @@ impl Geometry for Rectangle {
         if p.x >= -half_width && p.x <= half_width && p.y >= -half_height && p.y <= half_height {
             ray.max_t = t;
             let n = Normal::new(0.0, 0.0, 1.0);
-            let dp_du = Vector::new(1.0, 0.0, 0.0);
-            let dp_dv = Vector::new(0.0, 1.0, 0.0);
-            Some(DifferentialGeometry::new(&p, &n, &dp_du, &dp_dv, self))
+            let u = (p.x + half_width) / (2.0 * half_width);
+            let v = (p.y + half_height) / (2.0 * half_height);
+            let dp_du = Vector::new(half_width * 2.0, 0.0, 0.0);
+            let dp_dv = Vector::new(0.0, half_height * 2.0, 0.0);
+            Some(DifferentialGeometry::new(&p, &n, u, v, ray.time, &dp_du, &dp_dv, self))
         } else {
             None
         }

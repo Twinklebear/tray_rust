@@ -72,7 +72,7 @@ impl Geometry for Sphere {
         let dp_dv = Vector::new(p.z * cos_phi, p.z * sin_phi,
                                 -self.radius * f32::sin(theta)) * f32::consts::PI;
 
-        Some(DifferentialGeometry::with_normal(&p, &n, &dp_du, &dp_dv, self))
+        Some(DifferentialGeometry::with_normal(&p, &n, 0.0, 0.0, ray.time, &dp_du, &dp_dv, self))
     }
 }
 
