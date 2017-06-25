@@ -2,14 +2,16 @@ extern crate tray_rust;
 extern crate rand;
 extern crate image;
 
+use std::sync::Arc;
 use rand::StdRng;
 
 use tray_rust::linalg::{AnimatedTransform, Transform, Point, Vector};
 use tray_rust::film::{Colorf, RenderTarget, Camera, ImageSample};
 use tray_rust::film::filter::MitchellNetravali;
-use tray_rust::geometry::{Plane, Instance};
+use tray_rust::geometry::{Rectangle, Instance};
 use tray_rust::material::Matte;
 use tray_rust::sampler::{BlockQueue, LowDiscrepancy, Sampler};
+use tray_rust::texture;
 
 fn main() {
     let width = 800usize;
@@ -22,10 +24,14 @@ fn main() {
                                                           &Point::new(0.0, 0.0, 0.0),
                                                           &Vector::new(0.0, 1.0, 0.0)));
     let camera = Camera::new(transform, 40.0, rt.dimensions(), 0.5, 0);
-    let plane = Plane {};
-    let geometry_lock = std::sync::Arc::new(plane);
-    let white_wall = Matte::new(&Colorf::new(0.740063, 0.742313, 0.733934), 1.0);
-    let material_lock = std::sync::Arc::new(white_wall);
+    let plane = Rectangle::new(2.0, 2.0);
+    let geometry_lock = Arc::new(plane);
+    // TODO: From a code usage standpoint it might be nice to have a constant version
+    // of the material ctor exposed which takes the plain types and builds the textures internally
+    let texture = Arc::new(texture::Constant::<Colorf>::new(Colorf::new(0.740063, 0.742313, 0.733934)));
+    let roughness = Arc::new(texture::Constant::<f32>::new(1.0));
+    let white_wall = Matte::new(texture, roughness);
+    let material_lock = Arc::new(white_wall);
     let position_transform =
         AnimatedTransform::unanimated(&Transform::translate(&Vector::new(0.0, 2.0, 0.0)));
     let instance = Instance::receiver(geometry_lock,
