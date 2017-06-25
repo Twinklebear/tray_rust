@@ -9,15 +9,15 @@ pub trait Texture<T: Copy> {
 }
 
 /// A single valued, solid 'color' texture for any T
-pub struct Solid<T: Copy> {
+pub struct Constant<T: Copy> {
     val: T,
 }
-impl<T: Copy> Solid<T> {
-    pub fn new(val: T) -> Solid<T> {
-        Solid { val: val }
+impl<T: Copy> Constant<T> {
+    pub fn new(val: T) -> Constant<T> {
+        Constant { val: val }
     }
 }
-impl<T: Copy> Texture<T> for Solid<T> {
+impl<T: Copy> Texture<T> for Constant<T> {
     fn sample(&self, _: f32, _: f32, _: f32) -> T {
         self.val
     }
