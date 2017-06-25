@@ -312,10 +312,14 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
             let diffuse = load_color(m.get("diffuse")
                                      .expect(&mat_error(&name, "A diffuse color is required for matte")[..]))
                 .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
+            let diffuse = Arc::new(texture::Constant::<Colorf>::new(diffuse));
+
             let roughness = m.get("roughness")
                 .expect(&mat_error(&name, "A roughness is required for matte")[..]).as_f64()
                 .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
-            materials.insert(name, Arc::new(Matte::new(&diffuse, roughness)) as Arc<Material + Send + Sync>);
+            let roughness = Arc::new(texture::Constant::<f32>::new(roughness));
+
+            materials.insert(name, Arc::new(Matte::new(diffuse, roughness)));
         } else if ty == "merl" {
             let file_path = Path::new(m.get("file")
                       .expect(&mat_error(&name, "A filename containing the MERL material data is required")[..])

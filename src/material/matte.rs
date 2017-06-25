@@ -19,36 +19,48 @@
 //! ]
 //! ```
 
+use std::sync::Arc;
+
 use light_arena::Allocator;
 
 use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, Lambertian, OrenNayar};
 use material::Material;
+use texture::Texture;
 
 /// The Matte material describes diffuse materials with either a Lambertian or
 /// Oren-Nayar BRDF. The Lambertian BRDF is used for materials with no roughness
 /// while Oren-Nayar is used for those with some roughness.
 pub struct Matte {
-    diffuse: Colorf,
-    roughness: f32,
+    diffuse: Arc<Texture<Colorf> + Send + Sync>,
+    roughness: Arc<Texture<f32> + Send + Sync>,
 }
 
 impl Matte {
     /// Create a new Matte material with the desired diffuse color and roughness
-    pub fn new(diffuse: &Colorf, roughness: f32) -> Matte {
-        Matte { diffuse: *diffuse, roughness: roughness }
+    pub fn new(diffuse: Arc<Texture<Colorf> + Send + Sync>,
+               roughness: Arc<Texture<f32> + Send + Sync>) -> Matte
+    {
+        Matte {
+            diffuse: diffuse.clone(),
+            roughness: roughness.clone()
+        }
     }
 }
 
 impl Material for Matte {
     fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>,
-                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
+                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c
+    {
+        let diffuse = self.diffuse.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let roughness = self.roughness.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+
         let bsdfs = alloc.alloc_slice::<&'c BxDF>(1);
-        if self.roughness == 0.0 {
-            bsdfs[0] = alloc <- Lambertian::new(&self.diffuse);
+        if roughness == 0.0 {
+            bsdfs[0] = alloc <- Lambertian::new(&diffuse);
         } else {
-            bsdfs[0] = alloc <- OrenNayar::new(&self.diffuse, self.roughness);
+            bsdfs[0] = alloc <- OrenNayar::new(&diffuse, roughness);
         }
         BSDF::new(bsdfs, 1.0, &hit.dg)
     }
