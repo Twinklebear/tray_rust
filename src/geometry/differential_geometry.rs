@@ -13,6 +13,11 @@ pub struct DifferentialGeometry<'a> {
     pub n: Normal,
     /// The geometry normal
     pub ng: Normal,
+    /// Surface parameterization u, v for texture mapping
+    pub u: f32,
+    pub v: f32,
+    /// The intersection time
+    pub time: f32,
     /// Derivative of the point with respect to the u parameterization coord of the surface
     pub dp_du: Vector,
     /// Derivative of the point with respect to the v parameterization coord of the surface
@@ -28,16 +33,34 @@ impl<'a> DifferentialGeometry<'a> {
                geom: &'a (Geometry + 'a))
                -> DifferentialGeometry<'a> {
         let n = linalg::cross(dp_du, dp_dv).normalized();
-        DifferentialGeometry { p: *p, n: Normal::new(n.x, n.y, n.z), ng: ng.normalized(),
-                               dp_du: *dp_du, dp_dv: *dp_dv, geom: geom }
+        DifferentialGeometry {
+            p: *p,
+            n: Normal::new(n.x, n.y, n.z),
+            ng: ng.normalized(),
+            u: 0.0,
+            v: 0.0,
+            time: 0.0,
+            dp_du: *dp_du,
+            dp_dv: *dp_dv,
+            geom: geom
+        }
     }
     /// Setup the differential geometry using the normal passed for the surface normal
     pub fn with_normal(p: &Point, n: &Normal, dp_du: &Vector, dp_dv: &Vector,
                geom: &'a (Geometry + 'a))
                -> DifferentialGeometry<'a> {
         let nn = n.normalized();
-        DifferentialGeometry { p: *p, n: nn, ng: nn,
-                               dp_du: *dp_du, dp_dv: *dp_dv, geom: geom }
+        DifferentialGeometry {
+            p: *p,
+            n: nn,
+            ng: nn,
+            u: 0.0,
+            v: 0.0,
+            time: 0.0,
+            dp_du: *dp_du,
+            dp_dv: *dp_dv,
+            geom: geom
+        }
     }
 }
 

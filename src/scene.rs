@@ -37,6 +37,7 @@ use geometry::{Sphere, Instance, Intersection, BVH, Mesh, Disk, Rectangle,
                BoundableGeom, SampleableGeom};
 use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal, RoughGlass};
 use integrator::{self, Integrator};
+use texture::{self, Texture};
 
 /// The scene containing the objects and camera configuration we'd like to render,
 /// shared immutably among the ray tracing threads
@@ -341,13 +342,19 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
             let diffuse = load_color(m.get("diffuse")
                              .expect(&mat_error(&name, "A diffuse color is required for plastic")[..]))
                 .expect(&mat_error(&name, "Invalid color specified for diffuse of plastic")[..]);
+            let diffuse = Arc::new(texture::Constant::<Colorf>::new(diffuse));
+
             let gloss = load_color(m.get("gloss")
                              .expect(&mat_error(&name, "A gloss color is required for plastic")[..]))
                 .expect(&mat_error(&name, "Invalid color specified for gloss of plastic")[..]);
+            let gloss = Arc::new(texture::Constant::<Colorf>::new(gloss));
+
             let roughness = m.get("roughness")
                 .expect(&mat_error(&name, "A roughness is required for plastic")[..]).as_f64()
                 .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
-            materials.insert(name, Arc::new(Plastic::new(&diffuse, &gloss, roughness))
+            let roughness = Arc::new(texture::Constant::<f32>::new(roughness));
+
+            materials.insert(name, Arc::new(Plastic::new(diffuse, gloss, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "specular_metal" {
             let refr_index = load_color(m.get("refractive_index")

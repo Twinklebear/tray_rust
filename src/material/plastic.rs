@@ -22,6 +22,8 @@
 //! ]
 //! ```
 
+use std::sync::Arc;
+
 use light_arena::Allocator;
 
 use film::Colorf;
@@ -30,45 +32,58 @@ use bxdf::{BxDF, BSDF, TorranceSparrow, Lambertian};
 use bxdf::microfacet::Beckmann;
 use bxdf::fresnel::Dielectric;
 use material::Material;
+use texture::Texture;
 
 /// The Plastic material describes plastic materials of varying roughness
 pub struct Plastic {
-    diffuse: Colorf,
-    gloss: Colorf,
-    roughness: f32,
+    diffuse: Arc<Texture<Colorf> + Send + Sync>,
+    gloss: Arc<Texture<Colorf> + Send + Sync>,
+    roughness: Arc<Texture<f32> + Send + Sync>,
 }
 
 impl Plastic {
     /// Create a new plastic material specifying the diffuse and glossy colors
     /// along with the roughness of the surface
-    pub fn new(diffuse: &Colorf, gloss: &Colorf, roughness: f32) -> Plastic {
-        Plastic { diffuse: *diffuse, gloss: *gloss, roughness: roughness }
+    pub fn new(diffuse: Arc<Texture<Colorf> + Send + Sync>,
+               gloss: Arc<Texture<Colorf> + Send + Sync>,
+               roughness: Arc<Texture<f32> + Send + Sync>) -> Plastic
+    {
+        Plastic {
+            diffuse: diffuse.clone(),
+            gloss: gloss.clone(),
+            roughness: roughness.clone()
+        }
     }
 }
 
 impl Material for Plastic {
     fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>,
-                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
+                        alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c
+    {
+        let diffuse = self.diffuse.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let gloss = self.gloss.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let roughness = self.roughness.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+
         // TODO: I don't like this counting and junk we have to do to figure out
         // the slice size and then the indices. Is there a better way?
         let mut num_bxdfs = 0;
-        if !self.diffuse.is_black() {
+        if !diffuse.is_black() {
             num_bxdfs += 1;
         }
-        if !self.gloss.is_black() {
+        if !gloss.is_black() {
             num_bxdfs += 1;
         }
         let bxdfs = alloc.alloc_slice::<&BxDF>(num_bxdfs);
-        
+
         let mut i = 0;
-        if !self.diffuse.is_black() {
-            bxdfs[i] = alloc <- Lambertian::new(&self.diffuse);
+        if !diffuse.is_black() {
+            bxdfs[i] = alloc <- Lambertian::new(&diffuse);
             i += 1;
         }
-        if !self.gloss.is_black() {
+        if !gloss.is_black() {
             let fresnel = alloc <- Dielectric::new(1.0, 1.5);
-            let microfacet = alloc <- Beckmann::new(self.roughness);
-            bxdfs[i] = alloc <- TorranceSparrow::new(&self.gloss, fresnel, microfacet);
+            let microfacet = alloc <- Beckmann::new(roughness);
+            bxdfs[i] = alloc <- TorranceSparrow::new(&gloss, fresnel, microfacet);
         }
         BSDF::new(bxdfs, 1.0, &hit.dg)
     }
