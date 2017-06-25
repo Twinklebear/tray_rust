@@ -37,7 +37,7 @@ use geometry::{Sphere, Instance, Intersection, BVH, Mesh, Disk, Rectangle,
                BoundableGeom, SampleableGeom};
 use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal, RoughGlass};
 use integrator::{self, Integrator};
-use texture::{self, Texture};
+use texture;
 
 /// The scene containing the objects and camera configuration we'd like to render,
 /// shared immutably among the ray tracing threads
@@ -312,7 +312,8 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
             let diffuse = load_color(m.get("diffuse")
                                      .expect(&mat_error(&name, "A diffuse color is required for matte")[..]))
                 .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
-            let diffuse = Arc::new(texture::Constant::<Colorf>::new(diffuse));
+            //let diffuse = Arc::new(texture::Constant::<Colorf>::new(diffuse));
+            let diffuse = Arc::new(texture::UVColor);
 
             let roughness = m.get("roughness")
                 .expect(&mat_error(&name, "A roughness is required for matte")[..]).as_f64()

@@ -1,5 +1,7 @@
 //! Defines the trait implemented by all textured values
 
+use film::Colorf;
+
 /// Any T which can be copied to return can be computed
 /// based on some texture or procedural value.
 pub trait Texture<T: Copy> {
@@ -20,6 +22,13 @@ impl<T: Copy> Constant<T> {
 impl<T: Copy> Texture<T> for Constant<T> {
     fn sample(&self, _: f32, _: f32, _: f32) -> T {
         self.val
+    }
+}
+
+pub struct UVColor;
+impl Texture<Colorf> for UVColor {
+    fn sample(&self, u: f32, v: f32, _: f32) -> Colorf {
+        Colorf::new(u, v, 0.0)
     }
 }
 
