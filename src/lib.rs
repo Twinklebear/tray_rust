@@ -110,4 +110,5 @@ pub mod light;
 pub mod mc;
 pub mod partition;
 pub mod exec;
+pub mod texture;
 
