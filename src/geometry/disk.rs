@@ -66,10 +66,12 @@ impl Geometry for Disk {
         }
         ray.max_t = t;
         let hit_radius = f32::sqrt(dist_sqr);
+        let u = phi / (2.0 * f32::consts::PI);
+        let v = 1.0 - (hit_radius - self.inner_radius) / (self.radius - self.inner_radius);
         let dp_du = Vector::new(-f32::consts::PI * 2.0 * p.y, f32::consts::PI * 2.0 * p.x, 0.0);
         let dp_dv = ((self.inner_radius - self.radius) / hit_radius) * Vector::new(p.x, p.y, 0.0);
         Some(DifferentialGeometry::new(&p, &Normal::new(0.0, 0.0, 1.0),
-                                       0.0, 0.0, ray.time, &dp_du, &dp_dv, self))
+                                       u, v, ray.time, &dp_du, &dp_dv, self))
     }
 }
 

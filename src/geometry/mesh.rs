@@ -159,6 +159,8 @@ impl Geometry for Triangle {
         let ta = &self.texcoords[self.a];
         let tb = &self.texcoords[self.b];
         let tc = &self.texcoords[self.c];
+        let texcoord = bary[0] * *ta + bary[1] * *tb + bary[2] * *tc;
+
         // Triangle points can be found by p_i = p_0 + u_i dp/du + v_i dp/dv
         // we use this property to find the derivatives dp/du and dp/dv
         let du = [ta.x - tc.x, tb.x - tc.x];
@@ -176,7 +178,7 @@ impl Geometry for Triangle {
                 let dp_dv = (-du[1] * dp[0] + du[0] * dp[1]) * det;
                 (dp_du, dp_dv)
             };
-        Some(DifferentialGeometry::with_normal(&p, &n, 0.0, 0.0, ray.time, &dp_du, &dp_dv, self))
+        Some(DifferentialGeometry::with_normal(&p, &n, texcoord.x, texcoord.y, ray.time, &dp_du, &dp_dv, self))
     }
 }
 
