@@ -77,7 +77,7 @@
 					"transform": [
 						{
 							"type": "scale",
-							"scaling": 32.0
+							"scaling": [15, 12, 1]
 						},
 						{
 							"type": "translate",
@@ -95,7 +95,7 @@
 					"transform": [
 						{
 							"type": "scale",
-							"scaling": 32
+							"scaling": [20, 12, 1]
 						},
 						{
 							"type": "rotate_y",
@@ -117,7 +117,7 @@
 					"transform": [
 						{
 							"type": "scale",
-							"scaling": 32.0
+							"scaling": [20, 12, 1]
 						},
 						{
 							"type": "rotate_y",
@@ -139,7 +139,7 @@
 					"transform": [
 						{
 							"type": "scale",
-							"scaling": 32.0
+							"scaling": [15, 20, 1]
 						},
 						{
 							"type": "rotate_x",
@@ -161,7 +161,7 @@
 					"transform": [
 						{
 							"type": "scale",
-							"scaling": 32.0
+							"scaling": [15, 20, 1]
 						},
 						{
 							"type": "rotate_x",
