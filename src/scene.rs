@@ -29,6 +29,7 @@ use std::sync::Arc;
 use std::path::Path;
 use std::collections::HashMap;
 
+use image;
 use serde_json::{self, Value};
 
 use linalg::{Transform, Point, Vector, Ray, Keyframe, AnimatedTransform};
@@ -272,6 +273,7 @@ fn mat_error(mat_name: &str, msg: &str) -> String {
 fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + Send + Sync>> {
     let mut materials = HashMap::new();
     let mat_vec = elem.as_array().expect("The materials must be an array of materials used");
+    let img = Arc::new(image::open("./test-img.png").unwrap().flipv());
     for (i, m) in mat_vec.iter().enumerate() {
         let name = m.get("name").expect(&format!("Error loading material #{}: A name is required", i)[..])
             .as_str().expect(&format!("Error loading material #{}: name must be a string", i)[..])
@@ -313,7 +315,7 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
                                      .expect(&mat_error(&name, "A diffuse color is required for matte")[..]))
                 .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
             //let diffuse = Arc::new(texture::Constant::<Colorf>::new(diffuse));
-            let diffuse = Arc::new(texture::UVColor);
+            let diffuse = Arc::new(texture::Image::new(img.clone()));
 
             let roughness = m.get("roughness")
                 .expect(&mat_error(&name, "A roughness is required for matte")[..]).as_f64()
