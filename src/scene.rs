@@ -381,16 +381,17 @@ fn load_materials(path: &Path, elem: &Value, textures: &LoadedTextures)
             panic!("Error loading material '{}': name conflicts with an existing entry", name);
         }
         if ty == "glass" {
-            let reflect = load_color(m.get("reflect")
-                                     .expect(&mat_error(&name, "A reflect color is required for glass")[..]))
+            let reflect = textures.find_color(m.get("reflect")
+                                            .expect("reflect color/texture name is required for glass"))
                 .expect(&mat_error(&name, "Invalid color specified for reflect of glass")[..]);
-            let transmit = load_color(m.get("transmit")
-                                      .expect(&mat_error(&name, "A transmit color is required for glass")[..]))
+            let transmit = textures.find_color(m.get("transmit")
+                                            .expect("transmit color/texture name is required for glass"))
                 .expect(&mat_error(&name, "Invalid color specified for transmit of glass")[..]);
-            let eta = m.get("eta")
-                .expect(&mat_error(&name, "A refractive index 'eta' is required for glass")[..]).as_f64()
-                .expect(&mat_error(&name, "glass eta must be a float")[..]) as f32;
-            materials.insert(name, Arc::new(Glass::new(&reflect, &transmit, eta)) as Arc<Material + Send + Sync>);
+            let eta = textures.find_scalar(m.get("eta")
+                                            .expect("eta color/texture name is required for glass"))
+                .expect(&mat_error(&name, "Invalid color specified for eta of glass")[..]);
+
+            materials.insert(name, Arc::new(Glass::new(reflect, transmit, eta)) as Arc<Material + Send + Sync>);
         } else if ty == "rough_glass" {
             let reflect = load_color(m.get("reflect")
                                      .expect(&mat_error(&name, "A reflect color is required for roughglass")[..]))

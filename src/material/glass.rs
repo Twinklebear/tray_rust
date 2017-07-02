@@ -18,6 +18,8 @@
 //! ]
 //! ```
 
+use std::sync::Arc;
+
 use light_arena::Allocator;
 
 use film::Colorf;
@@ -25,12 +27,13 @@ use geometry::Intersection;
 use bxdf::{BxDF, BSDF, SpecularReflection, SpecularTransmission};
 use bxdf::fresnel::Dielectric;
 use material::Material;
+use texture::Texture;
 
 /// The Glass material describes specularly transmissive and reflective glass material
 pub struct Glass {
-    reflect: Colorf,
-    transmit: Colorf,
-    eta: f32,
+    reflect: Arc<Texture<Colorf> + Send + Sync>,
+    transmit: Arc<Texture<Colorf> + Send + Sync>,
+    eta: Arc<Texture<f32> + Send + Sync>,
 }
 
 impl Glass {
@@ -38,8 +41,10 @@ impl Glass {
     /// `reflect`: color of reflected light
     /// `transmit`: color of transmitted light
     /// `eta`: refractive index of the material
-    pub fn new(reflect: &Colorf, transmit: &Colorf, eta: f32) -> Glass {
-        Glass { reflect: *reflect, transmit: *transmit, eta: eta }
+    pub fn new(reflect: Arc<Texture<Colorf> + Send + Sync>,
+               transmit: Arc<Texture<Colorf> + Send + Sync>,
+               eta: Arc<Texture<f32> + Send + Sync>) -> Glass {
+        Glass { reflect: reflect, transmit: transmit, eta: eta }
     }
 }
 
@@ -48,25 +53,29 @@ impl Material for Glass {
                         alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
         // TODO: I don't like this counting and junk we have to do to figure out
         // the slice size and then the indices. Is there a better way?
+        let reflect = self.reflect.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let transmit = self.transmit.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let eta = self.eta.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+
         let mut num_bxdfs = 0;
-        if !self.reflect.is_black() {
+        if !reflect.is_black() {
             num_bxdfs += 1;
         }
-        if !self.transmit.is_black() {
+        if !transmit.is_black() {
             num_bxdfs += 1;
         }
         let bxdfs = alloc.alloc_slice::<&BxDF>(num_bxdfs);
 
         let mut i = 0;
-        let fresnel = alloc <- Dielectric::new(1.0, self.eta);
-        if !self.reflect.is_black() {
-            bxdfs[i] = alloc <- SpecularReflection::new(&self.reflect, fresnel);
+        let fresnel = alloc <- Dielectric::new(1.0, eta);
+        if !reflect.is_black() {
+            bxdfs[i] = alloc <- SpecularReflection::new(&reflect, fresnel);
             i += 1;
         }
-        if !self.transmit.is_black() {
-            bxdfs[i] = alloc <- SpecularTransmission::new(&self.transmit, fresnel);
+        if !transmit.is_black() {
+            bxdfs[i] = alloc <- SpecularTransmission::new(&transmit, fresnel);
         }
-        BSDF::new(bxdfs, self.eta, &hit.dg)
+        BSDF::new(bxdfs, eta, &hit.dg)
     }
 }
 
