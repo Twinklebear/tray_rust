@@ -1,8 +1,6 @@
 //! An `Image` texture is a `Texture` whose samples come
 //! from an image file.
 
-use std::sync::Arc;
-
 use image::{self, GenericImage};
 
 use linalg::clamp;
@@ -10,11 +8,11 @@ use film::Colorf;
 use texture::{Texture, bilinear_interpolate};
 
 pub struct Image {
-    img: Arc<image::DynamicImage>,
+    img: image::DynamicImage,
 }
 
 impl Image {
-    pub fn new(img: Arc<image::DynamicImage>) -> Image {
+    pub fn new(img: image::DynamicImage) -> Image {
         Image { img: img }
     }
     fn get_float(&self, x: u32, y: u32) -> f32 {
