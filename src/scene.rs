@@ -26,7 +26,7 @@
 use std::io::prelude::*;
 use std::fs::File;
 use std::sync::Arc;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::collections::HashMap;
 
 use image;
@@ -38,7 +38,56 @@ use geometry::{Sphere, Instance, Intersection, BVH, Mesh, Disk, Rectangle,
                BoundableGeom, SampleableGeom};
 use material::{Material, Matte, Glass, Metal, Merl, Plastic, SpecularMetal, RoughGlass};
 use integrator::{self, Integrator};
-use texture;
+use texture::{self, Texture};
+
+/// This lets me enforce only certain types of textures are valid,
+/// and to look up the right type of texture result for a given
+/// input. But it's a bit of a pain to deal with, if I want to add
+/// more texture-able types and such.
+struct LoadedTextures {
+    color: HashMap<String, Arc<Texture<Colorf> + Send + Sync>>,
+    scalar: HashMap<String, Arc<Texture<f32> + Send + Sync>>,
+}
+impl LoadedTextures {
+    pub fn none() -> LoadedTextures {
+        LoadedTextures { color: HashMap::new(), scalar: HashMap::new() }
+    }
+    /// Get a Color texture, if it's in the map by loading from the element.
+    /// If the element is a string the teture name will be looked up, if
+    /// not a constant texture will be created and returned
+    pub fn find_color(&self, e: &Value) -> Option<Arc<Texture<Colorf> + Send + Sync>> {
+        match *e {
+            Value::String(ref s) => {
+                match self.color.get(s) {
+                    Some(t) => Some(t.clone()),
+                    None => None,
+                }
+            },
+            Value::Array(_) => {
+                match load_color(e) {
+                    Some(c) => Some(Arc::new(texture::Constant::new(c))),
+                    None => None,
+                }
+            },
+            _ => panic!("Invalid JSON type for colorf texture"),
+        }
+    }
+    /// Get a scalar texture, if it's in the map by loading from the element.
+    /// If the element is a string the teture name will be looked up, if
+    /// not a constant texture will be created and returned
+    pub fn find_scalar(&self, e: &Value) -> Option<Arc<Texture<f32> + Send + Sync>> {
+        match *e {
+            Value::String(ref s) => {
+                match self.scalar.get(s) {
+                    Some(t) => Some(t.clone()),
+                    None => None,
+                }
+            },
+            Value::Number(ref n) => Some(Arc::new(texture::Constant::new(n.as_f64().unwrap() as f32))),
+            _ => panic!("Invalid JSON type for scalar texture"),
+        }
+    }
+}
 
 /// The scene containing the objects and camera configuration we'd like to render,
 /// shared immutably among the ray tracing threads
@@ -74,8 +123,12 @@ impl Scene {
         let cameras = load_cameras(&data, rt.dimensions());
         let integrator = load_integrator(data.get("integrator")
                                          .expect("The scene must specify the integrator to render with"));
-        let materials = load_materials(path, data.get("materials")
-                                       .expect("The scene must specify an array of materials"));
+        let textures = match data.get("textures") {
+            Some(e) => load_textures(path, e),
+            None => LoadedTextures::none(),
+        };
+        let materials = load_materials(path, data.get("materials").expect("An array of materials is required"),
+                                       &textures);
         // mesh cache is a map of file_name -> (map of mesh name -> mesh)
         let mut mesh_cache = HashMap::new();
         let instances = load_objects(path, &materials, &mut mesh_cache,
@@ -262,6 +315,48 @@ fn load_integrator(elem: &Value) -> Box<Integrator + Send + Sync> {
     }
 }
 
+fn load_textures(path: &Path, elem: &Value) -> LoadedTextures {
+    let mut textures = LoadedTextures::none();
+    let tex_vec = elem.as_array().expect("The 'textures' must be an array of textures to load");
+    for (i, t) in tex_vec.iter().enumerate() {
+        let name = t.get("name").expect(&format!("Error loading texture #{}: A name is required", i)[..])
+            .as_str().expect(&format!("Error loading texture #{}: name must be a string", i)[..])
+            .to_owned();
+        let ty = t.get("type").expect(&mat_error(&name, "A texture type is required")[..])
+            .as_str().expect(&mat_error(&name, "Texture type must be a string")[..]);
+        // Make sure names are unique to avoid people accidently overwriting textures
+        if textures.color.contains_key(&name) || textures.scalar.contains_key(&name) {
+            panic!("Error loading texture '{}': name conflicts with an existing entry", name);
+        }
+        if ty == "image" {
+            let mut file_path = PathBuf::new();
+            file_path.push(t.get("file").expect("Image textures must specify an image file")
+                      .as_str().expect("Image file name must be a string"));
+
+            if file_path.is_relative() {
+                file_path = path.join(file_path);
+            }
+            let img = image::open(file_path).expect("Failed to load image file");
+            let px_fmt = t.get("pixel_format").map(|x| x.as_str().expect("pixel_format must be a string"));
+            match px_fmt {
+                Some(fmt) => {
+                    if fmt == "color" {
+                        textures.color.insert(name, Arc::new(texture::Image::new(img)));
+                    } else if fmt == "f32" {
+                        textures.scalar.insert(name, Arc::new(texture::Image::new(img)));
+                    } else {
+                        panic!("Unrecognized pixel format {}", fmt);
+                    }
+                },
+                None => { textures.color.insert(name, Arc::new(texture::Image::new(img))); },
+            }
+        } else {
+            panic!("Unrecognized texture type '{}' for texture '{}'", ty, name);
+        }
+    }
+    textures
+}
+
 /// Generate a material loading error string
 fn mat_error(mat_name: &str, msg: &str) -> String {
     format!("Error loading material '{}': {}", mat_name, msg)
@@ -270,10 +365,11 @@ fn mat_error(mat_name: &str, msg: &str) -> String {
 /// Load the array of materials used in the scene, panics if a material is specified
 /// incorrectly. The path to the directory containing the scene file is required to find
 /// referenced material data relative to the scene file.
-fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + Send + Sync>> {
+fn load_materials(path: &Path, elem: &Value, textures: &LoadedTextures)
+    -> HashMap<String, Arc<Material + Send + Sync>>
+{
     let mut materials = HashMap::new();
     let mat_vec = elem.as_array().expect("The materials must be an array of materials used");
-    let img = Arc::new(image::open("./test-img.png").unwrap().flipv());
     for (i, m) in mat_vec.iter().enumerate() {
         let name = m.get("name").expect(&format!("Error loading material #{}: A name is required", i)[..])
             .as_str().expect(&format!("Error loading material #{}: name must be a string", i)[..])
@@ -311,16 +407,13 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
             materials.insert(name, Arc::new(RoughGlass::new(&reflect, &transmit, eta, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "matte" {
-            let diffuse = load_color(m.get("diffuse")
-                                     .expect(&mat_error(&name, "A diffuse color is required for matte")[..]))
+            let diffuse = textures.find_color(m.get("diffuse")
+                                            .expect("diffuse color/texture name is required for matte"))
                 .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
-            //let diffuse = Arc::new(texture::Constant::<Colorf>::new(diffuse));
-            let diffuse = Arc::new(texture::Image::new(img.clone()));
 
-            let roughness = m.get("roughness")
-                .expect(&mat_error(&name, "A roughness is required for matte")[..]).as_f64()
-                .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
-            let roughness = Arc::new(texture::Constant::<f32>::new(roughness));
+            let roughness = textures.find_scalar(m.get("roughness")
+                                                 .expect("roughness color/texture is required for matte"))
+                .expect(&mat_error(&name, "Invalid roughness specified for roughness")[..]);
 
             materials.insert(name, Arc::new(Matte::new(diffuse, roughness)));
         } else if ty == "merl" {
@@ -346,20 +439,17 @@ fn load_materials(path: &Path, elem: &Value) -> HashMap<String, Arc<Material + S
             materials.insert(name, Arc::new(Metal::new(&refr_index, &absorption_coef, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "plastic" {
-            let diffuse = load_color(m.get("diffuse")
-                             .expect(&mat_error(&name, "A diffuse color is required for plastic")[..]))
-                .expect(&mat_error(&name, "Invalid color specified for diffuse of plastic")[..]);
-            let diffuse = Arc::new(texture::Constant::<Colorf>::new(diffuse));
+            let diffuse = textures.find_color(m.get("diffuse")
+                                            .expect("diffuse color/texture name is required for plastic"))
+                .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
 
-            let gloss = load_color(m.get("gloss")
-                             .expect(&mat_error(&name, "A gloss color is required for plastic")[..]))
-                .expect(&mat_error(&name, "Invalid color specified for gloss of plastic")[..]);
-            let gloss = Arc::new(texture::Constant::<Colorf>::new(gloss));
+            let gloss = textures.find_color(m.get("gloss")
+                                            .expect("gloss color/texture name is required for plastic"))
+                .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
 
-            let roughness = m.get("roughness")
-                .expect(&mat_error(&name, "A roughness is required for plastic")[..]).as_f64()
-                .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
-            let roughness = Arc::new(texture::Constant::<f32>::new(roughness));
+            let roughness = textures.find_scalar(m.get("roughness")
+                                                 .expect("roughness color/texture is required for plastic"))
+                .expect(&mat_error(&name, "Invalid roughness specified for roughness")[..]);
 
             materials.insert(name, Arc::new(Plastic::new(diffuse, gloss, roughness))
                              as Arc<Material + Send + Sync>);
