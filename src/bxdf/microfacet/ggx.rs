@@ -51,11 +51,8 @@ impl MicrofacetDistribution for GGX {
     /// shadowing-masking which uses the reciprocity of this function.
     /// `w` is the incident/outgoing light direction and `w_h` is the microfacet normal
     fn monodir_shadowing(&self, v: &Vector, w_h: &Vector) -> f32 {
-        if linalg::dot(v, w_h) / bxdf::cos_theta(v) > 0.0 {
-            2.0 / (1.0 + f32::sqrt(1.0 + f32::powf(self.width * bxdf::tan_theta(v), 2.0)))
-        } else {
-            0.0
-        }
+        2.0 / (1.0 + f32::sqrt(1.0 + f32::powf(self.width * f32::abs(bxdf::tan_theta(v)), 2.0)))
+        
     }
 }
 
