@@ -111,11 +111,10 @@ pub fn reflect(w: &Vector, v: &Vector) -> Vector {
     2.0 * dot(w, v) * *v - *w
 }
 /// Compute the refraction of `w` entering surface with normal `n` where
-/// the refractive index in the incident material is `eta_1` and the refractive
-/// index of the entered material is `eta_2`. In the case of total internal
+/// `eta` is the refractive index of the incident material divided
+/// by that of the exiting materia. In the case of total internal
 /// refraction this will return None.
-pub fn refract(w: &Vector, n: &Vector, eta_1: f32, eta_2: f32) -> Option<Vector> {
-    let eta = eta_1 / eta_2;
+pub fn refract(w: &Vector, n: &Vector, eta: f32) -> Option<Vector> {
     let cos_t1 = dot(n, w);
     let sin_t1_sqr = f32::max(0.0, 1.0 - f32::powf(cos_t1, 2.0));
     let sin_t2_sqr = f32::powf(eta, 2.0) * sin_t1_sqr;

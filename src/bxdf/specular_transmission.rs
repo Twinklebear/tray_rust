@@ -46,7 +46,7 @@ impl<'a> BxDF for SpecularTransmission<'a> {
             } else {
                 (self.fresnel.eta_t, self.fresnel.eta_i, Vector::new(0.0, 0.0, -1.0))
             };
-        if let Some(w_i) = linalg::refract(w_o, &n, ei, et) {
+        if let Some(w_i) = linalg::refract(w_o, &n, ei / et) {
             let f = Colorf::broadcast(1.0) - self.fresnel.fresnel(bxdf::cos_theta(&w_i));
             let c = f * self.transmission / f32::abs(bxdf::cos_theta(&w_i));
             (c, w_i, 1.0)
