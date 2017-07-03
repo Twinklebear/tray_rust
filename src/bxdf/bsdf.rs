@@ -64,11 +64,11 @@ impl<'a> BSDF<'a> {
     /// selected by the flags passed. `wo_world` and `wi_world` should point from
     /// the hit point in the outgoing and incident light directions respectively.
     pub fn eval(&self, wo_world: &Vector, wi_world: &Vector, mut flags: EnumSet<BxDFType>) -> Colorf {
-        let w_o = self.to_shading(wo_world);
-        let w_i = self.to_shading(wi_world);
+        let w_o = self.to_shading(wo_world).normalized();
+        let w_i = self.to_shading(wi_world).normalized();
         // Determine if we should evaluate reflection or transmission based on the
         // geometry normal and the light directions
-        if linalg::dot(wo_world, &self.ng) * linalg::dot(wi_world, &self.ng) > 0.0 {
+        if w_o.z * w_i.z > 0.0 {
             flags.remove(&BxDFType::Transmission);
         } else {
             flags.remove(&BxDFType::Reflection);
@@ -83,7 +83,8 @@ impl<'a> BSDF<'a> {
     /// and a the chosen BSDF
     /// Returns the color, direction, pdf and the type of BxDF that was sampled.
     pub fn sample(&self, wo_world: &Vector, flags: EnumSet<BxDFType>, samples: &Sample)
-        -> (Colorf, Vector, f32, EnumSet<BxDFType>) {
+        -> (Colorf, Vector, f32, EnumSet<BxDFType>)
+    {
         let n_matching = self.num_matching(flags);
         if n_matching == 0 {
             return (Colorf::broadcast(0.0), Vector::broadcast(0.0), 0.0, EnumSet::new());
@@ -114,7 +115,6 @@ impl<'a> BSDF<'a> {
     /// Compute the pdf for sampling the pair of incident and outgoing light directions for
     /// the BxDFs matching the flags set
     pub fn pdf(&self, wo_world: &Vector, wi_world: &Vector, flags: EnumSet<BxDFType>) -> f32 {
-        // should also normalize?
         let w_o = self.to_shading(wo_world).normalized();
         let w_i = self.to_shading(wi_world).normalized();
         let (pdf_val, n_comps) = self.bxdfs.iter()
