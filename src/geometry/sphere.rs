@@ -68,9 +68,9 @@ impl Geometry for Sphere {
         // directions, they should at least point in a similar direction
         // Doing dp_dv x dp_du gives the same as normal, kind of as we'd expect since they're
         // facing opposite directions, but it doesn't explain why this would be wrong
-        let u = match f32::atan2(p.x, p.y) {
-            x if x < 0.0 => x + 2.0 * f32::consts::PI,
-            x => x
+        let u = match f32::atan2(p.x, p.y) / (2.0 * f32::consts::PI) {
+            x if x < 0.0 => x + 1.0,
+            x => x,
         };
         let v = theta / f32::consts::PI;
         let dp_du = Vector::new(-f32::consts::PI * 2.0 * p.y, f32::consts::PI * 2.0 * p.x, 0.0);
