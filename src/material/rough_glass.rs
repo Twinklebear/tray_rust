@@ -79,7 +79,6 @@ impl Material for RoughGlass {
             i += 1;
         }
         if !transmit.is_black() {
-            println!("i = {}", i);
             bxdfs[i] = alloc <- MicrofacetTransmission::new(&transmit, fresnel, microfacet);
         }
         BSDF::new(bxdfs, eta, &hit.dg)
