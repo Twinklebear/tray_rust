@@ -44,7 +44,11 @@ impl<'a> MicrofacetTransmission<'a> {
         let wi_dot_h = linalg::dot(w_i, w_h);
         let wo_dot_h = linalg::dot(w_o, w_h);
         let denom = f32::powf(eta.0 * wi_dot_h + eta.1 * wo_dot_h, 2.0);
-        f32::abs(f32::powf(eta.1, 2.0) * f32::abs(wo_dot_h) / denom)
+        if denom != 0.0 {
+            f32::abs(f32::powf(eta.1, 2.0) * f32::abs(wo_dot_h) / denom)
+        } else {
+            0.0
+        }
     }
     fn half_vector(w_o: &Vector, w_i: &Vector, eta: (f32, f32)) -> Option<Vector> {
         let w_h = -eta.1 * *w_i - eta.0 * *w_o;
