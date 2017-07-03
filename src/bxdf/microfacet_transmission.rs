@@ -44,14 +44,10 @@ impl<'a> MicrofacetTransmission<'a> {
         let wi_dot_h = linalg::dot(w_i, w_h);
         let wo_dot_h = linalg::dot(w_o, w_h);
         let denom = f32::powf(eta.0 * wi_dot_h + eta.1 * wo_dot_h, 2.0);
-        if denom == 0.0 {
-            0.0
-        } else {
-            f32::powf(eta.1, 2.0) * f32::abs(wo_dot_h) / denom
-        }
+        f32::abs(f32::powf(eta.1, 2.0) * f32::abs(wo_dot_h) / denom)
     }
     fn half_vector(w_o: &Vector, w_i: &Vector, eta: (f32, f32)) -> Option<Vector> {
-        let w_h = -eta.0 * *w_o - eta.1 * *w_i;
+        let w_h = -eta.1 * *w_i - eta.0 * *w_o;
         if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
             None
         } else {
@@ -95,7 +91,7 @@ impl<'a> BxDF for MicrofacetTransmission<'a> {
             w_h = -w_h;
         }
         let eta = self.eta_for_interaction(w_o);
-        if let Some(w_i) = linalg::refract(w_o, &w_h, eta.0, eta.1) {
+        if let Some(w_i) = linalg::refract(w_o, &w_h, eta.0 / eta.1) {
             if bxdf::same_hemisphere(w_o, &w_i) {
                 (Colorf::black(), Vector::broadcast(0.0), 0.0)
             } else {
