@@ -393,19 +393,20 @@ fn load_materials(path: &Path, elem: &Value, textures: &LoadedTextures)
 
             materials.insert(name, Arc::new(Glass::new(reflect, transmit, eta)) as Arc<Material + Send + Sync>);
         } else if ty == "rough_glass" {
-            let reflect = load_color(m.get("reflect")
-                                     .expect(&mat_error(&name, "A reflect color is required for roughglass")[..]))
-                .expect(&mat_error(&name, "Invalid color specified for reflect of glass")[..]);
-            let transmit = load_color(m.get("transmit")
-                                      .expect(&mat_error(&name, "A transmit color is required for roughglass")[..]))
-                .expect(&mat_error(&name, "Invalid color specified for transmit of roughglass")[..]);
-            let eta = m.get("eta")
-                .expect(&mat_error(&name, "A refractive index 'eta' is required for roughglass")[..]).as_f64()
-                .expect(&mat_error(&name, "roughglass eta must be a float")[..]) as f32;
-            let roughness = m.get("roughness")
-                .expect(&mat_error(&name, "A roughness is required for roughglass")[..]).as_f64()
-                .expect(&mat_error(&name, "roughness of roughglass must be a float")[..]) as f32;
-            materials.insert(name, Arc::new(RoughGlass::new(&reflect, &transmit, eta, roughness))
+            let reflect = textures.find_color(m.get("reflect")
+                                            .expect("reflect color/texture name is required for rough glass"))
+                .expect(&mat_error(&name, "Invalid color specified for reflect of rough glass")[..]);
+            let transmit = textures.find_color(m.get("transmit")
+                                            .expect("transmit color/texture name is required for rough glass"))
+                .expect(&mat_error(&name, "Invalid color specified for transmit of rough glass")[..]);
+            let eta = textures.find_scalar(m.get("eta")
+                                            .expect("eta color/texture name is required for rough glass"))
+                .expect(&mat_error(&name, "Invalid color specified for eta of rough glass")[..]);
+            let roughness = textures.find_scalar(m.get("roughness")
+                                            .expect("roughness color/texture name is required for rough glass"))
+                .expect(&mat_error(&name, "Invalid color specified for roughness of rough glass")[..]);
+
+            materials.insert(name, Arc::new(RoughGlass::new(reflect, transmit, eta, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "matte" {
             let diffuse = textures.find_color(m.get("diffuse")
