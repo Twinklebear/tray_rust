@@ -43,20 +43,15 @@ impl<'a> MicrofacetTransmission<'a> {
     fn jacobian(w_o: &Vector, w_i: &Vector, w_h: &Vector, eta: (f32, f32)) -> f32 {
         let wi_dot_h = linalg::dot(w_i, w_h);
         let wo_dot_h = linalg::dot(w_o, w_h);
-        let denom = f32::powf(eta.0 * wi_dot_h + eta.1 * wo_dot_h, 2.0);
+        let denom = f32::powf(eta.1 * wi_dot_h + eta.0 * wo_dot_h, 2.0);
         if denom != 0.0 {
-            f32::abs(f32::powf(eta.1, 2.0) * f32::abs(wo_dot_h) / denom)
+            f32::abs(f32::powf(eta.0, 2.0) * f32::abs(wo_dot_h) / denom)
         } else {
             0.0
         }
     }
-    fn half_vector(w_o: &Vector, w_i: &Vector, eta: (f32, f32)) -> Option<Vector> {
-        let w_h = -eta.1 * *w_i - eta.0 * *w_o;
-        if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
-            None
-        } else {
-            Some(w_h.normalized())
-        }
+    fn half_vector(w_o: &Vector, w_i: &Vector, eta: (f32, f32)) -> Vector {
+        (-eta.1 * *w_i - eta.0 * *w_o).normalized()
     }
 }
 
@@ -77,17 +72,14 @@ impl<'a> BxDF for MicrofacetTransmission<'a> {
             return Colorf::black();
         }
         let eta = self.eta_for_interaction(w_o);
-        if let Some(w_h) = MicrofacetTransmission::half_vector(w_o, w_i, eta) {
-            let d = self.microfacet.normal_distribution(&w_h);
-            let f = Colorf::broadcast(1.0) - self.fresnel.fresnel(linalg::dot(w_o, &w_h));
-            let g = self.microfacet.shadowing_masking(w_i, w_o, &w_h);
-            let wi_dot_h = linalg::dot(w_i, &w_h);
-            let jacobian = MicrofacetTransmission::jacobian(w_o, w_i, &w_h, eta);
-            self.reflectance * (f32::abs(wi_dot_h) / (f32::abs(w_i.z) * f32::abs(w_o.z)))
-                * (f * g * d) * jacobian
-        } else {
-            Colorf::black()
-        }
+        let w_h = MicrofacetTransmission::half_vector(w_o, w_i, eta);
+        let d = self.microfacet.normal_distribution(&w_h);
+        let f = Colorf::broadcast(1.0) - self.fresnel.fresnel(linalg::dot(w_o, &w_h));
+        let g = self.microfacet.shadowing_masking(w_i, w_o, &w_h);
+        let wi_dot_h = linalg::dot(w_i, &w_h);
+        let jacobian = MicrofacetTransmission::jacobian(w_o, w_i, &w_h, eta);
+        self.reflectance * (f32::abs(wi_dot_h) / (f32::abs(w_i.z) * f32::abs(w_o.z)))
+            * (f * g * d) * jacobian
     }
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Colorf, Vector, f32) {
         let mut w_h = self.microfacet.sample(w_o, samples);
@@ -99,9 +91,7 @@ impl<'a> BxDF for MicrofacetTransmission<'a> {
             if bxdf::same_hemisphere(w_o, &w_i) {
                 (Colorf::black(), Vector::broadcast(0.0), 0.0)
             } else {
-                let pdf = self.microfacet.pdf(&w_h)
-                    * MicrofacetTransmission::jacobian(w_o, &w_i, &w_h, eta);
-                (self.eval(w_o, &w_i), w_i, pdf)
+                (self.eval(w_o, &w_i), w_i, self.pdf(w_o, &w_i))
             }
         } else {
             (Colorf::black(), Vector::broadcast(0.0), 0.0)
@@ -112,11 +102,8 @@ impl<'a> BxDF for MicrofacetTransmission<'a> {
             0.0
         } else {
             let eta = self.eta_for_interaction(w_o);
-            if let Some(w_h) = MicrofacetTransmission::half_vector(w_o, w_i, eta) {
-                self.microfacet.pdf(&w_h) * MicrofacetTransmission::jacobian(w_o, w_i, &w_h, eta)
-            } else {
-                0.0
-            }
+            let w_h = MicrofacetTransmission::half_vector(w_o, w_i, eta);
+            self.microfacet.pdf(&w_h) * MicrofacetTransmission::jacobian(w_o, w_i, &w_h, eta)
         }
     }
 }
