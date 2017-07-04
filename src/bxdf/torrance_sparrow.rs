@@ -44,7 +44,7 @@ impl<'a> BxDF for TorranceSparrow<'a> {
             return Colorf::new(0.0, 0.0, 0.0)
         }
         let mut w_h = *w_i + *w_o;
-        if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
+        if w_h == Vector::broadcast(0.0) {
             return Colorf::new(0.0, 0.0, 0.0)
         }
         w_h = w_h.normalized();
@@ -54,6 +54,9 @@ impl<'a> BxDF for TorranceSparrow<'a> {
         (self.reflectance * f * d * g / (4.0 * cos_ti * cos_to))
     }
     fn sample(&self, w_o: &Vector, samples: &(f32, f32)) -> (Colorf, Vector, f32) {
+        if w_o.z == 0.0 {
+            return (Colorf::black(), Vector::broadcast(0.0), 0.0)
+        }
         let mut w_h = self.microfacet.sample(w_o, samples);
         if !bxdf::same_hemisphere(w_o, &w_h) {
             w_h = -w_h;
@@ -62,27 +65,18 @@ impl<'a> BxDF for TorranceSparrow<'a> {
         if !bxdf::same_hemisphere(w_o, &w_i) {
             (Colorf::black(), Vector::broadcast(0.0), 0.0)
         } else {
-            // This term is p_o(o) in eq. 38 of Walter et al's 07 paper and is for reflection so
-            // we use the Jacobian for reflection, eq. 14
-            let jacobian = 1.0 / (4.0 * f32::abs(linalg::dot(w_o, &w_h)));
-            let pdf = self.microfacet.pdf(&w_h) * jacobian;
-            (self.eval(w_o, &w_i), w_i, pdf)
+            (self.eval(w_o, &w_i), w_i, self.pdf(w_o, &w_i))
         }
     }
     fn pdf(&self, w_o: &Vector, w_i: &Vector) -> f32 {
         if !bxdf::same_hemisphere(w_o, w_i) {
             0.0
         } else {
-            let mut w_h = *w_o + *w_i;
-            if w_h.x == 0.0 && w_h.y == 0.0 && w_h.z == 0.0 {
-                0.0
-            } else {
-                w_h = w_h.normalized();
-                // This term is p_o(o) in eq. 38 of Walter et al's 07 paper and is for reflection so
-                // we use the Jacobian for reflection, eq. 14
-                let jacobian = 1.0 / (4.0 * f32::abs(linalg::dot(w_o, &w_h)));
-                self.microfacet.pdf(&w_h.normalized()) * jacobian
-            }
+            let w_h = (*w_o + *w_i).normalized();
+            // This term is p_o(o) in eq. 38 of Walter et al's 07 paper and is for reflection so
+            // we use the Jacobian for reflection, eq. 14
+            let jacobian = 1.0 / (4.0 * f32::abs(linalg::dot(w_o, &w_h)));
+            self.microfacet.pdf(&w_h) * jacobian
         }
     }
 }
