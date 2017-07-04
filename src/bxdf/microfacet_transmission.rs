@@ -74,7 +74,7 @@ impl<'a> BxDF for MicrofacetTransmission<'a> {
         let eta = self.eta_for_interaction(w_o);
         let w_h = MicrofacetTransmission::half_vector(w_o, w_i, eta);
         let d = self.microfacet.normal_distribution(&w_h);
-        let f = Colorf::broadcast(1.0) - self.fresnel.fresnel(linalg::dot(w_o, &w_h));
+        let f = Colorf::broadcast(1.0) - self.fresnel.fresnel(linalg::dot(w_i, &w_h));
         let g = self.microfacet.shadowing_masking(w_i, w_o, &w_h);
         let wi_dot_h = linalg::dot(w_i, &w_h);
         let jacobian = MicrofacetTransmission::jacobian(w_o, w_i, &w_h, eta);
