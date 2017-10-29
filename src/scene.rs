@@ -433,7 +433,7 @@ fn load_materials(path: &Path, elem: &Value, textures: &LoadedTextures)
                                             .expect("refractive_index color/texture name is required for metal"))
                 .expect(&mat_error(&name, "Invalid color specified for refractive_index of metal")[..]);
 
-            let absorption_coef  = textures.find_color(m.get("absorption_coefficient")
+            let absorption_coef = textures.find_color(m.get("absorption_coefficient")
                                             .expect("absorption_coefficient color/texture name is required for metal"))
                 .expect(&mat_error(&name, "Invalid color specified for absorption_coefficient of metal")[..]);
 
@@ -458,15 +458,14 @@ fn load_materials(path: &Path, elem: &Value, textures: &LoadedTextures)
             materials.insert(name, Arc::new(Plastic::new(diffuse, gloss, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "specular_metal" {
-            let refr_index = load_color(m.get("refractive_index")
-                    .expect(&mat_error(&name, "A refractive_index color is required for specular metal")[..]))
+            let refr_index = textures.find_color(m.get("refractive_index")
+                                            .expect("refractive_index color/texture name is required for specular metal"))
                 .expect(&mat_error(&name, "Invalid color specified for refractive_index of specular metal")[..]);
-            let absorption_coef = load_color(m.get("absorption_coefficient")
-                     .expect(&mat_error(&name,
-                                        "An absorption_coefficient color is required for specular metal")[..]))
-                .expect(&mat_error(&name,
-                                   "Invalid color specified for absorption_coefficient of specular metal")[..]);
-            materials.insert(name, Arc::new(SpecularMetal::new(&refr_index, &absorption_coef))
+
+            let absorption_coef = textures.find_color(m.get("absorption_coefficient")
+                                            .expect("absorption_coefficient color/texture name is required for specular metal"))
+                .expect(&mat_error(&name, "Invalid color specified for absorption_coefficient of specular metal")[..]);
+            materials.insert(name, Arc::new(SpecularMetal::new(refr_index, absorption_coef))
                              as Arc<Material + Send + Sync>);
         } else {
             panic!("Error parsing material '{}': unrecognized type '{}'", name, ty);
