@@ -429,29 +429,31 @@ fn load_materials(path: &Path, elem: &Value, textures: &LoadedTextures)
                 materials.insert(name, Arc::new(Merl::load_file(file_path)) as Arc<Material + Send + Sync>);
             }
         } else if ty == "metal" {
-            let refr_index = load_color(m.get("refractive_index")
-                            .expect(&mat_error(&name, "A refractive_index color is required for metal")[..]))
+            let refr_index = textures.find_color(m.get("refractive_index")
+                                            .expect("refractive_index color/texture name is required for metal"))
                 .expect(&mat_error(&name, "Invalid color specified for refractive_index of metal")[..]);
-            let absorption_coef = load_color(m.get("absorption_coefficient")
-                         .expect(&mat_error(&name, "An absorption_coefficient color is required for metal")[..]))
+
+            let absorption_coef  = textures.find_color(m.get("absorption_coefficient")
+                                            .expect("absorption_coefficient color/texture name is required for metal"))
                 .expect(&mat_error(&name, "Invalid color specified for absorption_coefficient of metal")[..]);
-            let roughness = m.get("roughness")
-                .expect(&mat_error(&name, "A roughness is required for metal")[..]).as_f64()
-                .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
-            materials.insert(name, Arc::new(Metal::new(&refr_index, &absorption_coef, roughness))
+
+            let roughness = textures.find_scalar(m.get("roughness")
+                                                 .expect("roughness color/texture is required for metal"))
+                .expect(&mat_error(&name, "Invalid roughness specified for metal")[..]);
+            materials.insert(name, Arc::new(Metal::new(refr_index, absorption_coef, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "plastic" {
             let diffuse = textures.find_color(m.get("diffuse")
                                             .expect("diffuse color/texture name is required for plastic"))
-                .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
+                .expect(&mat_error(&name, "Invalid color specified for diffuse of plastic")[..]);
 
             let gloss = textures.find_color(m.get("gloss")
                                             .expect("gloss color/texture name is required for plastic"))
-                .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
+                .expect(&mat_error(&name, "Invalid color specified for diffuse of plastic")[..]);
 
             let roughness = textures.find_scalar(m.get("roughness")
                                                  .expect("roughness color/texture is required for plastic"))
-                .expect(&mat_error(&name, "Invalid roughness specified for roughness")[..]);
+                .expect(&mat_error(&name, "Invalid roughness specified for plastic")[..]);
 
             materials.insert(name, Arc::new(Plastic::new(diffuse, gloss, roughness))
                              as Arc<Material + Send + Sync>);

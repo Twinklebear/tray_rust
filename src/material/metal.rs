@@ -20,6 +20,8 @@
 //! ]
 //! ```
 
+use std::sync::Arc;
+
 use light_arena::Allocator;
 
 use film::Colorf;
@@ -28,27 +30,38 @@ use bxdf::{BxDF, BSDF, TorranceSparrow};
 use bxdf::microfacet::Beckmann;
 use bxdf::fresnel::Conductor;
 use material::Material;
+use texture::Texture;
 
 /// The Metal material describes metals of varying roughness
 pub struct Metal {
-    eta: Colorf,
-    k: Colorf,
-    roughness: f32,
+    eta: Arc<Texture<Colorf> + Send + Sync>,
+    k: Arc<Texture<Colorf> + Send + Sync>,
+    roughness: Arc<Texture<f32> + Send + Sync>,
 }
 
 impl Metal {
     /// Create a new metal material specifying the reflectance properties of the metal
-    pub fn new(eta: &Colorf, k: &Colorf, roughness: f32) -> Metal {
-        Metal { eta: *eta, k: *k, roughness: roughness }
+    pub fn new(eta: Arc<Texture<Colorf> + Send + Sync>,
+               k: Arc<Texture<Colorf> + Send + Sync>,
+               roughness: Arc<Texture<f32> + Send + Sync>) -> Metal
+    {
+        Metal { eta: eta.clone(),
+                k: k.clone(),
+                roughness: roughness.clone()
+        }
     }
 }
 
 impl Material for Metal {
     fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>,
                         alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
+        let eta = self.eta.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let k = self.k.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let roughness = self.roughness.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+
         let bxdfs = alloc.alloc_slice::<&BxDF>(1);
-        let fresnel = alloc <- Conductor::new(&self.eta, &self.k);
-        let microfacet = alloc <- Beckmann::new(self.roughness);
+        let fresnel = alloc <- Conductor::new(&eta, &k);
+        let microfacet = alloc <- Beckmann::new(roughness);
         bxdfs[0] = alloc <- TorranceSparrow::new(&Colorf::broadcast(1.0), fresnel, microfacet);
         BSDF::new(bxdfs, 1.0, &hit.dg)
     }
