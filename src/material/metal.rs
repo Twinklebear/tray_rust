@@ -34,16 +34,16 @@ use texture::Texture;
 
 /// The Metal material describes metals of varying roughness
 pub struct Metal {
-    eta: Arc<Texture<Colorf> + Send + Sync>,
-    k: Arc<Texture<Colorf> + Send + Sync>,
-    roughness: Arc<Texture<f32> + Send + Sync>,
+    eta: Arc<Texture + Send + Sync>,
+    k: Arc<Texture + Send + Sync>,
+    roughness: Arc<Texture + Send + Sync>,
 }
 
 impl Metal {
     /// Create a new metal material specifying the reflectance properties of the metal
-    pub fn new(eta: Arc<Texture<Colorf> + Send + Sync>,
-               k: Arc<Texture<Colorf> + Send + Sync>,
-               roughness: Arc<Texture<f32> + Send + Sync>) -> Metal
+    pub fn new(eta: Arc<Texture + Send + Sync>,
+               k: Arc<Texture + Send + Sync>,
+               roughness: Arc<Texture + Send + Sync>) -> Metal
     {
         Metal { eta: eta.clone(),
                 k: k.clone(),
@@ -55,9 +55,9 @@ impl Metal {
 impl Material for Metal {
     fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>,
                         alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
-        let eta = self.eta.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let k = self.k.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let roughness = self.roughness.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let eta = self.eta.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let k = self.k.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let roughness = self.roughness.sample_f32(hit.dg.u, hit.dg.v, hit.dg.time);
 
         let bxdfs = alloc.alloc_slice::<&BxDF>(1);
         let fresnel = alloc <- Conductor::new(&eta, &k);

@@ -32,17 +32,14 @@ impl Image {
     }
 }
 
-impl Texture<f32> for Image {
-    fn sample(&self, u: f32, v: f32, _: f32) -> f32 {
+impl Texture for Image {
+    fn sample_f32(&self, u: f32, v: f32, _: f32) -> f32 {
         let dims = self.img.dimensions();
         let x = u * dims.0 as f32;
         let y = v * dims.1 as f32;
         bilinear_interpolate(x, y, |px, py| self.get_float(px, py))
     }
-}
-
-impl Texture<Colorf> for Image {
-    fn sample(&self, u: f32, v: f32, _: f32) -> Colorf {
+    fn sample_color(&self, u: f32, v: f32, _: f32) -> Colorf {
         let x = u * self.img.dimensions().0 as f32;
         let y = v * self.img.dimensions().1 as f32;
         bilinear_interpolate(x, y, |px, py| self.get_color(px, py))

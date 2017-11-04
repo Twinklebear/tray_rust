@@ -23,7 +23,6 @@ use std::sync::Arc;
 
 use light_arena::Allocator;
 
-use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, Lambertian, OrenNayar};
 use material::Material;
@@ -33,14 +32,14 @@ use texture::Texture;
 /// Oren-Nayar BRDF. The Lambertian BRDF is used for materials with no roughness
 /// while Oren-Nayar is used for those with some roughness.
 pub struct Matte {
-    diffuse: Arc<Texture<Colorf> + Send + Sync>,
-    roughness: Arc<Texture<f32> + Send + Sync>,
+    diffuse: Arc<Texture + Send + Sync>,
+    roughness: Arc<Texture + Send + Sync>,
 }
 
 impl Matte {
     /// Create a new Matte material with the desired diffuse color and roughness
-    pub fn new(diffuse: Arc<Texture<Colorf> + Send + Sync>,
-               roughness: Arc<Texture<f32> + Send + Sync>) -> Matte
+    pub fn new(diffuse: Arc<Texture + Send + Sync>,
+               roughness: Arc<Texture + Send + Sync>) -> Matte
     {
         Matte {
             diffuse: diffuse.clone(),
@@ -53,8 +52,8 @@ impl Material for Matte {
     fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>,
                         alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c
     {
-        let diffuse = self.diffuse.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let roughness = self.roughness.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let diffuse = self.diffuse.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let roughness = self.roughness.sample_f32(hit.dg.u, hit.dg.v, hit.dg.time);
 
         let bsdfs = alloc.alloc_slice::<&'c BxDF>(1);
         if roughness == 0.0 {

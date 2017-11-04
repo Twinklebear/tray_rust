@@ -26,7 +26,6 @@ use std::sync::Arc;
 
 use light_arena::Allocator;
 
-use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, TorranceSparrow, Lambertian};
 use bxdf::microfacet::Beckmann;
@@ -36,17 +35,17 @@ use texture::Texture;
 
 /// The Plastic material describes plastic materials of varying roughness
 pub struct Plastic {
-    diffuse: Arc<Texture<Colorf> + Send + Sync>,
-    gloss: Arc<Texture<Colorf> + Send + Sync>,
-    roughness: Arc<Texture<f32> + Send + Sync>,
+    diffuse: Arc<Texture + Send + Sync>,
+    gloss: Arc<Texture + Send + Sync>,
+    roughness: Arc<Texture + Send + Sync>,
 }
 
 impl Plastic {
     /// Create a new plastic material specifying the diffuse and glossy colors
     /// along with the roughness of the surface
-    pub fn new(diffuse: Arc<Texture<Colorf> + Send + Sync>,
-               gloss: Arc<Texture<Colorf> + Send + Sync>,
-               roughness: Arc<Texture<f32> + Send + Sync>) -> Plastic
+    pub fn new(diffuse: Arc<Texture + Send + Sync>,
+               gloss: Arc<Texture + Send + Sync>,
+               roughness: Arc<Texture + Send + Sync>) -> Plastic
     {
         Plastic {
             diffuse: diffuse.clone(),
@@ -60,9 +59,9 @@ impl Material for Plastic {
     fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>,
                         alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c
     {
-        let diffuse = self.diffuse.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let gloss = self.gloss.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let roughness = self.roughness.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let diffuse = self.diffuse.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let gloss = self.gloss.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let roughness = self.roughness.sample_f32(hit.dg.u, hit.dg.v, hit.dg.time);
 
         // TODO: I don't like this counting and junk we have to do to figure out
         // the slice size and then the indices. Is there a better way?

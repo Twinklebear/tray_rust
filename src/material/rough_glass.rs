@@ -23,7 +23,6 @@ use std::sync::Arc;
 
 use light_arena::Allocator;
 
-use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, MicrofacetTransmission, TorranceSparrow};
 use bxdf::microfacet::Beckmann;
@@ -33,10 +32,10 @@ use texture::Texture;
 
 /// The `RoughGlass` material describes specularly transmissive and reflective glass material
 pub struct RoughGlass {
-    reflect: Arc<Texture<Colorf> + Send + Sync>,
-    transmit: Arc<Texture<Colorf> + Send + Sync>,
-    eta: Arc<Texture<f32> + Send + Sync>,
-    roughness: Arc<Texture<f32> + Send + Sync>,
+    reflect: Arc<Texture + Send + Sync>,
+    transmit: Arc<Texture + Send + Sync>,
+    eta: Arc<Texture + Send + Sync>,
+    roughness: Arc<Texture + Send + Sync>,
 }
 
 impl RoughGlass {
@@ -45,10 +44,10 @@ impl RoughGlass {
     /// `transmit`: color of transmitted light
     /// `eta`: refractive index of the material
     /// `roughness`: roughness of the material
-    pub fn new(reflect: Arc<Texture<Colorf> + Send + Sync>,
-               transmit: Arc<Texture<Colorf> + Send + Sync>,
-               eta: Arc<Texture<f32> + Send + Sync>,
-               roughness: Arc<Texture<f32> + Send + Sync>) -> RoughGlass
+    pub fn new(reflect: Arc<Texture + Send + Sync>,
+               transmit: Arc<Texture + Send + Sync>,
+               eta: Arc<Texture + Send + Sync>,
+               roughness: Arc<Texture + Send + Sync>) -> RoughGlass
     {
         RoughGlass { reflect: reflect, transmit: transmit, eta: eta, roughness: roughness }
     }
@@ -57,10 +56,10 @@ impl RoughGlass {
 impl Material for RoughGlass {
     fn bsdf<'a, 'b, 'c>(&self, hit: &Intersection<'a, 'b>,
                         alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
-        let reflect = self.reflect.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let transmit = self.transmit.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let eta = self.eta.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let roughness = self.roughness.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let reflect = self.reflect.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let transmit = self.transmit.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let eta = self.eta.sample_f32(hit.dg.u, hit.dg.v, hit.dg.time);
+        let roughness = self.roughness.sample_f32(hit.dg.u, hit.dg.v, hit.dg.time);
 
         let mut num_bxdfs = 0;
         if !reflect.is_black() {

@@ -22,7 +22,6 @@ use std::sync::Arc;
 
 use light_arena::Allocator;
 
-use film::Colorf;
 use geometry::Intersection;
 use bxdf::{BxDF, BSDF, SpecularReflection, SpecularTransmission};
 use bxdf::fresnel::Dielectric;
@@ -31,9 +30,9 @@ use texture::Texture;
 
 /// The Glass material describes specularly transmissive and reflective glass material
 pub struct Glass {
-    reflect: Arc<Texture<Colorf> + Send + Sync>,
-    transmit: Arc<Texture<Colorf> + Send + Sync>,
-    eta: Arc<Texture<f32> + Send + Sync>,
+    reflect: Arc<Texture + Send + Sync>,
+    transmit: Arc<Texture + Send + Sync>,
+    eta: Arc<Texture + Send + Sync>,
 }
 
 impl Glass {
@@ -41,9 +40,9 @@ impl Glass {
     /// `reflect`: color of reflected light
     /// `transmit`: color of transmitted light
     /// `eta`: refractive index of the material
-    pub fn new(reflect: Arc<Texture<Colorf> + Send + Sync>,
-               transmit: Arc<Texture<Colorf> + Send + Sync>,
-               eta: Arc<Texture<f32> + Send + Sync>) -> Glass {
+    pub fn new(reflect: Arc<Texture + Send + Sync>,
+               transmit: Arc<Texture + Send + Sync>,
+               eta: Arc<Texture + Send + Sync>) -> Glass {
         Glass { reflect: reflect, transmit: transmit, eta: eta }
     }
 }
@@ -53,9 +52,9 @@ impl Material for Glass {
                         alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
         // TODO: I don't like this counting and junk we have to do to figure out
         // the slice size and then the indices. Is there a better way?
-        let reflect = self.reflect.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let transmit = self.transmit.sample(hit.dg.u, hit.dg.v, hit.dg.time);
-        let eta = self.eta.sample(hit.dg.u, hit.dg.v, hit.dg.time);
+        let reflect = self.reflect.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let transmit = self.transmit.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
+        let eta = self.eta.sample_f32(hit.dg.u, hit.dg.v, hit.dg.time);
 
         let mut num_bxdfs = 0;
         if !reflect.is_black() {

@@ -32,25 +32,26 @@ impl AnimatedImage {
     }
 }
 
-impl Texture<f32> for AnimatedImage {
-    fn sample(&self, u: f32, v: f32, time: f32) -> f32 {
+impl Texture for AnimatedImage {
+    fn sample_f32(&self, u: f32, v: f32, time: f32) -> f32 {
         match self.active_keyframes(time) {
-            (lo, None) => self.frames[lo].1.sample(u, v, time),
+            (lo, None) => self.frames[lo].1.sample_f32(u, v, time),
             (lo, Some(hi)) => {
-                let x = (time - self.frames[lo].0) / (self.frames[hi].0 - self.frames[lo].0);
-                lerp(x, &self.frames[lo].1.sample(u, v, time), &self.frames[hi].1.sample(u, v, time))
+                let x = (time - self.frames[lo].0)
+                    / (self.frames[hi].0 - self.frames[lo].0);
+                lerp(x, &self.frames[lo].1.sample_f32(u, v, time),
+                    &self.frames[hi].1.sample_f32(u, v, time))
             }
         }
     }
-}
-
-impl Texture<Colorf> for AnimatedImage {
-    fn sample(&self, u: f32, v: f32, time: f32) -> Colorf {
+    fn sample_color(&self, u: f32, v: f32, time: f32) -> Colorf {
         match self.active_keyframes(time) {
-            (lo, None) => self.frames[lo].1.sample(u, v, time),
+            (lo, None) => self.frames[lo].1.sample_color(u, v, time),
             (lo, Some(hi)) => {
-                let x = (time - self.frames[lo].0) / (self.frames[hi].0 - self.frames[lo].0);
-                lerp(x, &self.frames[lo].1.sample(u, v, time), &self.frames[hi].1.sample(u, v, time))
+                let x = (time - self.frames[lo].0)
+                    / (self.frames[hi].0 - self.frames[lo].0);
+                lerp(x, &self.frames[lo].1.sample_color(u, v, time),
+                    &self.frames[hi].1.sample_color(u, v, time))
             }
         }
     }

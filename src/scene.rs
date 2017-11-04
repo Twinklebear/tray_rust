@@ -45,28 +45,26 @@ use texture::{self, Texture};
 /// input. But it's a bit of a pain to deal with, if I want to add
 /// more texture-able types and such.
 struct LoadedTextures {
-    // TODO: This sucks.
-    color: HashMap<String, Arc<Texture<Colorf> + Send + Sync>>,
-    scalar: HashMap<String, Arc<Texture<f32> + Send + Sync>>,
+    textures: HashMap<String, Arc<Texture + Send + Sync>>,
 }
 impl LoadedTextures {
     pub fn none() -> LoadedTextures {
-        LoadedTextures { color: HashMap::new(), scalar: HashMap::new() }
+        LoadedTextures { textures: HashMap::new() }
     }
     /// Get a Color texture, if it's in the map by loading from the element.
     /// If the element is a string the teture name will be looked up, if
     /// not a constant texture will be created and returned
-    pub fn find_color(&self, e: &Value) -> Option<Arc<Texture<Colorf> + Send + Sync>> {
+    pub fn find_color(&self, e: &Value) -> Option<Arc<Texture + Send + Sync>> {
         match *e {
             Value::String(ref s) => {
-                match self.color.get(s) {
+                match self.textures.get(s) {
                     Some(t) => Some(t.clone()),
                     None => None,
                 }
             },
             Value::Array(_) => {
                 match load_color(e) {
-                    Some(c) => Some(Arc::new(texture::Constant::new(c))),
+                    Some(c) => Some(Arc::new(texture::ConstantColor::new(c))),
                     None => None,
                 }
             },
@@ -76,15 +74,15 @@ impl LoadedTextures {
     /// Get a scalar texture, if it's in the map by loading from the element.
     /// If the element is a string the teture name will be looked up, if
     /// not a constant texture will be created and returned
-    pub fn find_scalar(&self, e: &Value) -> Option<Arc<Texture<f32> + Send + Sync>> {
+    pub fn find_scalar(&self, e: &Value) -> Option<Arc<Texture + Send + Sync>> {
         match *e {
             Value::String(ref s) => {
-                match self.scalar.get(s) {
+                match self.textures.get(s) {
                     Some(t) => Some(t.clone()),
                     None => None,
                 }
             },
-            Value::Number(ref n) => Some(Arc::new(texture::Constant::new(n.as_f64().unwrap() as f32))),
+            Value::Number(ref n) => Some(Arc::new(texture::ConstantScalar::new(n.as_f64().unwrap() as f32))),
             _ => panic!("Invalid JSON type for scalar texture"),
         }
     }
@@ -326,7 +324,7 @@ fn load_textures(path: &Path, elem: &Value) -> LoadedTextures {
         let ty = t.get("type").expect(&mat_error(&name, "A texture type is required")[..])
             .as_str().expect(&mat_error(&name, "Texture type must be a string")[..]);
         // Make sure names are unique to avoid people accidently overwriting textures
-        if textures.color.contains_key(&name) || textures.scalar.contains_key(&name) {
+        if textures.textures.contains_key(&name) {
             panic!("Error loading texture '{}': name conflicts with an existing entry", name);
         }
         if ty == "image" {
@@ -338,19 +336,8 @@ fn load_textures(path: &Path, elem: &Value) -> LoadedTextures {
                 file_path = path.join(file_path);
             }
             let img = image::open(file_path).expect("Failed to load image file");
-            let px_fmt = t.get("pixel_format").map(|x| x.as_str().expect("pixel_format must be a string"));
-            match px_fmt {
-                Some(fmt) => {
-                    if fmt == "color" {
-                        textures.color.insert(name, Arc::new(texture::Image::new(img)));
-                    } else if fmt == "f32" {
-                        textures.scalar.insert(name, Arc::new(texture::Image::new(img)));
-                    } else {
-                        panic!("Unrecognized pixel format {}", fmt);
-                    }
-                },
-                None => { textures.color.insert(name, Arc::new(texture::Image::new(img))); },
-            }
+
+            textures.textures.insert(name, Arc::new(texture::Image::new(img)));
         } else if ty == "animated_image" {
             let frames_list = t.get("keyframes").expect("animated_image requires keyframes")
                 .as_array().expect("animated_image keyframes must be an array");
@@ -371,19 +358,7 @@ fn load_textures(path: &Path, elem: &Value) -> LoadedTextures {
                 (time, img)
             }).collect();
 
-            let px_fmt = t.get("pixel_format").map(|x| x.as_str().expect("pixel_format must be a string"));
-            match px_fmt {
-                Some(fmt) => {
-                    if fmt == "color" {
-                        textures.color.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
-                    } else if fmt == "f32" {
-                        textures.scalar.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
-                    } else {
-                        panic!("Unrecognized pixel format {}", fmt);
-                    }
-                },
-                None => { textures.color.insert(name, Arc::new(texture::AnimatedImage::new(frames))); },
-            }
+            textures.textures.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
         } else {
             panic!("Unrecognized texture type '{}' for texture '{}'", ty, name);
         }
