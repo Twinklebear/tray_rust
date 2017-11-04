@@ -359,6 +359,33 @@ fn load_textures(path: &Path, elem: &Value) -> LoadedTextures {
             }).collect();
 
             textures.textures.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
+        } else if ty == "movie" {
+            // A movie is a generated animated_image, based on a format string to find the
+            // keyframes and a framerate to play back at
+
+            let file_prefix = t.get("file_prefix").expect("A file_prefix for movie is required")
+                .as_str().expect("file_prefix for movie must be a string");
+            let file_suffix = t.get("file_suffix").expect("A file_suffix for movie is required")
+                .as_str().expect("file_suffix for movie must be a string");
+            let total_frames = t.get("frames").expect("# of frames for movie texture is required")
+                .as_u64().expect("frames for movie texture must be an int");
+            let framerate = t.get("framerate").expect("A framerate for movie is required")
+                .as_u64().expect("framerate for movie must be an int");
+
+            let frames: Vec<_> = (0..total_frames).map(|frame| {
+                let mut file_path = PathBuf::new();
+                // There's no support for runtime-string formatting, maybe some lib out there for
+                // it but a lot of them seem targetted for web development and are too heavy.
+                file_path.push(format!("{}{:05}{}", file_prefix, frame, file_suffix));
+                if file_path.is_relative() {
+                    file_path = path.join(file_path);
+                }
+                let time = frame as f32 / framerate as f32;
+                let img = texture::Image::new(image::open(file_path).expect("Failed to load image file"));
+                (time, img)
+            }).collect();
+
+            textures.textures.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
         } else {
             panic!("Unrecognized texture type '{}' for texture '{}'", ty, name);
         }
