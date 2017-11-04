@@ -148,9 +148,9 @@ impl Master {
                         Ok(_) => {},
                         Err(e) => println!("Error saving image, {}", e),
                     };
-                    println!("Frame {}: rendering took {:4}s\nFrame {}: rendered to '{}'\n--------------------",
-                             frame_num, render_time.as_secs() as f64 + render_time.subsec_nanos() as f64 * 1e-9,
-                             frame_num, out_file.display());
+                    println!("Frame {}: time between receiving first and last tile {:4}s",
+                             frame_num, render_time.as_secs() as f64 + render_time.subsec_nanos() as f64 * 1e-9);
+                    println!("Frame {}: rendered to '{}'\n--------------------", frame_num, out_file.display());
                     finished = true;
                 }
             },
