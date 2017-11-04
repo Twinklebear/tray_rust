@@ -1,12 +1,11 @@
-//! An `Image` texture is a `Texture` whose samples come
-//! from an image file.
-
 use image::{self, GenericImage};
 
 use linalg::clamp;
 use film::Colorf;
 use texture::{Texture, bilinear_interpolate};
 
+/// An `Image` texture is a `Texture` whose samples come
+/// from an image file.
 pub struct Image {
     img: image::DynamicImage,
 }

@@ -5,11 +5,15 @@ use std::ops::{Add, Mul};
 use film::Colorf;
 
 pub use self::image::Image;
+pub use self::animated_image::AnimatedImage;
 
 pub mod image;
+pub mod animated_image;
 
 /// Any T which can be copied to return can be computed
 /// based on some texture or procedural value.
+/// TODO: We shouldn't have a templated texture, and should just
+/// have a sample_f32 and sample_color method.
 pub trait Texture<T: Copy> {
     /// Sample the textured value at texture coordinates u,v
     /// at some time. u and v should be in [0, 1]

@@ -45,6 +45,7 @@ use texture::{self, Texture};
 /// input. But it's a bit of a pain to deal with, if I want to add
 /// more texture-able types and such.
 struct LoadedTextures {
+    // TODO: This sucks.
     color: HashMap<String, Arc<Texture<Colorf> + Send + Sync>>,
     scalar: HashMap<String, Arc<Texture<f32> + Send + Sync>>,
 }
@@ -349,6 +350,39 @@ fn load_textures(path: &Path, elem: &Value) -> LoadedTextures {
                     }
                 },
                 None => { textures.color.insert(name, Arc::new(texture::Image::new(img))); },
+            }
+        } else if ty == "animated_image" {
+            let frames_list = t.get("keyframes").expect("animated_image requires keyframes")
+                .as_array().expect("animated_image keyframes must be an array");
+            if frames_list.len() < 2 {
+                panic!("animated_image must have at least 2 frames");
+            }
+            let frames: Vec<_> = frames_list.iter().map(|f| {
+                let mut file_path = PathBuf::new();
+                file_path.push(f.get("file").expect("Image textures must specify an image file")
+                               .as_str().expect("Image file name must be a string"));
+
+                if file_path.is_relative() {
+                    file_path = path.join(file_path);
+                }
+                let time = f.get("time").expect("animated_image keyframe requires time")
+                    .as_f64().expect("animated_image keyframe time must be a number") as f32;
+                let img = texture::Image::new(image::open(file_path).expect("Failed to load image file"));
+                (time, img)
+            }).collect();
+
+            let px_fmt = t.get("pixel_format").map(|x| x.as_str().expect("pixel_format must be a string"));
+            match px_fmt {
+                Some(fmt) => {
+                    if fmt == "color" {
+                        textures.color.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
+                    } else if fmt == "f32" {
+                        textures.scalar.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
+                    } else {
+                        panic!("Unrecognized pixel format {}", fmt);
+                    }
+                },
+                None => { textures.color.insert(name, Arc::new(texture::AnimatedImage::new(frames))); },
             }
         } else {
             panic!("Unrecognized texture type '{}' for texture '{}'", ty, name);
