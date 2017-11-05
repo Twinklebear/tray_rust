@@ -34,6 +34,7 @@ pub use self::rectangle::Rectangle;
 pub use self::bbox::BBox;
 pub use self::bvh::BVH;
 pub use self::mesh::Mesh;
+pub use self::animated_mesh::AnimatedMesh;
 pub use self::receiver::Receiver;
 pub use self::emitter::Emitter;
 
@@ -46,6 +47,7 @@ pub mod rectangle;
 pub mod bbox;
 pub mod bvh;
 pub mod mesh;
+pub mod animated_mesh;
 pub mod receiver;
 pub mod emitter;
 
@@ -66,6 +68,9 @@ pub trait Boundable {
     /// simply returns its bounds. This is kind of a hack to use
     /// the BVH for animated geomtry (instances) and non-animated geometry (triangles).
     fn bounds(&self, start: f32, end: f32) -> BBox;
+    /// Have the object recompute its bounds for the time range. In the case
+    /// of deforming geometry this can rebuild acceleration structures for example.
+    fn update_deformation(&mut self, start: f32, end: f32) {}
 }
 
 /// Trait implemented by geometry that can sample a point on its surface
