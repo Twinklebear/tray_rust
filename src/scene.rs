@@ -45,27 +45,26 @@ use texture::{self, Texture};
 /// input. But it's a bit of a pain to deal with, if I want to add
 /// more texture-able types and such.
 struct LoadedTextures {
-    color: HashMap<String, Arc<Texture<Colorf> + Send + Sync>>,
-    scalar: HashMap<String, Arc<Texture<f32> + Send + Sync>>,
+    textures: HashMap<String, Arc<Texture + Send + Sync>>,
 }
 impl LoadedTextures {
     pub fn none() -> LoadedTextures {
-        LoadedTextures { color: HashMap::new(), scalar: HashMap::new() }
+        LoadedTextures { textures: HashMap::new() }
     }
     /// Get a Color texture, if it's in the map by loading from the element.
     /// If the element is a string the teture name will be looked up, if
     /// not a constant texture will be created and returned
-    pub fn find_color(&self, e: &Value) -> Option<Arc<Texture<Colorf> + Send + Sync>> {
+    pub fn find_color(&self, e: &Value) -> Option<Arc<Texture + Send + Sync>> {
         match *e {
             Value::String(ref s) => {
-                match self.color.get(s) {
+                match self.textures.get(s) {
                     Some(t) => Some(t.clone()),
                     None => None,
                 }
             },
             Value::Array(_) => {
                 match load_color(e) {
-                    Some(c) => Some(Arc::new(texture::Constant::new(c))),
+                    Some(c) => Some(Arc::new(texture::ConstantColor::new(c))),
                     None => None,
                 }
             },
@@ -75,15 +74,15 @@ impl LoadedTextures {
     /// Get a scalar texture, if it's in the map by loading from the element.
     /// If the element is a string the teture name will be looked up, if
     /// not a constant texture will be created and returned
-    pub fn find_scalar(&self, e: &Value) -> Option<Arc<Texture<f32> + Send + Sync>> {
+    pub fn find_scalar(&self, e: &Value) -> Option<Arc<Texture + Send + Sync>> {
         match *e {
             Value::String(ref s) => {
-                match self.scalar.get(s) {
+                match self.textures.get(s) {
                     Some(t) => Some(t.clone()),
                     None => None,
                 }
             },
-            Value::Number(ref n) => Some(Arc::new(texture::Constant::new(n.as_f64().unwrap() as f32))),
+            Value::Number(ref n) => Some(Arc::new(texture::ConstantScalar::new(n.as_f64().unwrap() as f32))),
             _ => panic!("Invalid JSON type for scalar texture"),
         }
     }
@@ -325,7 +324,7 @@ fn load_textures(path: &Path, elem: &Value) -> LoadedTextures {
         let ty = t.get("type").expect(&mat_error(&name, "A texture type is required")[..])
             .as_str().expect(&mat_error(&name, "Texture type must be a string")[..]);
         // Make sure names are unique to avoid people accidently overwriting textures
-        if textures.color.contains_key(&name) || textures.scalar.contains_key(&name) {
+        if textures.textures.contains_key(&name) {
             panic!("Error loading texture '{}': name conflicts with an existing entry", name);
         }
         if ty == "image" {
@@ -337,19 +336,56 @@ fn load_textures(path: &Path, elem: &Value) -> LoadedTextures {
                 file_path = path.join(file_path);
             }
             let img = image::open(file_path).expect("Failed to load image file");
-            let px_fmt = t.get("pixel_format").map(|x| x.as_str().expect("pixel_format must be a string"));
-            match px_fmt {
-                Some(fmt) => {
-                    if fmt == "color" {
-                        textures.color.insert(name, Arc::new(texture::Image::new(img)));
-                    } else if fmt == "f32" {
-                        textures.scalar.insert(name, Arc::new(texture::Image::new(img)));
-                    } else {
-                        panic!("Unrecognized pixel format {}", fmt);
-                    }
-                },
-                None => { textures.color.insert(name, Arc::new(texture::Image::new(img))); },
+
+            textures.textures.insert(name, Arc::new(texture::Image::new(img)));
+        } else if ty == "animated_image" {
+            let frames_list = t.get("keyframes").expect("animated_image requires keyframes")
+                .as_array().expect("animated_image keyframes must be an array");
+            if frames_list.len() < 2 {
+                panic!("animated_image must have at least 2 frames");
             }
+            let frames: Vec<_> = frames_list.iter().map(|f| {
+                let mut file_path = PathBuf::new();
+                file_path.push(f.get("file").expect("Image textures must specify an image file")
+                               .as_str().expect("Image file name must be a string"));
+
+                if file_path.is_relative() {
+                    file_path = path.join(file_path);
+                }
+                let time = f.get("time").expect("animated_image keyframe requires time")
+                    .as_f64().expect("animated_image keyframe time must be a number") as f32;
+                let img = texture::Image::new(image::open(file_path).expect("Failed to load image file"));
+                (time, img)
+            }).collect();
+
+            textures.textures.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
+        } else if ty == "movie" {
+            // A movie is a generated animated_image, based on a format string to find the
+            // keyframes and a framerate to play back at
+
+            let file_prefix = t.get("file_prefix").expect("A file_prefix for movie is required")
+                .as_str().expect("file_prefix for movie must be a string");
+            let file_suffix = t.get("file_suffix").expect("A file_suffix for movie is required")
+                .as_str().expect("file_suffix for movie must be a string");
+            let total_frames = t.get("frames").expect("# of frames for movie texture is required")
+                .as_u64().expect("frames for movie texture must be an int");
+            let framerate = t.get("framerate").expect("A framerate for movie is required")
+                .as_u64().expect("framerate for movie must be an int");
+
+            let frames: Vec<_> = (0..total_frames).map(|frame| {
+                let mut file_path = PathBuf::new();
+                // There's no support for runtime-string formatting, maybe some lib out there for
+                // it but a lot of them seem targetted for web development and are too heavy.
+                file_path.push(format!("{}{:05}{}", file_prefix, frame, file_suffix));
+                if file_path.is_relative() {
+                    file_path = path.join(file_path);
+                }
+                let time = frame as f32 / framerate as f32;
+                let img = texture::Image::new(image::open(file_path).expect("Failed to load image file"));
+                (time, img)
+            }).collect();
+
+            textures.textures.insert(name, Arc::new(texture::AnimatedImage::new(frames)));
         } else {
             panic!("Unrecognized texture type '{}' for texture '{}'", ty, name);
         }
@@ -429,42 +465,43 @@ fn load_materials(path: &Path, elem: &Value, textures: &LoadedTextures)
                 materials.insert(name, Arc::new(Merl::load_file(file_path)) as Arc<Material + Send + Sync>);
             }
         } else if ty == "metal" {
-            let refr_index = load_color(m.get("refractive_index")
-                            .expect(&mat_error(&name, "A refractive_index color is required for metal")[..]))
+            let refr_index = textures.find_color(m.get("refractive_index")
+                                            .expect("refractive_index color/texture name is required for metal"))
                 .expect(&mat_error(&name, "Invalid color specified for refractive_index of metal")[..]);
-            let absorption_coef = load_color(m.get("absorption_coefficient")
-                         .expect(&mat_error(&name, "An absorption_coefficient color is required for metal")[..]))
+
+            let absorption_coef = textures.find_color(m.get("absorption_coefficient")
+                                            .expect("absorption_coefficient color/texture name is required for metal"))
                 .expect(&mat_error(&name, "Invalid color specified for absorption_coefficient of metal")[..]);
-            let roughness = m.get("roughness")
-                .expect(&mat_error(&name, "A roughness is required for metal")[..]).as_f64()
-                .expect(&mat_error(&name, "roughness must be a float")[..]) as f32;
-            materials.insert(name, Arc::new(Metal::new(&refr_index, &absorption_coef, roughness))
+
+            let roughness = textures.find_scalar(m.get("roughness")
+                                                 .expect("roughness color/texture is required for metal"))
+                .expect(&mat_error(&name, "Invalid roughness specified for metal")[..]);
+            materials.insert(name, Arc::new(Metal::new(refr_index, absorption_coef, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "plastic" {
             let diffuse = textures.find_color(m.get("diffuse")
                                             .expect("diffuse color/texture name is required for plastic"))
-                .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
+                .expect(&mat_error(&name, "Invalid color specified for diffuse of plastic")[..]);
 
             let gloss = textures.find_color(m.get("gloss")
                                             .expect("gloss color/texture name is required for plastic"))
-                .expect(&mat_error(&name, "Invalid color specified for diffuse of matte")[..]);
+                .expect(&mat_error(&name, "Invalid color specified for diffuse of plastic")[..]);
 
             let roughness = textures.find_scalar(m.get("roughness")
                                                  .expect("roughness color/texture is required for plastic"))
-                .expect(&mat_error(&name, "Invalid roughness specified for roughness")[..]);
+                .expect(&mat_error(&name, "Invalid roughness specified for plastic")[..]);
 
             materials.insert(name, Arc::new(Plastic::new(diffuse, gloss, roughness))
                              as Arc<Material + Send + Sync>);
         } else if ty == "specular_metal" {
-            let refr_index = load_color(m.get("refractive_index")
-                    .expect(&mat_error(&name, "A refractive_index color is required for specular metal")[..]))
+            let refr_index = textures.find_color(m.get("refractive_index")
+                                            .expect("refractive_index color/texture name is required for specular metal"))
                 .expect(&mat_error(&name, "Invalid color specified for refractive_index of specular metal")[..]);
-            let absorption_coef = load_color(m.get("absorption_coefficient")
-                     .expect(&mat_error(&name,
-                                        "An absorption_coefficient color is required for specular metal")[..]))
-                .expect(&mat_error(&name,
-                                   "Invalid color specified for absorption_coefficient of specular metal")[..]);
-            materials.insert(name, Arc::new(SpecularMetal::new(&refr_index, &absorption_coef))
+
+            let absorption_coef = textures.find_color(m.get("absorption_coefficient")
+                                            .expect("absorption_coefficient color/texture name is required for specular metal"))
+                .expect(&mat_error(&name, "Invalid color specified for absorption_coefficient of specular metal")[..]);
+            materials.insert(name, Arc::new(SpecularMetal::new(refr_index, absorption_coef))
                              as Arc<Material + Send + Sync>);
         } else {
             panic!("Error parsing material '{}': unrecognized type '{}'", name, ty);

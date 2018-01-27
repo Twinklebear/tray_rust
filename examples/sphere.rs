@@ -28,8 +28,8 @@ fn main() {
     let geometry_lock = Arc::new(sphere);
     // TODO: From a code usage standpoint it might be nice to have a constant version
     // of the material ctor exposed which takes the plain types and builds the textures internally
-    let texture = Arc::new(texture::Constant::<Colorf>::new(Colorf::new(0.740063, 0.742313, 0.733934)));
-    let roughness = Arc::new(texture::Constant::<f32>::new(1.0));
+    let texture = Arc::new(texture::ConstantColor::new(Colorf::new(0.740063, 0.742313, 0.733934)));
+    let roughness = Arc::new(texture::ConstantScalar::new(1.0));
     let white_wall = Matte::new(texture, roughness);
     let material_lock = Arc::new(white_wall);
     let position_transform =

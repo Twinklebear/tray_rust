@@ -5,15 +5,18 @@ use std::ops::{Add, Mul};
 use film::Colorf;
 
 pub use self::image::Image;
+pub use self::animated_image::AnimatedImage;
 
 pub mod image;
+pub mod animated_image;
 
-/// Any T which can be copied to return can be computed
-/// based on some texture or procedural value.
-pub trait Texture<T: Copy> {
+/// scalars or Colors can be computed on some image texture
+/// or procedural generator
+pub trait Texture {
     /// Sample the textured value at texture coordinates u,v
     /// at some time. u and v should be in [0, 1]
-    fn sample(&self, u: f32, v: f32, time: f32) -> T;
+    fn sample_f32(&self, u: f32, v: f32, time: f32) -> f32;
+    fn sample_color(&self, u: f32, v: f32, time: f32) -> Colorf;
 }
 
 fn bilinear_interpolate<T, F>(x: f32, y: f32, get: F) -> T
@@ -36,24 +39,48 @@ fn bilinear_interpolate<T, F>(x: f32, y: f32, get: F) -> T
         + s01 * (1.0 - sx) * sy + s11 * sx * sy
 }
 
-/// A single valued, solid 'color' texture for any T
-pub struct Constant<T: Copy> {
-    val: T,
+/// A single valued, solid scalar texture
+pub struct ConstantScalar {
+    val: f32,
 }
-impl<T: Copy> Constant<T> {
-    pub fn new(val: T) -> Constant<T> {
-        Constant { val: val }
+impl ConstantScalar {
+    pub fn new(val: f32) -> ConstantScalar {
+        ConstantScalar { val: val }
     }
 }
-impl<T: Copy> Texture<T> for Constant<T> {
-    fn sample(&self, _: f32, _: f32, _: f32) -> T {
+impl Texture for ConstantScalar {
+    fn sample_f32(&self, _: f32, _: f32, _: f32) -> f32 {
+        self.val
+    }
+    fn sample_color(&self, _: f32, _: f32, _: f32) -> Colorf {
+        Colorf::broadcast(self.val)
+    }
+}
+
+/// A single valued, solid color texture
+pub struct ConstantColor {
+    val: Colorf,
+}
+impl ConstantColor {
+    pub fn new(val: Colorf) -> ConstantColor {
+        ConstantColor { val: val }
+    }
+}
+impl Texture for ConstantColor {
+    fn sample_f32(&self, _: f32, _: f32, _: f32) -> f32 {
+        self.val.luminance()
+    }
+    fn sample_color(&self, _: f32, _: f32, _: f32) -> Colorf {
         self.val
     }
 }
 
 pub struct UVColor;
-impl Texture<Colorf> for UVColor {
-    fn sample(&self, u: f32, v: f32, _: f32) -> Colorf {
+impl Texture for UVColor {
+    fn sample_f32(&self, u: f32, v: f32, _: f32) -> f32 {
+        Colorf::new(u, v, 0.0).luminance()
+    }
+    fn sample_color(&self, u: f32, v: f32, _: f32) -> Colorf {
         Colorf::new(u, v, 0.0)
     }
 }
