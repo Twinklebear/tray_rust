@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-#![feature(placement_in_syntax)]
 //#![cfg_attr(feature = "unstable", feature(plugin))]
 //#![cfg_attr(feature = "unstable", plugin(clippy))]
 

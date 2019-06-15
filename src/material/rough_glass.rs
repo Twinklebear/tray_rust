@@ -71,14 +71,14 @@ impl Material for RoughGlass {
 
         let bxdfs = alloc.alloc_slice::<&BxDF>(num_bxdfs);
         let mut i = 0;
-        let fresnel = alloc <- Dielectric::new(1.0, eta);
-        let microfacet = alloc <- Beckmann::new(roughness);
+        let fresnel = alloc.alloc(Dielectric::new(1.0, eta));
+        let microfacet = alloc.alloc(Beckmann::new(roughness));
         if !reflect.is_black() {
-            bxdfs[i] = alloc <- TorranceSparrow::new(&reflect, fresnel, microfacet);
+            bxdfs[i] = alloc.alloc(TorranceSparrow::new(&reflect, fresnel, microfacet));
             i += 1;
         }
         if !transmit.is_black() {
-            bxdfs[i] = alloc <- MicrofacetTransmission::new(&transmit, fresnel, microfacet);
+            bxdfs[i] = alloc.alloc(MicrofacetTransmission::new(&transmit, fresnel, microfacet));
         }
         BSDF::new(bxdfs, eta, &hit.dg)
     }

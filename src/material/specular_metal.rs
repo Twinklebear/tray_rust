@@ -52,8 +52,8 @@ impl Material for SpecularMetal {
         let k = self.k.sample_color(hit.dg.u, hit.dg.v, hit.dg.time);
 
         let bxdfs = alloc.alloc_slice::<&BxDF>(1);
-        let fresnel = alloc <- Conductor::new(&eta, &k);
-        bxdfs[0] = alloc <- SpecularReflection::new(&Colorf::broadcast(1.0), fresnel);
+        let fresnel = alloc.alloc(Conductor::new(&eta, &k));
+        bxdfs[0] = alloc.alloc(SpecularReflection::new(&Colorf::broadcast(1.0), fresnel));
         BSDF::new(bxdfs, 1.0, &hit.dg)
     }
 }

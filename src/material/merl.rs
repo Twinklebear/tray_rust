@@ -88,7 +88,7 @@ impl Material for Merl {
     fn bsdf<'a, 'b, 'c>(&'a self, hit: &Intersection<'a, 'b>,
                         alloc: &'c Allocator) -> BSDF<'c> where 'a: 'c {
         let bxdfs = alloc.alloc_slice::<&BxDF>(1);
-        bxdfs[0] = alloc <- bxdf::Merl::new(&self.brdf[..], self.n_theta_h, self.n_theta_d, self.n_phi_d);
+        bxdfs[0] = alloc.alloc(bxdf::Merl::new(&self.brdf[..], self.n_theta_h, self.n_theta_d, self.n_phi_d));
         BSDF::new(bxdfs, 1.0, &hit.dg)
     }
 }

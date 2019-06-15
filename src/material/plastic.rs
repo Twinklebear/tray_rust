@@ -76,13 +76,13 @@ impl Material for Plastic {
 
         let mut i = 0;
         if !diffuse.is_black() {
-            bxdfs[i] = alloc <- Lambertian::new(&diffuse);
+            bxdfs[i] = alloc.alloc(Lambertian::new(&diffuse));
             i += 1;
         }
         if !gloss.is_black() {
-            let fresnel = alloc <- Dielectric::new(1.0, 1.5);
-            let microfacet = alloc <- Beckmann::new(roughness);
-            bxdfs[i] = alloc <- TorranceSparrow::new(&gloss, fresnel, microfacet);
+            let fresnel = alloc.alloc(Dielectric::new(1.0, 1.5));
+            let microfacet = alloc.alloc(Beckmann::new(roughness));
+            bxdfs[i] = alloc.alloc(TorranceSparrow::new(&gloss, fresnel, microfacet));
         }
         BSDF::new(bxdfs, 1.0, &hit.dg)
     }

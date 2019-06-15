@@ -57,9 +57,9 @@ impl Material for Matte {
 
         let bsdfs = alloc.alloc_slice::<&'c BxDF>(1);
         if roughness == 0.0 {
-            bsdfs[0] = alloc <- Lambertian::new(&diffuse);
+            bsdfs[0] = alloc.alloc(Lambertian::new(&diffuse));
         } else {
-            bsdfs[0] = alloc <- OrenNayar::new(&diffuse, roughness);
+            bsdfs[0] = alloc.alloc(OrenNayar::new(&diffuse, roughness));
         }
         BSDF::new(bsdfs, 1.0, &hit.dg)
     }

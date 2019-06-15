@@ -60,9 +60,9 @@ impl Material for Metal {
         let roughness = self.roughness.sample_f32(hit.dg.u, hit.dg.v, hit.dg.time);
 
         let bxdfs = alloc.alloc_slice::<&BxDF>(1);
-        let fresnel = alloc <- Conductor::new(&eta, &k);
-        let microfacet = alloc <- Beckmann::new(roughness);
-        bxdfs[0] = alloc <- TorranceSparrow::new(&Colorf::broadcast(1.0), fresnel, microfacet);
+        let fresnel = alloc.alloc(Conductor::new(&eta, &k));
+        let microfacet = alloc.alloc(Beckmann::new(roughness));
+        bxdfs[0] = alloc.alloc(TorranceSparrow::new(&Colorf::broadcast(1.0), fresnel, microfacet));
         BSDF::new(bxdfs, 1.0, &hit.dg)
     }
 }

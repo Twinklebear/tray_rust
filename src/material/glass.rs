@@ -66,13 +66,13 @@ impl Material for Glass {
         let bxdfs = alloc.alloc_slice::<&BxDF>(num_bxdfs);
 
         let mut i = 0;
-        let fresnel = alloc <- Dielectric::new(1.0, eta);
+        let fresnel = alloc.alloc(Dielectric::new(1.0, eta));
         if !reflect.is_black() {
-            bxdfs[i] = alloc <- SpecularReflection::new(&reflect, fresnel);
+            bxdfs[i] = alloc.alloc(SpecularReflection::new(&reflect, fresnel));
             i += 1;
         }
         if !transmit.is_black() {
-            bxdfs[i] = alloc <- SpecularTransmission::new(&transmit, fresnel);
+            bxdfs[i] = alloc.alloc(SpecularTransmission::new(&transmit, fresnel));
         }
         BSDF::new(bxdfs, eta, &hit.dg)
     }
