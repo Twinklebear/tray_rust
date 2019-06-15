@@ -318,15 +318,15 @@ fn test_rotate_x() {
     let n = t * Normal::new(0.0, 1.0, 0.0);
     // Need to now deal with some floating annoyances in these tests
     assert_eq!(p.x, 0.0);
-    assert_eq!(f32::abs_sub(p.y, 0.0), 0.0);
+    assert!(f32::abs(p.y) < 0.0001);
     assert_eq!(p.z, 1.0);
 
     assert_eq!(v.x, 0.0);
-    assert_eq!(f32::abs_sub(v.y, 0.0), 0.0);
+    assert!(f32::abs(v.y) < 0.0001);
     assert_eq!(v.z, 1.0);
 
     assert_eq!(n.x, 0.0);
-    assert_eq!(f32::abs_sub(n.y, 0.0), 0.0);
+    assert!(f32::abs(n.y) < 0.0001);
     assert_eq!(n.z, 1.0);
 }
 #[test]
@@ -336,15 +336,15 @@ fn test_rotate_y() {
     let v = t * Vector::new(1.0, 0.0, 0.0);
     let n = t * Normal::new(1.0, 0.0, 0.0);
     // Need to now deal with some floating annoyances in these tests
-    assert_eq!(f32::abs_sub(p.x, 0.0), 0.0);
+    assert!(f32::abs(p.x) < 0.0001);
     assert_eq!(p.y, 0.0);
     assert_eq!(p.z, 1.0);
 
-    assert_eq!(f32::abs_sub(v.x, 0.0), 0.0);
+    assert!(f32::abs(v.x) < 0.0001);
     assert_eq!(v.y, 0.0);
     assert_eq!(v.z, 1.0);
 
-    assert_eq!(f32::abs_sub(n.x, 0.0), 0.0);
+    assert!(f32::abs(n.x) < 0.0001);
     assert_eq!(n.y, 0.0);
     assert_eq!(n.z, 1.0);
 }
@@ -355,15 +355,15 @@ fn test_rotate_z() {
     let v = t * Vector::new(1.0, 0.0, 0.0);
     let n = t * Normal::new(1.0, 0.0, 0.0);
     // Need to now deal with some floating annoyances in these tests
-    assert_eq!(f32::abs_sub(p.x, 0.0), 0.0);
+    assert!(f32::abs(p.x) < 0.0001);
     assert_eq!(p.y, 1.0);
     assert_eq!(p.z, 0.0);
 
-    assert_eq!(f32::abs_sub(v.x, 0.0), 0.0);
+    assert!(f32::abs(v.x) < 0.0001);
     assert_eq!(v.y, 1.0);
     assert_eq!(v.z, 0.0);
 
-    assert_eq!(f32::abs_sub(n.x, 0.0), 0.0);
+    assert!(f32::abs(n.x) < 0.0001);
     assert_eq!(n.y, 1.0);
     assert_eq!(n.z, 0.0);
 }
