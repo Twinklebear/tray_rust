@@ -2,16 +2,15 @@ language: rust
 sudo: false
 rust:
     - stable
-    - nightly
-matrix:
-    allow_failures:
-        - rust: nightly
+    - beta
 before_script:
     - pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
+    - rustup component add clippy
 script:
     - travis-cargo build
     - travis-cargo test
     - travis-cargo doc
+    - cargo clippy
 after_success:
     - git config user.name "Travis-CI Doc Bot"
     - git config user.email "willusher.life@gmail.com"

@@ -1,6 +1,3 @@
-//#![cfg_attr(feature = "unstable", feature(plugin))]
-//#![cfg_attr(feature = "unstable", plugin(clippy))]
-
 extern crate image;
 extern crate rand;
 extern crate docopt;
