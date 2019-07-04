@@ -153,7 +153,7 @@ impl<T: Boundable> BVH<T> {
         let mut mid = build_info.len() / 2;
         // If all the geometry's centers are on the same point there's no partitioning that makes
         // sense to do
-        if centroids.max[split_axis] == centroids.min[split_axis] {
+        if (centroids.max[split_axis] - centroids.min[split_axis]).abs() < f32::EPSILON {
             if ngeom < max_geom {
                 return BVH::build_leaf(&mut build_info[..], ordered_geom, bounds);
             } else {

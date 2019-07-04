@@ -155,7 +155,7 @@ impl Transform {
         }
         let w = *self.inv.at(3, 0) * p.x + *self.inv.at(3, 1) * p.y
             + *self.inv.at(3, 2) * p.z + *self.inv.at(3, 3);
-        if w != 1.0 {
+        if (w - 1.0).abs() < f32::EPSILON {
             res / w
         } else {
             res
@@ -199,6 +199,7 @@ impl Mul for Transform {
 impl Mul<Point> for Transform {
     type Output = Point;
     /// Multiply the point by the transform to apply the transformation
+    #[allow(clippy::suspicious_arithmetic_impl)]
     fn mul(self, p: Point) -> Point {
         let mut res = Point::broadcast(0.0);
         for i in 0..3 {
@@ -207,7 +208,7 @@ impl Mul<Point> for Transform {
         }
         let w = *self.mat.at(3, 0) * p.x + *self.mat.at(3, 1) * p.y
             + *self.mat.at(3, 2) * p.z + *self.mat.at(3, 3);
-        if w != 1.0 {
+        if (w - 1.0).abs() < f32::EPSILON {
             res / w
         } else {
             res
