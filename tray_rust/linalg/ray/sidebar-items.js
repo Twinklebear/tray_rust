@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Ray","Ray is a standard 3D ray, starting at origin `o` and heading in direction `d` The min and max points along the ray can be specified with `min_t` and `max_t` `depth` is the recursion depth of the ray"]]});

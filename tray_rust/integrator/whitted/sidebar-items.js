@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Whitted","The Whitted integrator implementing the Whitted recursive ray tracing algorithm"]]});

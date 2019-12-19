@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Matte","The Matte material describes diffuse materials with either a Lambertian or Oren-Nayar BRDF. The Lambertian BRDF is used for materials with no roughness while Oren-Nayar is used for those with some roughness."]]});

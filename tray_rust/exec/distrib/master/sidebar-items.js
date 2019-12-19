@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Master","The Master organizes the set of Worker processes and instructions them what parts of the scene to render. As workers report results the master collects them and saves out the PNG once all workers have reported the frame."]]});

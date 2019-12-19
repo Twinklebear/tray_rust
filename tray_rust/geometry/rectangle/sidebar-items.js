@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Rectangle","A rectangle centered at the origin spanning [-width / 2, -height / 2] to [width / 2, height / 2] with a normal along [0, 0, 1]"]]});

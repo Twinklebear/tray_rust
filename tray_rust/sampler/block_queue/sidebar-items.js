@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BlockQueue","The queue of blocks to be worked on shared immutably between worker threads."],["BlockQueueIterator","Iterator to work through the queue safely"]]});

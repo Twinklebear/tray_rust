@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Matrix4","Matrix4 is a 4x4 matrix stored in row-major format"]]});

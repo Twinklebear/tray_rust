@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Instance","Defines an instance of some geometry with its own transform and material"]]});

@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `emitter` mod in crate `tray_rust`."><meta name="keywords" content="rust, rustlang, rust-lang, emitter"><title>tray_rust::geometry::emitter - Rust</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../tray_rust/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a><p class='location'>Module emitter</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li></ul></div><p class='location'><a href='../../index.html'>tray_rust</a>::<wbr><a href='../index.html'>geometry</a></p><script>window.sidebarCurrent = {name: 'emitter', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../../src/tray_rust/geometry/emitter.rs.html#1-204' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../../index.html'>tray_rust</a>::<wbr><a href='../index.html'>geometry</a>::<wbr><a class="mod" href=''>emitter</a></span></h1><div class='docblock'><p>An emitter is an instance of geometry that both receives and emits light</p>
+<h1 id="scene-usage-example" class="section-header"><a href="#scene-usage-example">Scene Usage Example</a></h1>
+<p>An emitter is an object in the scene that emits light, it can be a point light
+or an area light. The emitter takes an extra 'emitter' parameter to specify
+whether the instance is an area or point emitter and an 'emission' parameter
+to set the color and strength of emitted light.</p>
+<h2 id="point-light-example" class="section-header"><a href="#point-light-example">Point Light Example</a></h2>
+<p>The point light has no geometry, material or transformation since it's not a
+physical object. Instead it simply takes a position to place the light at in the scene.</p>
+<pre><code class="language-json">&quot;objects&quot;: [
+    {
+        &quot;name&quot;: &quot;my_light&quot;,
+        &quot;type&quot;: &quot;emitter&quot;,
+        &quot;emitter&quot;: &quot;point&quot;,
+        &quot;emission&quot;: [1, 1, 1, 100],
+        &quot;transform&quot;: [
+            {
+                &quot;type&quot;: &quot;translate&quot;,
+                &quot;translation&quot;: [0, 0, 22]
+            }
+        ]
+    },
+    ...
+]
+</code></pre>
+<h2 id="area-light-example" class="section-header"><a href="#area-light-example">Area Light Example</a></h2>
+<p>The area light looks similar to a regular receiver except it has an additional emission
+parameter. Area lights are also restricted somewhat in which geometry they can use as
+it needs to be possible to sample the geometry. Area lights can only accept geometry
+that implements <code>geometry::Sampleable</code>.</p>
+<pre><code class="language-json">&quot;objects&quot;: [
+    {
+        &quot;name&quot;: &quot;my_area_light&quot;,
+        &quot;type&quot;: &quot;emitter&quot;,
+        &quot;emitter&quot;: &quot;area&quot;,
+        &quot;emission&quot;: [1, 1, 1, 100],
+        &quot;material&quot;: &quot;white_matte&quot;,
+        &quot;geometry&quot;: {
+            &quot;type&quot;: &quot;sphere&quot;,
+             &quot;radius&quot;: 2.5
+        },
+        &quot;transform&quot;: [
+            {
+                &quot;type&quot;: &quot;translate&quot;,
+                &quot;translation&quot;: [0, 0, 22]
+            }
+        ]
+    },
+    ...
+]
+</code></pre>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table><tr class='module-item'><td><a class="struct" href="struct.Emitter.html" title='tray_rust::geometry::emitter::Emitter struct'>Emitter</a></td><td class='docblock-short'><p>An instance of geometry in the scene that receives and emits light.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "tray_rust";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>

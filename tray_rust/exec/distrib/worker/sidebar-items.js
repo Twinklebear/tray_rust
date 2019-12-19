@@ -1,0 +1,1 @@
+initSidebarItems({"static":[["PORT","Port that the workers listen for the master on"]],"struct":[["Worker","A worker process for distributed rendering. Accepts instructions from the master process telling it what to render, after each frame is finished results are sent back to the master and the next frame is started. Once all frames are finished the worker exits"]]});

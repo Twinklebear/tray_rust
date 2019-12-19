@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Keyframe","A transformation associated with a specific point in time. Note that this transform is now more implicit since they keyframe's times are stored as knots in the b-spline animation path"]]});

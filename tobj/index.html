@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `tobj` crate."><meta name="keywords" content="rust, rustlang, rust-lang, tobj"><title>tobj - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../tobj/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate tobj</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all tobj's items</p></a><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'tobj', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/tobj/lib.rs.html#1-931' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>tobj</a></span></h1><div class='docblock'><p>Tiny OBJ loader, inspired by Syoyo's excellent <a href="https://github.com/syoyo/tinyobjloader">tinyobjloader</a>.
+Aims to be a simple and lightweight option for loading OBJ files, just returns two vecs
+containing loaded models and materials. All models are made of triangles, any quad or polygon faces
+in an OBJ file will be converted to triangles. Note that only polygons that are trivially
+convertible to triangle fans are supported, arbitrary polygons may not behave as expected.
+The best solution would be to re-export your mesh using only triangles in your modeling software.</p>
+<p>It is assumed that all meshes will at least have positions, but normals and texture coordinates
+are optional. If no normals or texture coordinates were found then the corresponding vecs for
+the mesh will be empty. Values are stored packed as floats in vecs, eg. the positions member of
+a loaded mesh will contain <code>[x, y, z, x, y, z, ...]</code> which you can then use however you like.
+Indices are also loaded and may re-use vertices already existing in the mesh, this data is
+stored in the <code>indices</code> member.</p>
+<p>Standard MTL attributes are supported as well and any unrecognized parameters will be stored in a
+<code>HashMap</code> containing the key-value pairs of the unrecognized parameter and its value.</p>
+<h1 id="example" class="section-header"><a href="#example">Example</a></h1>
+<p>In this simple example we load the classic Cornell Box model that only defines positions and
+print out its attributes. This example is a slightly trimmed down version of <code>print_model_info</code>
+and <code>print_material_info</code> combined together, see them for a version that also prints out
+normals and texture coordinates if the model has them.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span>;
+<span class="kw">use</span> <span class="ident">tobj</span>;
+
+<span class="kw">let</span> <span class="ident">cornell_box</span> <span class="op">=</span> <span class="ident">tobj</span>::<span class="ident">load_obj</span>(<span class="kw-2">&amp;</span><span class="ident">Path</span>::<span class="ident">new</span>(<span class="string">&quot;cornell_box.obj&quot;</span>));
+<span class="macro">assert</span><span class="macro">!</span>(<span class="ident">cornell_box</span>.<span class="ident">is_ok</span>());
+<span class="kw">let</span> (<span class="ident">models</span>, <span class="ident">materials</span>) <span class="op">=</span> <span class="ident">cornell_box</span>.<span class="ident">unwrap</span>();
+
+<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;# of models: {}&quot;</span>, <span class="ident">models</span>.<span class="ident">len</span>());
+<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;# of materials: {}&quot;</span>, <span class="ident">materials</span>.<span class="ident">len</span>());
+<span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">m</span>) <span class="kw">in</span> <span class="ident">models</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+	<span class="kw">let</span> <span class="ident">mesh</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">m</span>.<span class="ident">mesh</span>;
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;model[{}].name = \&#39;{}\&#39;&quot;</span>, <span class="ident">i</span>, <span class="ident">m</span>.<span class="ident">name</span>);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;model[{}].mesh.material_id = {:?}&quot;</span>, <span class="ident">i</span>, <span class="ident">mesh</span>.<span class="ident">material_id</span>);
+
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Size of model[{}].indices: {}&quot;</span>, <span class="ident">i</span>, <span class="ident">mesh</span>.<span class="ident">indices</span>.<span class="ident">len</span>());
+	<span class="kw">for</span> <span class="ident">f</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">mesh</span>.<span class="ident">indices</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="number">3</span> {
+		<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    idx[{}] = {}, {}, {}.&quot;</span>, <span class="ident">f</span>, <span class="ident">mesh</span>.<span class="ident">indices</span>[<span class="number">3</span> <span class="op">*</span> <span class="ident">f</span>],
+			<span class="ident">mesh</span>.<span class="ident">indices</span>[<span class="number">3</span> <span class="op">*</span> <span class="ident">f</span> <span class="op">+</span> <span class="number">1</span>], <span class="ident">mesh</span>.<span class="ident">indices</span>[<span class="number">3</span> <span class="op">*</span> <span class="ident">f</span> <span class="op">+</span> <span class="number">2</span>]);
+	}
+
+	<span class="comment">// Normals and texture coordinates are also loaded, but not printed in this example</span>
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;model[{}].vertices: {}&quot;</span>, <span class="ident">i</span>, <span class="ident">mesh</span>.<span class="ident">positions</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="number">3</span>);
+	<span class="macro">assert</span><span class="macro">!</span>(<span class="ident">mesh</span>.<span class="ident">positions</span>.<span class="ident">len</span>() <span class="op">%</span> <span class="number">3</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>);
+	<span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">mesh</span>.<span class="ident">positions</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="number">3</span> {
+		<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    v[{}] = ({}, {}, {})&quot;</span>, <span class="ident">v</span>, <span class="ident">mesh</span>.<span class="ident">positions</span>[<span class="number">3</span> <span class="op">*</span> <span class="ident">v</span>],
+			<span class="ident">mesh</span>.<span class="ident">positions</span>[<span class="number">3</span> <span class="op">*</span> <span class="ident">v</span> <span class="op">+</span> <span class="number">1</span>], <span class="ident">mesh</span>.<span class="ident">positions</span>[<span class="number">3</span> <span class="op">*</span> <span class="ident">v</span> <span class="op">+</span> <span class="number">2</span>]);
+	}
+}
+<span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">m</span>) <span class="kw">in</span> <span class="ident">materials</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;material[{}].name = \&#39;{}\&#39;&quot;</span>, <span class="ident">i</span>, <span class="ident">m</span>.<span class="ident">name</span>);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.Ka = ({}, {}, {})&quot;</span>, <span class="ident">m</span>.<span class="ident">ambient</span>[<span class="number">0</span>], <span class="ident">m</span>.<span class="ident">ambient</span>[<span class="number">1</span>], <span class="ident">m</span>.<span class="ident">ambient</span>[<span class="number">2</span>]);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.Kd = ({}, {}, {})&quot;</span>, <span class="ident">m</span>.<span class="ident">diffuse</span>[<span class="number">0</span>], <span class="ident">m</span>.<span class="ident">diffuse</span>[<span class="number">1</span>], <span class="ident">m</span>.<span class="ident">diffuse</span>[<span class="number">2</span>]);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.Ks = ({}, {}, {})&quot;</span>, <span class="ident">m</span>.<span class="ident">specular</span>[<span class="number">0</span>], <span class="ident">m</span>.<span class="ident">specular</span>[<span class="number">1</span>], <span class="ident">m</span>.<span class="ident">specular</span>[<span class="number">2</span>]);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.Ns = {}&quot;</span>, <span class="ident">m</span>.<span class="ident">shininess</span>);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.d = {}&quot;</span>, <span class="ident">m</span>.<span class="ident">dissolve</span>);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.map_Ka = {}&quot;</span>, <span class="ident">m</span>.<span class="ident">ambient_texture</span>);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.map_Kd = {}&quot;</span>, <span class="ident">m</span>.<span class="ident">diffuse_texture</span>);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.map_Ks = {}&quot;</span>, <span class="ident">m</span>.<span class="ident">specular_texture</span>);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.map_Ns = {}&quot;</span>, <span class="ident">m</span>.<span class="ident">normal_texture</span>);
+	<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.map_d = {}&quot;</span>, <span class="ident">m</span>.<span class="ident">dissolve_texture</span>);
+	<span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">m</span>.<span class="ident">unknown_param</span> {
+		<span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;    material.{} = {}&quot;</span>, <span class="ident">k</span>, <span class="ident">v</span>);
+	}
+}</pre></div>
+<h1 id="rendering-examples" class="section-header"><a href="#rendering-examples">Rendering Examples</a></h1>
+<p>For an example of integration with <a href="https://github.com/tomaka/glium">glium</a> to make a simple OBJ viewer,
+check out <a href="https://github.com/Twinklebear/tobj_viewer">tobj viewer</a>. Some sample images can be found in
+tobj viewer's readme or in <a href="http://imgur.com/a/xsg6v">this gallery</a>.</p>
+<p>The Rungholt model shown below is reasonably large (6.7M triangles, 12.3M vertices) and is loaded
+in ~7.47s using a peak of ~1.1GB of memory on a Windows 10 machine with an i7-4790k and 16GB of
+1600Mhz DDR3 RAM with tobj 0.1.1 on rustc 1.6.0.
+The model can be found on <a href="http://graphics.cs.williams.edu/data/meshes.xml">Morgan McGuire's</a> meshes page and
+was originally built by kescha. Future work will focus on improving performance and memory usage.</p>
+<p><img src="http://i.imgur.com/wImyNG4.png" alt="Rungholt"
+    style="display:block; max-width:100%; height:auto"></p>
+<p>For an example of integration within a ray tracer, check out tray_rust's
+<a href="https://github.com/Twinklebear/tray_rust/blob/master/src/geometry/mesh.rs">mesh module</a>.
+The Stanford Buddha and Dragon from the
+<a href="http://graphics.stanford.edu/data/3Dscanrep/">Stanford 3D Scanning Repository</a> both load quite quickly.
+The Rust logo model was made by
+<a href="http://blenderartists.org/forum/showthread.php?362836-Rust-language-3D-logo">Nylithius on BlenderArtists</a>.
+The materials used are from the <a href="http://www.merl.com/brdf/">MERL BRDF Database</a>.</p>
+<p><img src="http://i.imgur.com/E1ylrZW.png" alt="Rust logo with friends"
+    style="display:block; max-width:100%; height:auto"></p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table><tr class='module-item'><td><a class="struct" href="struct.Material.html" title='tobj::Material struct'>Material</a></td><td class='docblock-short'><p>A material that may be referenced by one or more meshes. Standard MTL attributes are supported.
+Any unrecognized parameters will be stored as key-value pairs in the <code>unknown_param</code> <code>HashMap</code>,
+which maps the unknown parameter to the value set for it.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.Mesh.html" title='tobj::Mesh struct'>Mesh</a></td><td class='docblock-short'><p>A mesh made up of triangles loaded from some OBJ file</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.Model.html" title='tobj::Model struct'>Model</a></td><td class='docblock-short'><p>A named model within the file, associates some mesh with a name that was specified with an <code>o</code>
+or <code>g</code> keyword in the OBJ file</p>
+</td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table><tr class='module-item'><td><a class="enum" href="enum.LoadError.html" title='tobj::LoadError enum'>LoadError</a></td><td class='docblock-short'><p>Possible errors that may occur while loading OBJ and MTL files</p>
+</td></tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table><tr class='module-item'><td><a class="fn" href="fn.load_mtl.html" title='tobj::load_mtl fn'>load_mtl</a></td><td class='docblock-short'><p>Load the materials defined in a MTL file
+Returns a pair with a <code>Vec</code> holding all loaded materials and a <code>HashMap</code> containing a mapping of
+material names to indices in the Vec.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.load_mtl_buf.html" title='tobj::load_mtl_buf fn'>load_mtl_buf</a></td><td class='docblock-short'><p>Load the various materials in a MTL buffer</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.load_obj.html" title='tobj::load_obj fn'>load_obj</a></td><td class='docblock-short'><p>Load the various objects specified in the OBJ file and any associated MTL file
+Returns a pair of Vecs containing the loaded models and materials from the file.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.load_obj_buf.html" title='tobj::load_obj_buf fn'>load_obj_buf</a></td><td class='docblock-short'><p>Load the various meshes in an OBJ buffer of some kind, e.g. a
+network stream, text file already in memory or so on.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.print_material_info.html" title='tobj::print_material_info fn'>print_material_info</a></td><td class='docblock-short'><p>Print out all loaded properties of some materials</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.print_model_info.html" title='tobj::print_model_info fn'>print_model_info</a></td><td class='docblock-short'><p>Print out all loaded properties of some models and associated materials</p>
+</td></tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table><tr class='module-item'><td><a class="type" href="type.LoadResult.html" title='tobj::LoadResult type'>LoadResult</a></td><td class='docblock-short'><p><code>LoadResult</code> is a result containing all the models loaded from the file and any materials from
+referenced material libraries, or an error that occured while loading</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.MTLLoadResult.html" title='tobj::MTLLoadResult type'>MTLLoadResult</a></td><td class='docblock-short'><p><code>MTLLoadResult</code> is a result containing all the materials loaded from the file and a map of MTL
+name to index or the error that occured while loading</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "tobj";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

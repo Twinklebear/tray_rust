@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SpecularMetal","The Specular Metal material describes specularly reflective metals using their refractive index and absorption coefficient"]]});

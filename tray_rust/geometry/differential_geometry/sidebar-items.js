@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["DifferentialGeometry","Stores information about a hit piece of geometry of some object in the scene"]]});

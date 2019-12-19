@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["IntoIter","Parallel iterator over an option"],["Iter","Parallel iterator over an immutable reference to an option"],["IterMut","Parallel iterator over a mutable reference to an option"]]});

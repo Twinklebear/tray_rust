@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Allocator","The allocator provides exclusive access to the memory arena, allowing for allocation of objects in the arena."],["MemoryArena","Provides the backing storage to serve allocations requested by an `Allocator`."]]});

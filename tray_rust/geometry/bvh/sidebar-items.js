@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BVH","A standard BVH2 that stores objects that can report their bounds in some space via the `Boundable` trait. The BVH is constructed using a SAH partitioning scheme"]]});

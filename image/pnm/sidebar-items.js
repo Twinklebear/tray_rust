@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PNMSubtype","Denotes the category of the magic number"]],"struct":[["PNMDecoder","PNM decoder"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MultiThreaded","The `MultiThreaded` execution uses a configurable number of threads in a threadpool to render each frame"]]});

@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `distrib` mod in crate `tray_rust`."><meta name="keywords" content="rust, rustlang, rust-lang, distrib"><title>tray_rust::exec::distrib - Rust</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../tray_rust/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a><p class='location'>Module distrib</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'><a href='../../index.html'>tray_rust</a>::<wbr><a href='../index.html'>exec</a></p><script>window.sidebarCurrent = {name: 'distrib', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../../src/tray_rust/exec/distrib/mod.rs.html#1-100' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../../index.html'>tray_rust</a>::<wbr><a href='../index.html'>exec</a>::<wbr><a class="mod" href=''>distrib</a></span></h1><div class='docblock'><p>The distrib module provides methods for executing the rendering in a
+distributed environment across multiple machines. The worker module provides
+the Worker which does the actual job of rendering a subregion of the image.
+The master module provides the Master which instructs the Workers what to render
+and collects their results to save out the final image.</p>
+<h1 id="usage" class="section-header"><a href="#usage">Usage</a></h1>
+<p>The worker process takes very few arguments, just a flag indicating it's a worker
+and optionally the number of threads to use with <code>-n</code>.</p>
+<pre><code class="language-text">./tray_rust --worker
+</code></pre>
+<p>The worker processes will listen on a hard-coded port for the master to send them instructions
+about what parts of the image they should render. This is <code>exec::distrib::worker::PORT</code> which
+you can change and re-compile if the default of 63234 conflicts with other applications.</p>
+<p>The master process can be run on the same machine as a worker since it doesn't take
+up too much CPU time. To run the master you'll pass it the scene file, a list of the
+worker hostnames or IP addresses and optionally an output path and start/end frame numbers.
+You can also run tray_rust with the <code>-h</code> or <code>--help</code> flag to see a list of options.</p>
+<pre><code class="language-text">./tray_rust cornell_box.json --master worker1 worker2 192.168.32.129
+</code></pre>
+<p>The master will send the workers the location of the scene file which is assumed to
+be on some shared filesystem or otherwise available at the same path on all the workers.</p>
+<h1 id="running-on-gce-or-ec2" class="section-header"><a href="#running-on-gce-or-ec2">Running on GCE or EC2</a></h1>
+<p>You can run on any network of home machines but you can also run on virtual machines from
+Google or Amazon if you want to rent a mini cluster. On GCE or EC2 you'll want machines in the
+same region for faster communication and will then pass the local IPs of the workers to
+the master. For example on GCE you're given a virtual local network, you would use
+these IP addresses instead of the public IPs of the worker nodes.</p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
+<table><tr><td><code>pub use self::worker::<a class="struct" href="../../../tray_rust/exec/distrib/worker/struct.Worker.html" title="struct tray_rust::exec::distrib::worker::Worker">Worker</a>;</code></td></tr><tr><td><code>pub use self::master::<a class="struct" href="../../../tray_rust/exec/distrib/master/struct.Master.html" title="struct tray_rust::exec::distrib::master::Master">Master</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr class='module-item'><td><a class="mod" href="master/index.html" title='tray_rust::exec::distrib::master mod'>master</a></td><td class='docblock-short'><p>The master module provides the Master struct which instructs Workers which
+portions of the image they should render and collects their results to combine
+into the final image.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="worker/index.html" title='tray_rust::exec::distrib::worker mod'>worker</a></td><td class='docblock-short'><p>The worker module provides the Worker struct which receives instructions from
+the master, renders and reports back its results</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "tray_rust";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>

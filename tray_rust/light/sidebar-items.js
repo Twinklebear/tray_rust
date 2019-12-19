@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["OcclusionTester","The `OcclusionTester` provides a simple interface for setting up and executing occlusion queries in the scene"]],"trait":[["Light","Trait implemented by all lights in `tray_rust`. Provides methods for sampling the light and in the future ones for checking if it's a delta light, computing its power and so on."]]});

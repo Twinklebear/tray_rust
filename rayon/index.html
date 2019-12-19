@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `rayon` crate."><meta name="keywords" content="rust, rustlang, rust-lang, rayon"><title>rayon - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rayon/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate rayon</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all rayon's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#functions">Functions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'rayon', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rayon/lib.rs.html#1-47' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>rayon</a></span></h1><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr class='module-item'><td><a class="mod" href="collections/index.html" title='rayon::collections mod'>collections</a></td><td class='docblock-short'><p>This module contains the parallel iterator types for standard
+collections. You will rarely need to interact with it directly
+unless you have need to name one of the iterator types.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="iter/index.html" title='rayon::iter mod'>iter</a></td><td class='docblock-short'><p>The <code>ParallelIterator</code> module makes it easy to write parallel
+programs using an iterator-style interface. To get access to all
+the methods you want, the easiest is to write <code>use rayon::prelude::*;</code> at the top of your module, which will import
+the various traits and methods you need.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="option/index.html" title='rayon::option mod'>option</a></td><td class='docblock-short'><p>This module contains the parallel iterator types for options
+(<code>Option&lt;T&gt;</code>). You will rarely need to interact with it directly
+unless you have need to name one of the iterator types.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="prelude/index.html" title='rayon::prelude mod'>prelude</a></td><td class='docblock-short'><p>The rayon prelude imports the various <code>ParallelIterator</code> traits.
+The intention is that one can include <code>use rayon::prelude::*</code> and
+have easy access to the various traits and methods you will need.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="range/index.html" title='rayon::range mod'>range</a></td><td class='docblock-short'><p>This module contains the parallel iterator types for ranges
+(<code>Range&lt;T&gt;</code>); this is the type for values created by a <code>a..b</code>
+expression. You will rarely need to interact with it directly
+unless you have need to name one of the iterator types.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="result/index.html" title='rayon::result mod'>result</a></td><td class='docblock-short'><p>This module contains the parallel iterator types for results
+(<code>Result&lt;T, E&gt;</code>). You will rarely need to interact with it directly
+unless you have need to name one of the iterator types.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="slice/index.html" title='rayon::slice mod'>slice</a></td><td class='docblock-short'><p>This module contains the parallel iterator types for slices
+(<code>[T]</code>). You will rarely need to interact with it directly unless
+you have need to name one of those types.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="str/index.html" title='rayon::str mod'>str</a></td><td class='docblock-short'><p>This module contains extension methods for <code>String</code> that expose
+parallel iterators, such as <code>par_split_whitespace()</code>. You will
+rarely need to interact with it directly, since if you add <code>use rayon::prelude::*</code> to your file, that will include the helper
+traits defined in this module.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="vec/index.html" title='rayon::vec mod'>vec</a></td><td class='docblock-short'><p>This module contains the parallel iterator types for vectors
+(<code>Vec&lt;T&gt;</code>). You will rarely need to interact with it directly
+unless you have need to name one of those types.</p>
+</td></tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table><tr class='module-item'><td><a class="struct" href="struct.Configuration.html" title='rayon::Configuration struct'>Configuration</a></td><td class='docblock-short'><p>Contains the rayon thread pool configuration.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.Scope.html" title='rayon::Scope struct'>Scope</a></td><td class='docblock-short'><p>Represents a fork-join scope which can be used to spawn any number of tasks. See <a href="fn.scope.html"><code>scope()</code></a> for more information.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.ThreadPool.html" title='rayon::ThreadPool struct'>ThreadPool</a></td><td class='docblock-short'><p>ThreadPool</p>
+</td></tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table><tr class='module-item'><td><a class="fn" href="fn.current_num_threads.html" title='rayon::current_num_threads fn'>current_num_threads</a></td><td class='docblock-short'><p>Returns the number of threads in the current registry. If this
+code is executing within a Rayon thread-pool, then this will be
+the number of threads for the thread-pool of the current
+thread. Otherwise, it will be the number of threads for the global
+thread-pool.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.initialize.html" title='rayon::initialize fn'>initialize</a></td><td class='docblock-short'><p>Initializes the global thread pool. This initialization is
+<strong>optional</strong>.  If you do not call this function, the thread pool
+will be automatically initialized with the default
+configuration. In fact, calling <code>initialize</code> is not recommended,
+except for in two scenarios:</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.join.html" title='rayon::join fn'>join</a></td><td class='docblock-short'><p>The <code>join</code> function takes two closures and <em>potentially</em> runs them
+in parallel. It returns a pair of the results from those closures.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.scope.html" title='rayon::scope fn'>scope</a></td><td class='docblock-short'><p>Create a &quot;fork-join&quot; scope <code>s</code> and invokes the closure with a
+reference to <code>s</code>. This closure can then spawn asynchronous tasks
+into <code>s</code>. Those tasks may run asynchronously with respect to the
+closure; they may themselves spawn additional tasks into <code>s</code>. When
+the closure returns, it will block until all tasks that have been
+spawned into <code>s</code> complete.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.spawn.html" title='rayon::spawn fn'>spawn</a></td><td class='docblock-short'><p>Fires off a task into the Rayon threadpool in the &quot;static&quot; or
+&quot;global&quot; scope.  Just like a standard thread, this task is not
+tied to the current stack frame, and hence it cannot hold any
+references other than those with <code>'static</code> lifetime. If you want
+to spawn a task that references stack data, use <a href="fn.scope.html">the <code>scope()</code>
+function</a> to create a scope.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.split.html" title='rayon::split fn'>split</a></td><td class='docblock-short'><p>The <code>split</code> function takes arbitrary data and a closure that knows how to
+split it, and turns this into a <code>ParallelIterator</code>.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rayon";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

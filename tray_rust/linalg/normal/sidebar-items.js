@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Normal","Normal is a standard 3 component normal but transforms as a normal normal when transformations are applied"]]});

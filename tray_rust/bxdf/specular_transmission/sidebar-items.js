@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SpecularTransmission","Specular transmission BTDF that implements a specularly transmissive material model"]]});

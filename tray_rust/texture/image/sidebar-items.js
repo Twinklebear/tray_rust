@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Image","An `Image` texture is a `Texture` whose samples come from an image file."]]});

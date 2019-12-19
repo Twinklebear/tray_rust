@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["morton2","Compute the Morton code for the `(x, y)` position"],["part1_by1","Provides utilities for 2D Morton code generation using Fabian Giesen's Morton code decoding functions, see his post on Morton codes Insert a 0 bit between each of the low 16 bits of x"]]});

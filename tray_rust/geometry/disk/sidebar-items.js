@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Disk","A disk with some inner and outer radius allowing it to have a hole in the middle. The disk is oriented with the center at the origin and the normal pointing along +Z."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AnimatedMesh","An animated mesh composed of a series of meshes linearly interpolated between over time. It's assumed the mesh topology does not change."],["AnimatedMeshData",""],["AnimatedTriangle","An animated triangle in the mesh. Just stores a reference to the mesh and the indices of each vertex"]]});

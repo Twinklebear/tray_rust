@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["animated_image",""],["image",""]],"struct":[["ConstantColor","A single valued, solid color texture"],["ConstantScalar","A single valued, solid scalar texture"],["UVColor",""]],"trait":[["Texture","scalars or Colors can be computed on some image texture or procedural generator"]]});

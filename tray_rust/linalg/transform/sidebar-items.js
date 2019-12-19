@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Transform","Transform describes an affine transformation in 3D space and stores both the transformation and its inverse"]]});

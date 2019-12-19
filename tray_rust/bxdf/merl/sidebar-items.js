@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Merl","BRDF that uses measured data to model the surface reflectance properties. The measured data is from \"A Data-Driven Reflectance Model\", by Wojciech Matusik, Hanspeter Pfister, Matt Brand and Leonard McMillan, in ACM Transactions on Graphics 22, 3(2003), 759-769"]]});

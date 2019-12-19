@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Vector","Vector is a standard 3 component vector"]]});

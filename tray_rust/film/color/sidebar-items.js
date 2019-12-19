@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Colorf","Colorf is a floating point RGBA color type `a` is typically used to store the weight of a color eg. in the render target for multisampling we need to track the weight to normalize in the end and is always initialized to 0"]]});

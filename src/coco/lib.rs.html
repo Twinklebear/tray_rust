@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/coco-0.1.1/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../coco/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Concurrent collections.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This crate offers several collections that are designed for performance in multithreaded</span>
+<span class="doccomment">//! contexts. They can be freely shared among multiple threads running in parallel, and</span>
+<span class="doccomment">//! concurrently modified without the overhead of locking.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! &lt;!--</span>
+<span class="doccomment">//! Some of these data structures are lock-free. Others are not strictly speaking lock-free, but</span>
+<span class="doccomment">//! still scale well with respect to the number of threads accessing them.</span>
+<span class="doccomment">//! --&gt;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Collections</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The following collections are available:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! * [`Stack`]: A lock-free stack.</span>
+<span class="doccomment">//! * [`deque`]: A lock-free work-stealing deque.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Which collection should you use?</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ### Use a [`Stack`] when:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! * You want a simple shared collection where objects can be insert and removed.</span>
+<span class="doccomment">//! * You want to avoid performance degradation due to locking.</span>
+<span class="doccomment">//! * You want the first-in first-out order of elements.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ### Use a [`deque`] when:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! * You want one thread inserting and removing objects, and multiple threads just removing them.</span>
+<span class="doccomment">//! * You don&#39;t care about the order of elements.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Garbage collection</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! An interesting problem concurrent collections deal with comes from the remove operation.</span>
+<span class="doccomment">//! Suppose that a thread removes an element from a lock-free map, while another thread is reading</span>
+<span class="doccomment">//! that same element at the same time. The first thread must wait until the second thread stops</span>
+<span class="doccomment">//! reading the element. Only then it is safe to destruct it.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Programming languages that come with garbage collectors solve this problem trivially. The</span>
+<span class="doccomment">//! garbage collector will destruct the removed element when no thread can hold a reference to it</span>
+<span class="doccomment">//! anymore.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This crate implements a basic garbage collection mechanism, which is based on epochs (see the</span>
+<span class="doccomment">//! `epoch` module). When an element gets removed from a concurrent collection, it is inserted into</span>
+<span class="doccomment">//! a pile of garbage and marked with the current epoch. Every time a thread accesses a collection,</span>
+<span class="doccomment">//! it checks the current epoch, attempts to increment it, and destructs some garbage that became</span>
+<span class="doccomment">//! so old that no thread can be referencing it anymore.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! That is the general mechanism behind garbage collection, but the details are a bit more</span>
+<span class="doccomment">//! complicated. Anyhow, garbage collection is designed to be fully automatic and something users</span>
+<span class="doccomment">//! of concurrent collections don&#39;t have to worry about.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! [`Stack`]: stack/struct.Stack.html</span>
+<span class="doccomment">//! [`deque`]: deque/fn.new.html</span>
+
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">either</span>;
+
+<span class="attribute">#[<span class="ident">macro_use</span>(<span class="ident">defer</span>)]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">scopeguard</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">deque</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">epoch</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">stack</span>;
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">stack</span>::<span class="ident">Stack</span>;
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "coco";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Conductor","Computes the Fresnel term for conductive materials"],["Dielectric","Computes the Fresnel term for dielectric materials"]],"trait":[["Fresnel","The Fresnel trait implemented by the various Fresnel term components"]]});

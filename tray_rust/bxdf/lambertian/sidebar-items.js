@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Lambertian","Lambertian BRDF that implements the Lambertian reflectance model"]]});

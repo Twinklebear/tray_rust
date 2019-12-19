@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `coco` crate."><meta name="keywords" content="rust, rustlang, rust-lang, coco"><title>coco - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../coco/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate coco</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all coco's items</p></a><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'coco', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/coco/lib.rs.html#1-65' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>coco</a></span></h1><div class='docblock'><p>Concurrent collections.</p>
+<p>This crate offers several collections that are designed for performance in multithreaded
+contexts. They can be freely shared among multiple threads running in parallel, and
+concurrently modified without the overhead of locking.</p>
+<!--
+Some of these data structures are lock-free. Others are not strictly speaking lock-free, but
+still scale well with respect to the number of threads accessing them.
+-->
+<h1 id="collections" class="section-header"><a href="#collections">Collections</a></h1>
+<p>The following collections are available:</p>
+<ul>
+<li><a href="stack/struct.Stack.html"><code>Stack</code></a>: A lock-free stack.</li>
+<li><a href="deque/fn.new.html"><code>deque</code></a>: A lock-free work-stealing deque.</li>
+</ul>
+<h1 id="which-collection-should-you-use" class="section-header"><a href="#which-collection-should-you-use">Which collection should you use?</a></h1><h3 id="use-a-stack-when" class="section-header"><a href="#use-a-stack-when">Use a <a href="stack/struct.Stack.html"><code>Stack</code></a> when:</a></h3>
+<ul>
+<li>You want a simple shared collection where objects can be insert and removed.</li>
+<li>You want to avoid performance degradation due to locking.</li>
+<li>You want the first-in first-out order of elements.</li>
+</ul>
+<h3 id="use-a-deque-when" class="section-header"><a href="#use-a-deque-when">Use a <a href="deque/fn.new.html"><code>deque</code></a> when:</a></h3>
+<ul>
+<li>You want one thread inserting and removing objects, and multiple threads just removing them.</li>
+<li>You don't care about the order of elements.</li>
+</ul>
+<h1 id="garbage-collection" class="section-header"><a href="#garbage-collection">Garbage collection</a></h1>
+<p>An interesting problem concurrent collections deal with comes from the remove operation.
+Suppose that a thread removes an element from a lock-free map, while another thread is reading
+that same element at the same time. The first thread must wait until the second thread stops
+reading the element. Only then it is safe to destruct it.</p>
+<p>Programming languages that come with garbage collectors solve this problem trivially. The
+garbage collector will destruct the removed element when no thread can hold a reference to it
+anymore.</p>
+<p>This crate implements a basic garbage collection mechanism, which is based on epochs (see the
+<code>epoch</code> module). When an element gets removed from a concurrent collection, it is inserted into
+a pile of garbage and marked with the current epoch. Every time a thread accesses a collection,
+it checks the current epoch, attempts to increment it, and destructs some garbage that became
+so old that no thread can be referencing it anymore.</p>
+<p>That is the general mechanism behind garbage collection, but the details are a bit more
+complicated. Anyhow, garbage collection is designed to be fully automatic and something users
+of concurrent collections don't have to worry about.</p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
+<table><tr><td><code>pub use stack::<a class="struct" href="../coco/stack/struct.Stack.html" title="struct coco::stack::Stack">Stack</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr class='module-item'><td><a class="mod" href="deque/index.html" title='coco::deque mod'>deque</a></td><td class='docblock-short'><p>A lock-free work-stealing deque.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="epoch/index.html" title='coco::epoch mod'>epoch</a></td><td class='docblock-short'><p>Epoch-based garbage collection.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="stack/index.html" title='coco::stack mod'>stack</a></td><td class='docblock-short'><p>A lock-free stack.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "coco";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

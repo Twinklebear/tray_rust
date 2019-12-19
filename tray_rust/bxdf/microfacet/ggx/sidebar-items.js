@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["GGX","GGX microfacet distribution with Smith shadowing-masking. This is the microfacet model described by Walter et al."]]});

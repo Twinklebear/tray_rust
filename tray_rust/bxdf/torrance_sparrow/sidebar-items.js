@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TorranceSparrow","Struct providing the Torrance Sparrow BRDF, implemented as described in Walter et al. 07"]]});

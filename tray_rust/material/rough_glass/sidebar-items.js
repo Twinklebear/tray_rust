@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["RoughGlass","The `RoughGlass` material describes specularly transmissive and reflective glass material"]]});

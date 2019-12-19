@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ImageSample","A struct containing results of an image sample where a ray was fired through continuous pixel coordinates [x, y] and color `color` was computed"],["RenderTarget","`RenderTarget` is a RGBF render target to write our image too while rendering"]]});

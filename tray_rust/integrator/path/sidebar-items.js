@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Path","The path integrator implementing Path tracing with explicit light sampling"]]});

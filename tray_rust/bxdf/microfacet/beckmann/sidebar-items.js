@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Beckmann","Beckmann microfacet distribution with Smith shadowing-masking. This is the microfacet model described by Walter et al."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MitchellNetravali","A Mitchell-Netravali reconstruction filter. Recommended parameters to try: w = 2.0, h = 2.0, b = 1.0 / 3.0, c = 1.0 / 3.0"]]});

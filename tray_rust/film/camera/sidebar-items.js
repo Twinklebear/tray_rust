@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Camera","Our camera for the ray tracer, has a transformation to position it in world space"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AnimatedTransform","An animated transform that blends between the keyframes in its transformation list over time."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Emitter","An instance of geometry in the scene that receives and emits light."]]});

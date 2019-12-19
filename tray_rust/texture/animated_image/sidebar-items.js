@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AnimatedImage","An `AnimatedImage` texture is a `Texture` whose samples come from a series of `Image`s which are played through over time."]]});

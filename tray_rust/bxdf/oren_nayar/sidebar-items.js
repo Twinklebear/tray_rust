@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["OrenNayar","Oren-Nayar BRDF that implements the Oren-Nayar reflectance model"]]});

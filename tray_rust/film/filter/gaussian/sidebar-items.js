@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Gaussian","A Gaussian reconstruction filter. Recommended parameters to try: w = 2.0, h = 2.0, alpha = 2.0"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["intersect_triangle",""]],"struct":[["Mesh","A mesh composed of triangles, specified by directly passing the position, normal and index buffers for the triangles making up the mesh"],["Triangle","A triangle in some mesh. Just stores a reference to the mesh and the indices of each vertex"]]});

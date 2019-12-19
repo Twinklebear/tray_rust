@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../tray_rust/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
+
+<span class="doccomment">//! # tray\_rust - A Toy Ray Tracer in Rust</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! tray\_rust is a toy physically based ray tracer built off of the techniques</span>
+<span class="doccomment">//! discussed in [Physically Based Rendering](http://pbrt.org/). It began life as a port of</span>
+<span class="doccomment">//! [tray](https://github.com/Twinklebear/tray) to [Rust](http://www.rust-lang.org) to check out the language.</span>
+<span class="doccomment">//! The renderer is currently capable of path tracing, supports triangle meshes (MTL support coming soon),</span>
+<span class="doccomment">//! and various physically based material models (including measured data from the</span>
+<span class="doccomment">//! [MERL BRDF Database](http://www.merl.com/brdf/)). tray\_rust also supports rigid body animation along</span>
+<span class="doccomment">//! B-spline paths and distributed rendering.</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! [![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! ## Running</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Running and passing `--help` or `-h` will print out options you can pass to the renderer which are documented in the help.</span>
+<span class="doccomment">//! For the more complicated use cases I hope to do some write ups and guides on how to use them (e.g. distributed rendering,</span>
+<span class="doccomment">//! animation) but this may take a while. I strongly recommend running the release build as the debug version will be very slow.</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! ## Building Your Own Scenes</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! To position and animate objects, the camera and so on the</span>
+<span class="doccomment">//! [Blender plugin](https://github.com/Twinklebear/tray_rust_blender) is the easiest to use. However the plugin</span>
+<span class="doccomment">//! is still in development and missing some features like setting materials, changing light properties and such so</span>
+<span class="doccomment">//! you&#39;ll still currently need to do those by hand in the exported JSON file. For materials take a look at</span>
+<span class="doccomment">//! the [materials documentation](http://www.willusher.io/tray_rust/tray_rust/material/index.html) for lights</span>
+<span class="doccomment">//! you&#39;ll likely just want to change the emission color which is an RGB color plus a strength term.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Start at the documentation for the [scene module](http://www.willusher.io/tray_rust/tray_rust/scene/index.html),</span>
+<span class="doccomment">//! there are also a few example [scenes](https://github.com/Twinklebear/tray_rust/tree/master/scenes) included but not all</span>
+<span class="doccomment">//! the models are provided. From a clean `git clone` you should be able to run</span>
+<span class="doccomment">//! [cornell\_box.json](https://github.com/Twinklebear/tray_rust/blob/master/scenes/cornell_box.json) and</span>
+<span class="doccomment">//! [smallpt.json](https://github.com/Twinklebear/tray_rust/blob/master/scenes/smallpt.json). I plan to add some</span>
+<span class="doccomment">//! more simple scenes that show usage of other features like animation to provide examples. The rigid body animation</span>
+<span class="doccomment">//! feature is relatively new though so I haven&#39;t had time to document it properly yet.</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! ## TODO</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - More material models (eg. more microfacet models, rough glass, etc.)</span>
+<span class="doccomment">//! - Textures</span>
+<span class="doccomment">//! - Support for using an OBJ&#39;s associated MTL files</span>
+<span class="doccomment">//! - Bump mapping</span>
+<span class="doccomment">//! - [Subsurface scattering?](http://en.wikipedia.org/wiki/Subsurface_scattering)</span>
+<span class="doccomment">//! - [Vertex Connection and Merging?](http://iliyan.com/publications/VertexMerging)</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! ## Sample Renders</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! In the samples the the Buddha, Dragon, Bunny and Lucy statue are from</span>
+<span class="doccomment">//! [The Stanford Scanning Repository](http://graphics.stanford.edu/data/3Dscanrep/).</span>
+<span class="doccomment">//! The Rust logo model was made by</span>
+<span class="doccomment">//! [Nylithius on BlenderArtists](http://blenderartists.org/forum/showthread.php?362836-Rust-language-3D-logo).</span>
+<span class="doccomment">//! The Utah teapot used is from [Morgan McGuire&#39;s page](http://graphics.cs.williams.edu/data/meshes.xml) and</span>
+<span class="doccomment">//! the monkey head is Blender&#39;s Suzanne. I&#39;ve made minor tweaks to some of the models so for convenience</span>
+<span class="doccomment">//! you can find versions that can be easily loaded into the sample scenes [here](https://drive.google.com/folderview?id=0B-l_lLEMo1YeflUzUndCd01hOHhRNUhrQUowM3hVd2pCc3JrSXRiS3FQSzRYLWtGcGM0eGc&amp;usp=sharing), though the</span>
+<span class="doccomment">//! cube model for the Cornell box scene is included.</span>
+<span class="doccomment">//! The materials on the Rust logo, Buddha, Dragon and Lucy are from the</span>
+<span class="doccomment">//! [MERL BRDF Database](http://www.merl.com/brdf/).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Render times are formatted as hh:mm:ss and were measured using 144 threads on a machine with four</span>
+<span class="doccomment">//! [Xeon E7-8890 v3](http://ark.intel.com/products/84685/Intel-Xeon-Processor-E7-8890-v3-45M-Cache-2_50-GHz)</span>
+<span class="doccomment">//! CPUs. The machine is an early/engineering sample from Intel so your results may differ, but massive thanks to</span>
+<span class="doccomment">//! Intel for the hardware! Some older renders are shown as well without timing since they were</span>
+<span class="doccomment">//! run on a different machine.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Some more sample renders can be found [here](http://imgur.com/a/3qNBc).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! &lt;a href=&quot;http://i.imgur.com/X5y8oIq.png&quot;&gt;</span>
+<span class="doccomment">//! &lt;img src=&quot;http://i.imgur.com/X5y8oIq.png&quot; alt=&quot;Model gallery&quot;</span>
+<span class="doccomment">//!     style=&quot;display:block; max-width:100%; height:auto&quot;&gt;</span>
+<span class="doccomment">//! &lt;/a&gt;</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! 1920x1080, 4096 samples/pixel. Rendering: 00:43:36.45.</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! &lt;a href=&quot;http://i.imgur.com/E1ylrZW.png&quot;&gt;</span>
+<span class="doccomment">//! &lt;img src=&quot;http://i.imgur.com/E1ylrZW.png&quot; alt=&quot;Rust Logo with friends, disk&quot;</span>
+<span class="doccomment">//!     style=&quot;display:block; max-width:100%; height:auto&quot;&gt;</span>
+<span class="doccomment">//! &lt;/a&gt;</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! 1920x1080, 4096 samples/pixel. Rendering: 00:49:33.514.</span>
+<span class="doccomment">//! </span>
+
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">enum_set</span> <span class="kw">as</span> <span class="ident">enum_set</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rand</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">byteorder</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_json</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">bspline</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">docopt</span>;
+<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_derive</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">scoped_threadpool</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">image</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">bincode</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">mio</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">la</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">light_arena</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">linalg</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">film</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">geometry</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sampler</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">integrator</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">scene</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">bxdf</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">material</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">light</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mc</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">partition</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">exec</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">texture</span>;
+
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "tray_rust";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

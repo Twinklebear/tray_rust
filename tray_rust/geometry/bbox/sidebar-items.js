@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BBox","A box between the min and max points"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Metal","The Metal material describes metals of varying roughness"]]});

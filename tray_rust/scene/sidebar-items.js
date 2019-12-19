@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Scene","The scene containing the objects and camera configuration we'd like to render, shared immutably among the ray tracing threads"]]});
