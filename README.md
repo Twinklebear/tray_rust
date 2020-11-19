@@ -9,7 +9,7 @@ and various physically based material models (including measured data from the
 [MERL BRDF Database](http://www.merl.com/brdf/)). tray\_rust also supports rigid body animation along
 B-spline paths and distributed rendering.
 
-[![Build Status](https://travis-ci.org/Twinklebear/tray_rust.svg?branch=master)](https://travis-ci.org/Twinklebear/tray_rust)
+![Build Status](https://github.com/Twinklebear/tray_rust/workflows/CI/badge.svg)
 
 Running
 ---
