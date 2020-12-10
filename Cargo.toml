@@ -31,7 +31,6 @@ light_arena = "1.0.1"
 opt-level = 3
 debug = false
 rpath = false
-lto = true
 
 [features]
 unstable = []
