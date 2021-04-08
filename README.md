@@ -47,7 +47,7 @@ TODO
 
 Sample Renders
 ---
-In the samples the the Buddha, Dragon, Bunny and Lucy statue are from
+In the samples the Buddha, Dragon, Bunny and Lucy statue are from
 [The Stanford Scanning Repository](http://graphics.stanford.edu/data/3Dscanrep/).
 The Rust logo model was made by
 [Nylithius on BlenderArtists](http://blenderartists.org/forum/showthread.php?362836-Rust-language-3D-logo).
